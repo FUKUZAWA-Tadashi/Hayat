@@ -1,0 +1,98 @@
+h1 {
+  background-color: #FFCC66;
+  margin-bottom: 1em;
+  padding: 1em 0.2em 1em 0.2em;
+}
+
+h2 {
+  background-color: #99FF33;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-right: 5%;
+  border-top:1px solid #99FF00;
+  border-bottom:1px solid #99FF00;
+  padding: 0.7em 0.2em 0.7em 0.2em;
+}
+
+h3 {
+  background-color: #99CCFF;
+  margin-top: 1em;
+  margin-right: 10%;
+  margin-bottom: .5em;
+  border-top:1px solid #9999FF;
+  border-bottom:1px solid #9999FF;
+  padding: 0.5em 0.4em 0.5em 0.4em;
+}
+
+h4 {
+  background-color: #CCCCCC;
+  margin-top: 1em;
+  margin-right: 15%;
+  margin-bottom: .5em;
+  border-top:1px solid #CCCC99;
+  border-bottom:1px solid #CCCC99;
+  padding: 0.4em 0.6em 0.4em 0.6em;
+}
+
+h5 {
+  background-color: #FFFFCC;
+  margin-top: 0.5em;
+  margin-right: 50%;
+  margin-bottom: .3em;
+  border-top:1px solid #E0E0CC;
+  padding: 0.2em 0.8em 0.2em 0.8em;
+}
+
+pre {
+  font-family: monospace;
+  background-color: #CCFFCC;
+  margin: .5em 20% .5em 2em;
+  padding: .5em;
+  line-height: 125%;
+  overflow: auto;
+  word-wrap: break-word;
+}
+
+code {
+  font-family: monospace;
+  background-color: #E0FFFF;
+ 
+}
+code.sample {
+  font-size: 9pt;
+  background-color: #CCFFCC;
+}
+.code {
+  font-family: monospace;
+}
+
+table {
+  border-collapse: collapse;
+  border: 1px solid #202020;
+  margin: 1em 1em 1em 1em;
+}
+td {
+  border: 1px solid #202020;
+  padding: .3em .3em .3em .3em;
+}
+th {
+  background-color: #FFFFE0;
+  border: 1px solid #202020;
+  padding: .3em .3em .3em .3em;
+}
+
+div.anno {
+  margin: .1em 0em .5em 2em;
+  font-size: 80%;
+}
+div.note {
+  margin: .5em 0em 1em 2em;
+  font-size: 80%;
+}
+
+dt {
+  background-color: #FFD0D0;
+  padding: .5em 1em .5em 1em;
+  margin: 2em 50% .4em 1em;
+  font-family: monospace;
+}

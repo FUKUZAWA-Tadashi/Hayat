@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Random クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Random</h2>
+	乱数生成クラス。
+	32bitのM系列乱数(ガロアLFSR)である。
+	<br>
+	newによるインスタンス生成はできない。
+
+	<h3>クラスメソッド</h3>
+
+	<dl>
+	  <dt>Random.srand(x)</dt>
+	  <dd>乱数シードを整数xで初期化。戻り値はx。</dd>
+
+	  <dt>Random.seed()</dt>
+	  <dd>現在の乱数シードを返す。</dd>
+
+	  <dt>Random.rand()</dt>
+	  <dd>乱数を生成し、整数を返す。値の範囲はIntの全範囲。</dd>
+
+	  <dt>Random.rand(x)</dt>
+	  <dd>0 &lt;= rand(x) &lt; x の範囲の整数乱数を生成する。</dd>
+
+	  <dt>Random.rand(x,y)</dt>
+	  <dd>x &lt;= rand(x,y) &lt;= y の範囲の整数乱数を生成する。</dd>
+	</dl>
+
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

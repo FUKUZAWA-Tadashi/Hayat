@@ -1,0 +1,69 @@
+#
+# syntax definition of PEG itself
+#
+
+$action     action()
+
+Start		<- Directives %Spc Rules %EOF
+
+Directives	<- (%Spc (Direc_userAction / Direc_ownMes))*
+Direc_userAction <- %"$action" $1 %(" " / "\t")+ Ident $2 %(" " / "\t")* %"(" ActionParam $3 %")"
+Direc_userAction$1 = "function name required"
+Direc_userAction$2 = "function parameter required"
+Direc_userAction$3 = "missing ')'"
+ActionParam     <- (!(")" / "\n" / "\r") %.)*
+Direc_ownMes    <- %"$ownErrorMessage"
+
+
+Rules		<- (Rule / OperatorDef / DummyRule / ErrorMesDef)*
+Rule		<- Ident %Spc %"<-" %Spc Disjunction
+DummyRule       <- Ident %Spc %"<%" %Spc Disjunction
+ErrorMesDef     <- Ident %"$" Number %Spc %"=" %Spc String %Spc
+Disjunction	<- Conjunction (%"/" %Spc Conjunction)*
+Conjunction	<- (PrefixExp / ErrorCut)+
+PrefixExp	<- (AndPred / NotPred / NoTree)? SuffixExp
+SuffixExp	<- Term %Spc (Optional / ZeroOrMore / OneOrMore)?
+Term		<- EndOfFile / Term1 / Term2 / String / Token
+		 / Range / AnyChar
+Term1		<- Ident !("$" / Spc "<")
+Term2		<- %"(" %Spc Disjunction %")"
+ErrorCut	<- %"$" $1 Number %Spc
+ErrorCut$1 = "error cut number required"
+
+OperatorDef	<- UnaryOp / BinaryOp / TernaryOp
+UnaryOp         <- Ident %Spc %"<<" %Spc ('prefix' / 'postfix') $1 %Spc Number $2 %Spc Disjunction
+UnaryOp$1 = "missing precedence"
+UnaryOp$2 = "missing rule of parsing unary operator"
+BinaryOp	<- Ident %Spc %"<<" %Spc ('infixl' / 'infixr' / 'infixn') $1 %Spc Number $2 %Spc Disjunction
+BinaryOp$1 = "missing precedence"
+BinaryOp$2 = "missing rule of parsing binary operator"
+TernaryOp	<- Ident %Spc %"<<" %Spc 'ternary' $1 %Spc Number $2 %Spc PrefixExp %Spc PrefixExp %Spc
+TernaryOp$1 = "missing precedence"
+TernaryOp$2 = "missing rule of parsing binary operator"
+Number		<% %[0-9]+
+
+AndPred		<- %"&" %Spc
+NotPred		<- %"!" %Spc
+NoTree		<- %"%" %Spc
+Optional	<- %"?" %Spc
+ZeroOrMore	<- %"*" %Spc
+OneOrMore	<- %"+" %Spc
+
+Ident		<% %Ident1 %Ident2*
+#Ident1		<% %[a-z] / %[A-Z] / %"_"
+#Ident2		<% %Ident1 / %[0-9]
+NotTokenPred	<% !Ident2
+
+EndOfFile	<- %'EOF'
+AnyChar		<- %"."
+String		<- %"\"" (!"\"" %XChar)+ %"\""
+Token		<- %"'" Ident %"'"
+Range		<- %"[" XChar %"-" XChar %"]"
+XChar		<- XCharH / XCharU / XCharE / XCharA
+XCharH		<- %"\\" %("x" / "X") Hex1 Hex1
+XCharU		<- %"\\" %("u" / "U") Hex1 Hex1 Hex1 Hex1
+XCharE		<- %"\\" .
+XCharA		<- !("\n" / "\r") %.
+Hex1		<- %[0-9] / %[A-F] / %[a-f]
+Spc		<- %(" " / "\t" / "\n" / "\r" / Comment)*
+Comment		<% %"#" %XCharA* %("\n" / "\r")+

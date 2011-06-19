@@ -1,0 +1,69 @@
+# -*- makefile -*-
+#
+# machine independent Makefile
+#
+#
+
+STDLIB_DIR	= ../stdlib
+COMPILER_DIR    = ../compiler
+COMMON_DIR      = ../common
+STDLIB_FFIOUT_DIR	= $(STDLIB_DIR)/ffiout
+
+
+# FFI_SRCS ’è‹`
+-include $(STDLIB_FFIOUT_DIR)/FFI_SRC_FILES
+
+# common source files
+include $(COMMON_DIR)/COMMON_SRCS
+
+
+SRCS	=	$(COMMON_SRCS) \
+	$(MACHDEP_DIR)/machdep.cpp \
+        opcode_nameTable.cpp \
+	hyDebug.cpp \
+	hyValue.cpp \
+	hySymbolTable.cpp \
+	hyException.cpp \
+	hyBytecode.cpp \
+	hyDebugSourceInfo.cpp \
+	hyCodePtr.cpp \
+	hyThread.cpp \
+	hyClosure.cpp \
+	hyContext.cpp \
+	hyVM.cpp \
+	hyThreadManager.cpp \
+	hyClass.cpp \
+	hyObject.cpp \
+	hyGC.cpp \
+	hyCodeManager.cpp \
+	hyStringBuffer.cpp \
+	hyValueArray.cpp \
+	hyHash.cpp \
+	hyVarTable.cpp \
+	hyFiber.cpp \
+	hyMethod.cpp \
+	hySignature.cpp \
+	hyBitArray.cpp \
+	hyStringBox.cpp \
+	hyPack.cpp \
+	hyStringReader.cpp \
+	hayat.cpp
+
+#
+
+TOOLS_SRCS	=	$(TOOLS_DIR)/htPrintOpcode.cpp
+
+#
+
+
+.PHONY: clean-common prep-common
+
+clean-common:
+	rm -f opcode_def.h opcode_nameTable.cpp opcode_func_defs.inc opcode_func_table.inc
+
+
+prep-common: opcode_def.h opcode_nameTable.cpp opcode_func_defs.inc opcode_func_table.inc
+
+
+opcode_def.h opcode_nameTable.cpp opcode_func_defs.inc opcode_func_table.inc : $(COMMON_DIR)/opcodeDef.rb
+	@ruby $(COMMON_DIR)/opcodeDef.rb -E

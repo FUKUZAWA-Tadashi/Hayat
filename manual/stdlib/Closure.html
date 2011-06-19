@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Closure クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Closure</h2>
+	クロージャ。
+	<br>
+	newによるインスタンス生成はできない。 lambda文によって生成する。
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>演算子</h3>
+
+	<table>
+	  <tr>
+		<td class="code">()</td>
+		<td>call() と同じ。</td>
+	  </tr>
+	</table>
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>call(...)</dt>
+	  <dd>クロージャを呼び出す。
+		クロージャ中のreturn文は、このcall()の戻り値となる。
+	  </dd>
+
+	  <dt>callAway(...)</dt>
+	  <dd>クロージャを呼び出す。
+		クロージャ中のreturn文は、クロージャを生成したメソッドからの
+		リターンとなる。
+	  </dd>
+
+	  <dt>run()</dt>
+	  <dd>引数の無い call() と同じ。主にThreadから使用される。</dd>
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

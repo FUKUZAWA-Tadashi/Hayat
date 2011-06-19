@@ -1,0 +1,188 @@
+// made by: common/mmesex.rb engine stdlib/ffi
+
+// stdlib/ffi/HSca_BitArray.cpp:129
+Array index out of bounds: idx1 = %d, idx2 = %d, array size = %d
+
+// stdlib/ffi/HSca_BitArray.cpp:51
+// stdlib/ffi/HSca_BitArray.cpp:76
+// stdlib/ffi/HSca_Array.cpp:82
+// stdlib/ffi/HSca_Array.cpp:102
+Array index out of bounds: index = %d, array size = %d
+
+// engine/hyContext.cpp:1162
+Bad FFI call %s::%s\nsp=%d,numRetVal=%d,newsp=%d
+
+// stdlib/ffi/HSca_Fiber.cpp:59
+Closure required
+
+// engine/hyThreadManager.cpp:45
+PROGRAM BUG :  ThreadManager::firstOfAll() must called first
+
+// engine/hyStringBuffer.cpp:122
+// engine/hyStringBuffer.cpp:134
+StringBuffer overflow detected
+
+// engine/hyFiber.cpp:93
+// engine/hyFiber.cpp:432
+already finished
+
+// stdlib/ffi/HSca_BitArray.cpp:114
+argument of BitArray::changeSize() must >= 0
+
+// stdlib/ffi/HSca_stdlib.cpp:43
+// stdlib/ffi/HSca_stdlib.cpp:52
+assertion failed
+
+// stdlib/ffi/HSca_List.cpp:90
+call head() of empty List
+
+// stdlib/ffi/HSca_List.cpp:102
+call tail() of empty List
+
+// engine/hyContext.cpp:634
+// engine/hyContext.cpp:653
+cannot access constant '%s' from class '%s'
+
+// engine/hyVM.cpp:770
+cannot access constant '%s::%s'
+
+// engine/hyVM.cpp:588
+cannot get member or call method '%s' in class '%s'
+
+// engine/hyVM.cpp:617
+cannot set member '%s' or call setter '%s' in class '%s'
+
+// engine/hySignature.cpp:553
+// engine/hySignature.cpp:623
+class %s not initialized for default value
+
+// engine/hyFfiDecl.h:51
+// engine/hyFfiDecl.h:53
+class method call for instance method
+
+// engine/hyContext.cpp:187
+class method not found or signature mismatch: %s::%s
+
+// engine/hyClosure.cpp:59
+closure call signature mismatch
+
+// engine/hyClass.cpp:187
+delete BUG !!  in class %s\n
+
+// stdlib/ffi/HSca_Int.cpp:76
+// stdlib/ffi/HSca_Int.cpp:89
+division by zero
+
+// engine/hyClass.cpp:868
+ffi table mismatch: table has entry '%s' but class %s does not have it
+
+// engine/hyFiber.cpp:67
+// engine/hyFiber.cpp:397
+fiber loop
+
+// engine/hyFiber.cpp:142
+fiber was finished
+
+// stdlib/ffi/HSca_Bytecode.cpp:33
+file %s reload as %s failed
+
+// stdlib/ffi/HSca_Bytecode.cpp:20
+file %s reload failed
+
+// engine/hyClass.cpp:305
+frameSP=%d,frameStack.sp=%d
+
+// engine/hyFiber.cpp:111
+generate() loop
+
+// engine/hyFiber.cpp:229
+getReturnVal() called but not returned
+
+// engine/hyVM.cpp:749
+getScopeClass: class not found: %s
+
+// engine/hyVM.cpp:756
+getScopeClass: inner class not found: %s
+
+// engine/hyFiber.cpp:219
+getYieldVal() called but not yielding
+
+// engine/hyVM.cpp:460
+initialize() must return an object of class '%s'
+
+// engine/hyFfiDecl.h:50
+// engine/hyFfiDecl.h:52
+instance method call for a class method
+
+// engine/hyContext.cpp:192
+instance method not found or signature mismatch: %s::%s
+
+// engine/hyContext.cpp:964
+internal error: incorrect finally process
+
+// engine/hyBytecode.cpp:283
+// engine/hyBytecode.cpp:318
+// engine/hyBytecode.cpp:354
+no link bytecode found %s
+
+// engine/hyContext.cpp:285
+no method %s found in scope %s.  self.type=%s
+
+// engine/hyBytecode.cpp:366
+offs=%d m_stringTableSize=%d
+
+// stdlib/ffi/HSca_Bytecode.cpp:24
+// stdlib/ffi/HSca_Bytecode.cpp:37
+reload feature not available
+
+// engine/hyContext.cpp:1220
+return assertion failed:\n  context=%x, sp=%d, framePos=%d, numArgs=%d, nulLocals=%d
+
+// stdlib/ffi/HSca_stdlib.cpp:78
+sleep() called out of thread
+
+// stdlib/ffi/HSca_Random.cpp:37
+srand(0) is not allowed
+
+// engine/hyClass.cpp:308
+stack size expected %d but actually %d
+
+// engine/hyContext.cpp:644
+substitution to Constant '%s' not allowed
+
+// engine/hyClass.cpp:577
+super class %s not found
+
+// engine/hySymbolTable.cpp:103
+symbol table is not initialized
+
+// engine/hyContext.cpp:896
+uncaught exception
+
+// engine/hyVM.cpp:432
+// engine/hyVM.cpp:546
+unknown class '%s'
+
+// engine/hyContext.cpp:567
+// engine/hyContext.cpp:582
+unknown member var %s (class %s)
+
+// engine/hyClass.cpp:596
+using class %s not found
+
+// engine/hyClass.cpp:603
+using class ...::%s not found
+
+// engine/hyClass.cpp:593
+using class ::%s not found
+
+// engine/hyContext.cpp:560
+// engine/hyContext.cpp:575
+using member variable '%s' out of instance
+
+// engine/hyVM.cpp:831
+yield out of fiber
+
+// engine/hyFiber.cpp:241
+yieldResult() called but not yielded
+

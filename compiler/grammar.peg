@@ -1,0 +1,384 @@
+#
+
+# Hayat grammar definition
+
+$action compile(Context*)
+
+
+# 空白,改行 
+#spcChar         <- " " / "\t" / "\r" / "　" / "\\\r\n" / "\\\r" / "\\\n" / comment
+s               <% %spcChar*
+spc             <% %spcChar+
+z               <% %(spcChar / "\n")*
+
+# コメント 
+comment         <% %comment1 / %comment2
+#comment1        <- %"//" (!"\n" %.)*
+#comment2        <- %"/*" (!"*/" (%comment2 / %.))* %"*/"
+
+
+
+# プログラム 
+main            <- classBody %z EOF
+
+classBody       <- %z (statements $1 %separator)?
+classBody$1 = "semicolon or linefeed required after statement"
+separator       <- %s %(";" / "\n") %z
+
+
+# クラス定義 
+defClass        <- defClassStart $1 %separator classBody %'end'
+defClass$1 = "';' or end of line required"
+defClassStart   <- %'class' %spc $1 IDENT (%s %"<" %z $2 superClassList)?
+defClassStart$1 = "class name required"
+defClassStart$2 = "super class list required"
+superClassList  <- IDENT (%s %"," %z $1 IDENT)*
+superClassList$1 = "existing class name required"
+
+
+# プログラム1かたまり 
+statement_end   <- %s $1 &(";" / "}" / "\n")
+statement_end$1 = "statement separator required"
+statements      <- (include %z)* statement %statement_end (%separator (include %z)* statement %statement_end)*
+progn_1         <- (include %z)* statement_1 %statement_end (%separator (include %z)* statement_1 %statement_end)*
+progn           <- progn_1? (%z %";")*
+
+statement       <- !'end' (defMethod / defFiber / defClass / ffi / require / using / statement_1)
+statement_1     <- if / loop / while / for / match / switch
+                 / break / next / label / goto 
+                 / return / enum / try / throw / subst
+                 / statement_exp / statement_0
+statement_exp   <- exp
+statement_0     <- &";"
+subst_or_exp    <- subst / exp
+
+scopeMethodCall <- scopedIDENT %s argList
+# メソッド呼び出し または ()演算子
+method_or_functor <- IDENT %s argList
+
+argList1        <- parenArgs (%s lambdaArgs)?
+argList         <- argList1 / lambdaArgs
+parenArgs       <- %"(" %z (rightValueList %z)? $1 %")"
+parenArgs$1 = "')' required"
+lambdaArgs      <- lambda2 (%s lambda2)*
+
+# sayCommand 
+sayCommand      <- exp0? %s say
+say             <- %"「" sayElement1* %"」" / %"<<" sayElement2* %">>"
+sayElement1     <- notSayExp / formatSayExp / sayExp / sayString1
+sayElement2     <- notSayExp / formatSayExp / sayExp / sayString2
+notSayExp       <- %"{#" %z $1 sayExpElems %z $2 %"}"
+notSayExp$1 = "expression or substitute statement required"
+notSayExp$2 = "'}' required in embedded sayCommand expression"
+formatSayExp    <- %"{%" $1 format %s $2 %"%" %s $3 exp %z $4 %"}"
+formatSayExp$1 = "bad format string"
+formatSayExp$2 = "a '%' needed after format string"
+formatSayExp$3 = "expression to be formatted required after '%'"
+formatSayExp$4 = "'}' required for formatted sayCommand"
+format          <- %"#"? %("-" / " " / "+")?
+                   %[0-9]*
+                   %("." [0-9]*)?
+                   ("d" / "i" / "o" / "u" / "x" / "X"
+                    / "lc" / "c"
+                    / "e" / "E" / "f" / "F"
+                    / "ls" / "s")
+sayExp          <- %"{" %z $1 sayExpElems %z $2 %"}"
+sayExp$1 = "expression or substitute statement required"
+sayExp$2 = "'}' required in embedded sayCommand expression"
+sayString1      <% (!"」" %SChar)+
+sayString2      <% (!">>" %SChar)+
+sayExpElems        <- subst_or_exp (%separator subst_or_exp)*
+
+
+# メソッド定義 
+defMethod       <- %"def" %spc $1 methodName_def %s $2 paramList? %z $3 block
+defMethod$1 = "method name required"
+defMethod$2 = "method parameter required"
+defMethod$3 = "method body block required"
+paramList       <- %"(" %z (params %z)? $1 %")"
+paramList$1 = "unclosed parameter list"
+lambdaParam     <- %"|" %z (params %z)? $1 %"|"
+lambdaParam$1 = "unclosed parameter list"
+params          <- paramElem (%z %"," %z $1 paramElem)*
+params$1 = "parameter required"
+paramElem       <- %"'(" %z $1 params? %z %")"
+                 / IDENT (%s %"=" %s $2 exp)?
+                 / %"*" %s $3 IDENT (%s %"=" %s $2 exp)?
+paramElem$1 = "unclosed parameter list"
+paramElem$2 = "default value expression required"
+paramElem$3 = "parameter variable name required"
+block           <- %"{" %z $1 progn %z $2 %"}"
+block$1 = "block body statements required"
+block$2 = "statement or '}' required"
+
+methodName      <- IDENT
+methodName_def  <- IDENT "="? / STRING
+
+# クロージャ
+lambda          <- %'lambda' %s paramList? %z $1 block
+lambda$1 = "closure body block required"
+lambda2         <- %"{" %z lambdaParam? %z $1 progn %z $2 %"}"
+lambda2$1 = "closure body block required"
+lambda2$2 = "statement or '}' required for closure block"
+
+# ファイバー定義
+defFiber        <- %'defFiber' %spc $1 methodName %s $2 paramList? %z $3 block
+defFiber$1 = "method name required"
+defFiber$2 = "method parameter required"
+defFiber$3 = "method body block required"
+
+
+# システムコール 
+ffi             <- %"c++" $1 (%spc cppClassName)? %z %"{" %z (cppInclude %z)? (ffiDecl %z)* $2 %"}"
+ffi$1 = "only C++ class name can be written after 'c++' keyword"
+ffi$2 = "'}' required for 'c++' block"
+cppClassName    <- %IDENT_cpp (%"::" %IDENT_cpp)*
+cppInclude      <- %"includeFile" %s STRING
+ffiDecl         <- methodName_def %s $1 ffiSigDecl
+ffiDecl$1 = "ffi parameter definition required"
+ffiSigDecl      <- argDecls (%s %":" $1 IDENT)?
+ffiSigDecl$1 = "type name required"
+argDecls        <- %"(" %z $1 (argDeclList %z / "..." %z $2 &")")? %")"
+argDecls$1 = "ffi parameter required"
+argDecls$2 = "no parameter can be after '...'"
+argDeclList     <- argDeclElem (%z %"," %z argDeclElem)*
+argDeclElem     <- argD (%s %"=" %s $1 exp)?
+argDeclElem$1 = "default value expression required"
+argD            <- IDENT (%":" $1 IDENT)?
+argD$1 = "class name required after ':'"
+
+
+# 制御構造 
+oneStmt         <- block / statement_1
+condExp         <- block / exp
+forInitExp      <- block / subst_or_exp? %s $1 &(";" / ")" / "\n")
+forInitExp$1 = "initialize expression is not terminated"
+
+if              <- %'if' %s $1 %"(" %z condExp %z %")" %z $2 oneStmt %s $3 &("\n" / ";" / 'else' / "}" / EOF) else?
+if$1 = "'(conditional expression)' required after 'if'"
+if$2 = "1 statement or block required"
+if$3 = "'else' or ';' required after 'if' statement"
+else            <- %separator? %'else' %z $1 oneStmt
+else$1 = "1 statement or block required"
+loop            <- %'loop' %s $1 oneStmt
+loop$1 = "1 statement or block required"
+while           <- %'while' %s $1 %"(" %z condExp %z %")" %z $2 oneStmt
+while$1 = "'(conditional expression)' required after 'while'"
+while$2 = "1 statement or block required"
+for             <- %'for' %s $1 %"(" %z forInitExp %z $2 %";" %z $3 condExp %z $2 %";" %z forInitExp %z $4 %")" %z $5 oneStmt
+for$1 = "'(' required after 'for'"
+for$2 = "';' required"
+for$3 = "conditional expression required"
+for$4 = "')' required"
+for$5 = "1 statement or block required"
+break           <- %'break'
+next            <- %'next'
+wait            <- %'wait' (%s %"(" %z exp %z %")")?
+label           <- %'label' %s $1 SYMBOL
+label$1 = "SYMBOL required"
+goto            <- %'goto' %s $1 (SYMBOL / exp)
+goto$1 = "a SYMBOL or a expression that returns SYMBOL required after 'goto'"
+return          <- %'return' %s exp?
+yield           <- %'yield' %s $1 exp
+yield$1 = "yield value required"
+try             <- %'try' %z $1 block catch? finally?
+try$1 = "block required for 'try'"
+catch           <- %z %'catch' (%s %"(" %z $1 IDENT %z %")")? %z $2 block
+catch$1 = "catch variable required"
+catch$2 = "block required for 'catch'"
+finally         <- %z %'finally' %z $1 block
+finally$1 = "block required for 'finally'"
+
+throw           <- %'throw' %s $1 exp (%s %"," %z exp)?
+throw$1 = "throw value required"
+
+
+# 式 
+exp0            <- %"(" %z exp %z %")"
+                 / true / false / nil / self
+                 / FLOAT / INTEGER / STRING / symbol
+                 / lambda / yield / wait / scopeMethodCall / method_or_functor
+                 / scopedVal / Var / membVar / classVar / globalVar
+                 / arrayLiteral / hashLiteral / listLiteral
+
+
+exp             <- newObj
+                 / sayCommand
+                 / exp0
+
+
+exp << infixl 10 %s 'or' %z
+exp << infixl 20 %s 'and' %z
+exp << prefix 30 'not' %z
+exp << ternary 50 %(s "?" z) %(z ":" z)
+exp << infixn 60 %s ("..<" / "..") %z
+exp << infixl 100 %s ("||" !"=") %z
+exp << infixl 110 %s ("&&" !"=") %z
+exp << infixn 200 %s ("<=>" / "===" / "==" / "!=" / "<>" / "<=" / ">=" / "<" / ">") %z
+exp << infixl 310 %s ("|" !("|" / "=") / "^" !"=") %z
+exp << infixl 320 %s ("&" !("&" / "=")) %z
+exp << prefix 330 "~" %s
+exp << infixl 350 %s ("+" !("+" / "=") / "-" !("-" / "=")) %z
+exp << infixl 360 %s ("*" !("*" / "=") / "/" !("/" / "*" / "=") / "%" !"=") %z
+exp << infixr 370 %s "**" %z
+exp << prefix 400 (("+" !("+" / "=") / "-" !("-" / "=")) / "!" !"=") %s
+exp << postfix 500 %s %"->" %z (lambda2 / lambda)
+exp << postfix 600 (array / methodCall / getMember / functor)
+
+array           <- %s %"[" %z $1 exp %z $2 %"]"
+array$1 = "array index required"
+array$2 = "']' required for array index end"
+methodCall      <- %s %"." IDENT %s argList
+getMember       <- %s %"." IDENT
+functor         <- %s argList1
+
+newObj          <- %'new' %spc IDENT %s argList
+
+
+true            <- %'true'
+false           <- %'false'
+nil             <- %'nil'
+self            <- %'self'
+symbol          <- SYMBOL
+
+
+
+# 配列リテラル 
+arrayLiteral    <- %"[" %z (expList %z)? %("," z)? %"]"
+expList         <- exp (%z %"," %z exp)*
+
+# ハッシュリテラル 
+hashLiteral     <- %"{" %z (hashPair (%z %"," %z hashPair)* %z)? %("," z)? %"}"
+hashPair        <- exp %s %"=>" %z exp
+
+# リストリテラル 
+listLiteral     <- %"'(" %z (exp ( %z %"," %z exp)* %z)? %("," z)? %")"
+
+
+# 変数等
+Var             <- IDENT
+membVar         <- %"@" IDENT
+classVar        <- %"@@" IDENT
+globalVar       <- %"$" IDENT
+
+# クラス内定数、インナークラス
+scopedVal       <- scopedIDENT
+enum            <- %'enum' %z $1 %"{" %z $2 IDENT (%z %"," %z !"}" $3 IDENT)* %z %","? %z $4 %"}"
+enum$1 = "'{' required for 'enum'"
+enum$2 = "constant variable name required"
+enum$3 = "constant variable name required"
+enum$4 = "closing '}' of enum required"
+
+
+scopedIDENT     <- IDENT? "::" IDENT (%"::" IDENT)*
+
+
+subst           <- singleSubst / multiSubst
+singleSubst     <- leftValue %s substOp %z $1 exp
+singleSubst$1 = "right value of substitution statement required"
+substOp         <- ("=" !"=") / "*=" / "/=" / "%=" / "+=" / "-="
+                 / "&=" / "|=" / "^=" / "&&=" / "||="
+multiSubst      <- leftValueList %s %("=" !"=") %z $1 rightValueList
+multiSubst$1 = "right value list of multi substitution statement required"
+
+
+leftValue       <- leftExp / leftVar / membVar / classVar / globalVar
+
+leftExp         <- exp0 (Larray / LmethodCall / Lmember / Lfunctor)+
+
+Larray          <- %s %"[" %z $1 exp %z $2 %"]"
+Larray$1 = "array index required"
+Larray$2 = "']' required"
+LmethodCall     <- %"." IDENT %s argList
+Lmember         <- %"." $1 IDENT
+Lmember$1 = "member name required"
+Lfunctor        <- %s argList
+
+
+leftVar         <- %'const' %s $1 IDENT / IDENT
+leftVar$1 = "no valid identifier specified after 'const'"
+
+leftValueList   <- lvElem (%s %"," %z lvElem)*
+lvElem          <- %"'(" %z leftValueList? %z %")" / %"*" %s leftValue / leftValue
+rightValueList  <- rvElem (%s %"," %z rvElem)*
+rvElem          <- %"*" %s exp
+                 / exp
+                 / %"'(" %z rightValueList %z %("," z)? %")"
+
+match           <- %'match' %s $1 %"(" %z rightValueList %z %")" %z $2 %"{" %z $3 caseOfMatch (%separator caseOfMatch)* defaultOfMatch %z $4 %"}"
+match$1 = "right value list required after 'match'"
+match$2 = "'{' required for 'match' block"
+match$3 = "'case' or 'default' statement required"
+match$4 = "closing '}' of match block required"
+caseOfMatch     <- %'case' %s $1 %"(" $2 %z leftValueList? %z %")" (%z block / %z stmtsInSwitch / s) %endOfCasePred
+caseOfMatch$1 = "left value(s) required after 'case'"
+caseOfMatch$2 = "only left value list can be written inside '()' of 'case'"
+defaultOfMatch  <- (%separator %'default' %z (block / stmtsInSwitch / s) %endOfDefaultPred)?
+
+endOfCasePred   <- &(separator 'case') / &(separator 'default') / %separator? &"}"
+endOfDefaultPred <- %separator? &"}"
+oneStmtInSwitch <- !(%'case' / %'default' / "}") oneStmt
+stmtsInSwitch   <- oneStmtInSwitch (%separator oneStmtInSwitch)*
+
+switch          <- %'switch' %s $1 %"(" %z exp %z %")" %z $2 %"{" %z $3 caseOfSwitch (%separator caseOfSwitch)* defaultOfSwitch %z $4 %"}"
+switch$1 = "'(expression)' required for switch"
+switch$2 = "'{' required for 'switch' block"
+switch$3 = "'case' statement required"
+switch$4 = "closing '}' of switch block required"
+caseOfSwitch    <- %'case' %s $1 expList $2 (%z block / %separator stmtsInSwitch / s) %endOfCasePred
+caseOfSwitch$1 = "expression(s) required after 'case'"
+caseOfSwitch$2 = "separator required after case expression(s)"
+defaultOfSwitch <- (%separator %'default' %z (block / stmtsInSwitch / s) %endOfDefaultPred)?
+
+
+
+
+# パッケージリンク 
+require         <- %'require' %spc $1 STRING
+require$1 = "package file name required"
+
+
+# include 
+include         <- %'include' %spc $1 STRING
+include$1 = "include file name required"
+
+
+# using
+using           <- %'using' %spc $1 (IDENT / scopedIDENT)
+using$1 = "scope required"
+
+
+
+
+# 識別子 
+IDENT           <% %ident_u1 %ident_u2* %ident_u3?
+IDENT_cpp       <% (%[A-Z] / %[a-z] / %"_") (%[A-Z] / %[a-z] / %"_" / %[0-9])*
+
+#not_ident <- %"　" / %"「" / %"」"
+#ident_u1 <- %[A-Z] / %[a-z] / %"_" / !not_ident %[\u0080-\uffff]
+#ident_u2 <- %ident_u1 / %[0-9]
+#ident_u3 <- %"?" / %"!"
+
+SYMBOL          <% %":" %(IDENT / STRING)
+FLOAT           <- FLOAT_1 / FLOAT_2
+FLOAT_1         <- %INTEGER_10 %("e" / "E") %("+" / "-")? %INTEGER_10
+FLOAT_2         <- %INTEGER_10 %"." %INTEGER_10 %(("e" / "E") ("+" / "-")? INTEGER_10)?
+INTEGER         <- INTEGER_2 / INTEGER_8 / INTEGER_16 / INTEGER_10
+INTEGER_2       <- %("0b" / "0B") %[0-1]+
+INTEGER_8       <- %("0o" / "0O") %[0-7]+
+INTEGER_16      <- %("0x" / "0X") %Hex1+
+INTEGER_10      <% %[0-9]+
+
+
+STRING          <% %"\"" (!"\"" %XChar)* %"\""
+#XChar <- %XCharH / %XCharE / %XCharA
+#SChar <- %XCharH / %XCharE / %XCharS
+#XCharH <- %"\\" %("x" / "X") Hex1 Hex1
+#XCharE <- %"\\" .
+#XCharA <- !"\n" %.
+#XCharS <- !"{" %.
+Hex1 <- %[0-9] / %[A-F] / %[a-f]
+
+
+# not token predicate
+NotTokenPred <% !ident_u1

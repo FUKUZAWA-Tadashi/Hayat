@@ -1,0 +1,59 @@
+# -*- ruby -*-
+
+# スクリプトライブラリコンパイル用Rakefile
+# VC++でコンパイルしたHayatコンパイラを使用、cygwin上で実行
+
+require 'fileutils'
+
+def chdir(dir, &block)
+  puts "Entering directory `#{dir}'"
+  Dir.chdir(dir, &block)
+  puts "Leaving directory `#{dir}'"
+end
+def my_define_method(name, &block)
+  self.class.send(:define_method, name, &block)
+end
+
+my_define_method(:mspath) do |uxpath|
+  uxpath.gsub('/', '\\')
+end
+
+
+compiler = '../vcproj/hayatc.exe'
+
+
+outDir = 'out'
+ffiDir = 'ffi'
+ffiOutDir = 'ffiout'
+
+symbolFile = outDir + '/symbols.sym'
+hsymbolh = outDir + '/HSymbol.h'
+
+directory outDir
+directory ffiOutDir
+
+sources = FileList['*.hy']
+binaries = []
+sources.each do |s|
+  b = outDir + '/' + s.ext('.hyb')
+  file b => [s, compiler] do
+    sh compiler, '-o', mspath(outDir), mspath(s)
+    ## -zi と -zo がデフォルトと同じなので指定無し
+  end
+  binaries.push b
+end
+
+
+task :default => [:compile]
+
+desc "compile all script"
+task :compile => [outDir] + binaries
+
+file hsymbolh => :default
+
+desc "cleanup script binaries"
+task :clean do
+  FileUtils.rm_rf(outDir)
+  FileUtils.rm_rf(ffiOutDir)
+  # FileUtils.rm_f([symbolFile, hsymbolh])
+end

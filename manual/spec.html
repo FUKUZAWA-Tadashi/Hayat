@@ -1,0 +1,1504 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="default.css" type="text/css" />
+	<script src="jquery-1.4.js"></script>
+	<script src="extoc_1_0.js"></script>
+	<script>
+	jQuery(function($){
+		$('h2').exTOC({
+			headFrom : 3,
+			headTo : 4,
+			insertMethod : 'after'
+		})
+	});
+	</script>
+	<title>言語仕様</title>
+  </head>
+  <body>
+
+	<a href="index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+
+	<h2>言語仕様</h2>
+
+	<h3>文の区切り</h3>
+	基本的に、行末の改行コードが文の区切りとなる。
+	セミコロンを使う事もできる。
+
+	<h3>複文、ブロック</h3>
+	文の区切りとしてセミコロンを使えば、１行に複数の文を書くことができる。
+	<div class="note">
+	  <code>if (cond) f(); g()</code>
+	  と書いた場合、condが真なら f() と g() を実行、偽なら g() を実行
+	  というように、 g() は if文には含まれないので注意が必要。
+	</div>
+	複数の文を { } でくくってひとまとまりの文(ブロック)として扱う事ができる。
+	複数行にまたがっていて良い。
+
+
+	<h3>コメント</h3>
+	C++と同じ形式。
+	<code>//</code>から行末まで、
+	または<code>/*</code>から<code>*/</code>までの複数行がコメントとなる。
+	<code>/* */</code>はネスティングする事が可能。
+
+<pre>
+func1()    // ここはコメントです
+func2()    /* ここはコメントです
+    ここもコメントです
+    /* ネスティング出来ます */
+    ここまでコメントです */
+func3()
+</pre>
+
+	<h3>識別子</h3>
+	<ul>
+	  <li>半角アルファベット、半角数字、半角アンダースコア(_)を使用可能。</li>
+	  <li>全角スペースと"<code>「</code>" "<code>」</code>"を除く全角文字も使用可能。
+		<div class="anno">(正確には、U+00A5,U+203E,U+3000,U+300C,U+300Dを除く U+0080からU+ffffまでの文字)</div>
+	  </li>
+	  <li>末尾の1文字に限り、半角クエスチョンマーク(<code>?</code>)、
+		半角エクスクラメーションマーク(<code>!</code>)を使用可能。</li>
+	  <li>先頭の1文字には半角数字を使うことは出来ない。</li>
+	  <li>半角アルファベットは大文字小文字を区別する。</li>
+	</ul>
+		
+	<h3>変数</h3>	
+
+	変数名には明確に区別する命名規則がある。
+	<table>
+	  <tr>
+		<td>クラス変数</td>
+		<td>頭に <code>@@</code> がつく</td>
+		<td><code class="sample">@@classVar_1</code></td>
+	  </tr>
+	  <tr>
+		<td>メンバ変数</td>
+		<td>頭に <code>@</code> がつく</td>
+		<td><code class="sample">@prop9</code></td>
+	  </tr>
+	  <tr>
+		<td>グローバル変数</td>
+		<td>頭に <code>$</code> がつく</td>
+		<td><code class="sample">$EnvStore</code></td>
+	  </tr>
+	  <tr>
+		<td>定数</td>
+		<td>半角大文字で開始、半角大文字、半角数字、半角アンダースコアのみで構成</td>
+		<td><code class="sample">CONST_VAR_33</code></td>
+	  </tr>
+	</table>
+
+	但し、定数については条件を満たさない識別子であっても、初期化時に const 宣言する事によって
+	定数として使うことができる。
+	<pre>const 円周率 = 3.141592</pre>
+
+	<h4>ローカル変数</h4>
+	
+	<code>def</code>で定義されるメソッドの中の上記(クラス変数、メンバ変数、
+	グローバル変数、定数)に該当しない変数は、メソッド内をスコープとする
+	ローカル変数である。
+	<br>
+	メソッドの外側で使われているローカル変数は、メソッドの内側から参照
+	する事はできない。
+	<br>
+	クロージャが使われている場合、クロージャの引数は
+	クロージャ内をスコープとするローカル変数である。
+<pre>
+class Hoge
+  a = 10       
+  c = 100      // ここの a,c は メソッド f 内から参照できない
+  def f (x) {  // x は メソッド f 内のローカル変数
+    b = 20     // b は メソッド f 内のローカル変数
+    a = x      // a は メソッド f 内のローカル変数で、外の a とは無関係
+    g = lambda (b) {  // この b は lambda内のローカル変数で、fのローカル変数 b とは無関係
+      b + a    // この a は メソッド f 内のローカル変数
+    }
+  }
+end
+</pre>
+	
+	<h3>リテラル</h3>
+
+	<h4>整数(32bit符号付き)</h4>
+	<table>
+	  <tr>
+		<td>10進数</td>
+		<td>-2147483648 ～ 2147483647</td>
+	  </tr>
+	  <tr>
+		<td>2進数</td>
+		<td>0bで始まる</td>
+	  </tr>
+	  <tr>
+		<td>8進数</td>
+		<td>0oで始まる</td>
+	  </tr>
+	  <tr>
+		<td>16進数</td>
+		<td>0xで始まる</td>
+	  </tr>
+	</table>
+
+	<h4>浮動小数(32bit)</h4>
+	小数点表記、または指数表記のどちらかを使用。
+	<pre>12.34, 1.234e1, 1234e-2</pre>
+	小数点を含まず、指数表記でもなければ、整数であると判断される。
+
+	<h4>文字列定数</h4>
+	両端を <code>"</code> で挟んだ文字列。
+	<br>
+	文字列中では、<code>\</code> はエスケープ文字として働く。
+	<ol><li><code>\n</code> は改行コード</li>
+	  <li><code>\xNN</code> で、半角文字1つを16進数2桁表記で指定</li>
+	  <li><code>\"</code> は文字列の終端ではない <code>"</code> 1文字</li>
+	  <li><code>\\</code> は <code>\</code> 1文字</li>
+	  <li>それ以外の場合は、次の1文字となる</li>
+	</ol>
+<pre>
+"aaaaaa", "foo bar\n\\ \"asd qwe\"  "
+</pre>
+
+<!-- " emacsのhtmlモード用のダブルクォート数合わせ -->
+
+	<h4>論理値</h4>
+	<table>
+	  <tr>
+		<td>true</td>
+		<td>真</td>
+	  </tr>
+	  <tr>
+		<td>false</td>
+		<td>偽</td>
+	  </tr>
+	</table>
+	Boolクラスのオブジェクトとなる。
+
+
+	<h4>nil</h4>
+	NilClassクラスのオブジェクト。
+	変数等は通常 nil で初期化される。
+	C言語の NULL に似ている。
+	<br>
+	if文などで真偽値判定される時、nilとfalseのみが偽と判定される。
+	(NilClassクラスは真と判定されるので注意)
+
+	<h4>self</h4>
+	現在実行中のインスタンス。Rubyのselfと同じ。C++の this とほぼ同じ。
+
+	<h4>シンボル</h4>
+	<code>:</code>で始まる。識別子に使っている文字を使用できる。
+<pre>
+:Symbol , :foo_bar , :_abc1xyz?
+</pre>
+	記号を含むシンボルは、ダブルクォートで囲う。
+<pre>
+:"+", :"==", :"x="
+</pre>
+	内部的には整数に変換されている。同じシンボルは同じ整数となる。
+	シンボルの比較は文字列の比較ではなく整数の比較なので、高速。
+
+	<h4>配列リテラル</h4>
+	<code>[ ]</code> でくくった値の列。 Arrayクラスのオブジェクト。
+<pre>
+[1,2,3]
+[10, false, 3.5, "foo"]
+</pre>
+
+	<h4>リストリテラル</h4>
+	<code>'( )</code> でくくった値の列。 Listクラスのオブジェクト。
+<pre>'(1,2,3)
+'(10, '("foo", 20), '(:bar, 30))
+</pre>
+
+	<h4>StringBufferリテラル</h4>
+	<code>「 」</code>または<code>&lt;&lt; &gt;&gt;</code>で囲んだ文字列。
+	<br>
+	新規StringBufferに対してsayCommandを実行した結果と同じ。
+	詳細はsayCommandを参照。
+<pre>
+x = 「こんにちは、{name}さん。」
+</pre>	
+	これは
+<pre>
+sb = new StringBuffer()
+sb「こんにちは、{name}さん。」
+x = sb
+</pre>	
+	と同じ。
+
+	<h4>スコープ</h4>
+	自クラスではないクラスやそのメンバーにアクセスできる。
+	<table>
+	  <tr>
+		<td>ClassA::ClassB</td>
+		<td>ClassAのインナークラスClassB</td>
+	  </tr>
+	  <tr>
+		<td>::ClassA</td>
+		<td>トップレベルにあるクラスClassA</td>
+	  </tr>
+	  <tr>
+		<td>ClassP::method()</td>
+		<td>自クラスが ClassP の子孫である時、ClassPのインスタンス
+		  メソッド method() を self をインスタンスとして呼び出す。
+		  <br>
+		  method()が子クラスでオーバーライドされている時に親クラスの
+		  ものを呼び出したい場合に使う。
+		</td>
+	  </tr>
+	  <tr>
+		<td>ClassA.method()</td>
+		<td>ClassA のクラスメソッド method() の呼び出し</td>
+	  </tr>
+	  <tr>
+		<td>ClassA.var</td>
+		<td>ClassA のクラス変数 @@var へのアクセス</td>
+	  </tr>
+
+	</table>
+
+
+	<h3>演算子</h3>
+	<h4>優先順位</h4>
+
+	<table>
+	  <tr>
+		<td>( ), [ ]</td>
+		<td>後置演算子(引数は括弧の中に書く)</td>
+	  </tr>
+	  <tr>
+		<td>-&gt;</td>
+		<td>後置演算子(引数はクロージャ)</td>
+	  </tr>
+	  <tr>
+		<td>-, +, !</td>
+		<td>前置演算子</td>
+	  </tr>
+	  <tr>
+		<td>**</td>
+		<td>右結合</td>
+	  </tr>
+	  <tr>
+		<td>*, /, %</td>
+		<td>左結合</td>
+	  </tr>
+	  <tr>
+		<td>+, -</td>
+		<td>左結合</td>
+	  </tr>
+	  <tr>
+		<td>&amp;</td>
+		<td>左結合</td>
+	  </tr>
+	  <tr>
+		<td>|, ^</td>
+		<td>左結合</td>
+	  </tr>
+	  <tr>
+		<td>&lt;=&gt;, ==, ===, !=, &lt;&gt;, &lt;, &lt;=, &gt;, &gt;=</td>
+		<td>非結合</td>
+	  </tr>
+	  <tr>
+		<td>&amp;&amp;</td>
+		<td>左結合</td>
+	  </tr>
+	  <tr>
+		<td>||</td>
+		<td>左結合</td>
+	  </tr>
+	  <tr>
+		<td>.., ..&lt;</td>
+		<td>非結合</td>
+	  </tr>
+	  <tr>
+		<td>? :</td>
+		<td>三項演算子</td>
+	  </tr>
+	  <tr>
+		<td>not</td>
+		<td>前置演算子</td>
+	  </tr>
+	  <tr>
+		<td>and</td>
+		<td>左結合</td>
+	  </tr>
+	  <tr>
+		<td>or</td>
+		<td>左結合</td>
+	  </tr>
+	</table>
+
+	<ul>
+	  <li>二項演算子には、左結合、右結合、非結合の3種類がある。</li>
+	  <li>左結合は、同順位演算子が並んだ時に左を優先する。
+		<pre>x + y + z  →   (x + y) + z</pre>
+	  </li>
+	  <li>右結合は、同順位演算子が並んだ時に右を優先する。
+		<pre>x ** y ** z  →   x ** (y ** z)</pre>
+	  </li>
+	  <li>非結合は、同順位演算子を並べる事ができない。
+		<pre>x == y &lt;= z  →  エラー</pre>
+	  </li>
+	  <li><code>&amp;&amp;</code>, <code>||</code>, <code>and</code>, <code>or</code> 演算子は、ショートカットを行なう。
+		<div style="margin-left:2em;">
+		  <code>true || f()</code>  を実行した時、f() が呼び出される事はない。
+		  <br>
+		  <code>false &amp;&amp; g()</code> を実行した時、g() が呼び出される事はない。
+		</div>
+	  </li>
+	  <li>三項演算子は、2番目の項と3番目の項に三項演算子を含む式を書く事ができる。
+		<div style="margin-left:2em;">
+		  <code>a ? b : c ? d : e</code> は、 <code>a ? b : (c ? d : e)</code> と等価
+		</div>
+	  </li>
+	  <li>1番目の項に三項演算子を含む式を書きたい場合は、<code>( )</code> で括る必要がある。
+		<pre>(a ? b : c) ? d : e</pre>
+	  </li>		
+	</ul>
+
+	<h4>代入文、自己代入演算子</h4>
+	<pre>=, *=, /=, %=, +=, -=, &amp;=, |=, ^=, &amp;&amp;=, ||=</pre>
+	代入演算子は、二項演算をした後に代入をする。
+	<br>
+	非結合なので、 <code>a = b = c = 0</code> といった代入はできない。(C言語は右結合なので可能)
+	
+	<h4>[ ] 演算子</h4>
+	<pre>[], []=</pre>
+	1次元配列アクセスが可能。
+<pre>
+a = new Array(3)
+a[0] = 100
+a[1] = 200
+x = a[1] - a[0]
+a[0] += 3
+</pre>
+
+	ユーザー定義のクラスでも、<code>[ ]</code> 演算子を定義する事で配列のような形でのアクセスが可能。
+<pre>
+class Hoge
+  def initialize (n) { @fuga = new Array(n) }
+  def "[]" (index) { return @fuga[index - 10] }
+  def "[]=" (val,index) { @fuga[index - 10] = val }
+end
+</pre>
+
+	<h4>メソッド呼び出し</h4>
+	<table>
+	  <tr>
+		<td><code>foobar(param)</code></td>
+		<td>自クラスのインスタンスメソッド呼び出し、自クラスのクラスメソッド呼び出し、組込み関数呼び出し</td>
+	  </tr>
+	  <tr>
+		<td><code>obj.method(param1,param2,param3)</code></td>
+		<td>objがインスタンスであるならば、インスタンスメソッド呼び出し</td>
+	  </tr>
+	  <tr>
+		<td><code>SomeClass.method()</code></td>
+		<td>SomeClassがクラスであるならば、クラスメソッド呼び出し</td>
+	  </tr>
+	</table>
+	メソッド内部でメンバ変数を使用しているメソッドをインスタンスメソッド
+	と呼び、使用していないものをクラスメソッドと呼ぶ。
+	メソッド定義時に C++のstatic宣言のようなクラスメソッドを
+	区別する文法はない。
+	<br>
+	クラスメソッド呼び出しをした時に、メソッド内部でメンバ変数が使われていた場合、
+	use_member_var_out_of_instance 例外が発生する。
+	<br>
+	引数が無い場合、( ) を省略可能。
+	<div style="margin-left:2em;">
+	  参考：メンバ変数アクセス getterメソッド
+	</div>
+
+	<h4>( ) 演算子</h4>
+	( ) 演算子を使用すると、メソッド呼出しのような形式で演算子を実行できる。
+<pre>
+class Sample
+  def "()" (x) { x + 10 }
+end
+f = new Sample()
+f(10)    // =&gt; 20
+g = lambda(x){x + 10}
+g(20)    // =&gt; 30
+h = new Method(10, :"+")
+h(30)    // =&gt; 40
+</pre>
+
+	<h4>メンバ変数アクセス</h4>
+	メンバ変数は、オブジェクトの外からアクセスできる。
+<pre>
+class Sample
+  def initialize() { @var = 0 }
+end
+a = new Sample()
+a.var += 10    // a の @var の値に 10 が足される
+</pre>
+
+	<h4>setter,getter</h4>
+	getterメソッド、setterメソッドを定義する事で、
+	メンバ変数へのアクセスの代わりにメソッドを呼び出す事ができる。
+<pre>
+class Sample
+  def initialize() { @v = 0 }
+  def var () { @v }
+  def var= (x) { @v = x }
+end
+a = new Sample()
+a.var += 10    // a の @v の値に 10 が足される
+</pre>
+	<ul>
+	  <li>getterメソッドはメンバ変数名と同じ名前で、引数無しのものである。</li>
+	  <li>setterメソッドはメンバ変数名の末尾に = が付いたもので、1つの引数を取るものである。</li>
+	  <li>メンバ変数と同じ名前のsetter,getterメソッドが存在する場合は、メソッドの方を優先する。</li>
+	</ul>
+
+
+	<h4>クラス変数アクセス</h4>
+	クラス変数は、クラスの外からアクセスできる。
+	setter,getterメソッドも使える。
+<pre>
+class Sample
+  @@var = nil
+  def v () { @@var }
+  def v= (x) { @@var = x }
+end
+Sample.var = 10
+x = Sample.var
+Sample.v += 20
+y = Sample.v
+</pre>
+
+
+	<h3>制御構造</h3>
+
+	<h4>if</h4>
+	条件式は、false または nil だけ偽で、他の値は真とみなされる。
+<pre>
+if (条件式)
+   文
+else
+   文
+</pre>
+	if文の値は、条件分岐した後実行した文の値となる。
+	elseが無く条件式が偽だった場合、if文の値はnilになる。
+
+	<h4>loop</h4>
+	無限ループ
+<pre>
+loop
+   文
+</pre>
+	break文で中断した場合、loop文終了時の値はbreak文の直前に実行した文の値になる。
+
+	<h4>while</h4>
+	条件ループ
+<pre>
+while (条件式)
+   文
+</pre>
+	条件式が真であれば文を実行し、また条件式の真偽判定に戻る。
+	<br>
+	条件式が偽で終了した場合、while文終了時の値はnilになる。
+	<br>
+	break文で中断した場合、while文終了時の値break文の直前に実行した文の値になる。
+
+	<h4>for</h4>
+	初期化、再初期化ありの条件ループ
+
+<pre>
+for ( 初期化式 ; 条件式 ; 再初期化式 )
+   文
+</pre>
+	<ul>
+	  <li>初期化式は最初に1度だけ実行される。</li>
+	  <li>条件式が真である間、文を実行し、再初期化式を実行する。</li>
+	  <li>文中で next が実行されると、再初期化式の実行部分にジャンプする。</li>
+	  <li>初期化式と再初期化式は省略可能で、式または代入文またはブロックを書ける。</li>
+	  <li>条件式は式またはブロックが書ける。省略はできない。</li>
+	  <li>for文終了時の値はwhileと同じ。</li>
+	</ul>
+
+	<h4>break</h4>
+	ループの中で使うと、ループを抜ける。
+
+	<h4>next</h4>
+	loopの中で使うと、文の先頭に戻る。
+	<br>
+	forの中で使うと、再初期化式の実行部分にジャンプする。
+
+	<h4>return</h4>
+	メソッドを終了し、呼び出し元へ戻る。
+	<pre>return 戻り値</pre>
+	クロージャ中での return は、2種類の動作がある。
+	<ol>
+	  <li>クロージャを呼び出したルーチンに戻る</li>
+	  <li>クロージャを生成したルーチンからリターンする</li>
+	</ol>
+	クロージャを call() で呼び出した場合は前者、 callAway() で呼び出した場合は後者の動作をする。
+	後者の場合、生成したルーチンが既に終了している事がありうるが、その場合戻る場所が無いのでエラーとなる。
+<pre>
+def f1 (c) { c.call(1) }
+def f2 (c) { c.callAway(2) }
+def g () {
+  c = lambda(x) { return x + 10 }
+  x = f1(c)  // xに11が代入される
+  y = f2(c)  // yに12は代入されず、g()の戻り値が12となってg()の実行を終了する
+}
+</pre>
+	<br>
+	この仕様は、クロージャ引数の中のreturnがクロージャからではなく
+	メソッドからのreturnを意図して書かれる場合が多いために作られた。
+<pre>
+def func () {
+  x = 0
+  n.times{|i|       // このクロージャはtimes()の中でcallAway()によって呼ばれる
+    if (a[i] == nil)
+      return x      // callAwayで呼ばれたので、func()からリターンする
+    x += a[i]
+  }
+  x
+}
+</pre>
+
+	<h4>goto</h4>
+	指定ラベルにジャンプし、戻らない。
+<pre>
+label :foo
+   ……
+goto :foo
+</pre>
+	メソッドをまたいだジャンプが可能。メソッド呼出しを戻る方向のみ可能。
+	(例外処理の一種として実装されている)
+<pre>
+def asd () {
+  goto :bar
+}
+def foo () {
+  label :bar
+  asd()
+}
+foo()  // 無限ループする
+</pre>
+	飛び先には、直前に実行していた文の値を運ぶ。
+<pre>
+def qwe () {
+  10 + 20
+  goto :baz
+  30 + 40
+  label :baz
+}
+qwe()  // 30
+</pre>
+
+	<h4>switch</h4>
+	複数の条件分岐
+<pre>
+switch (式) {
+case 式 [,式...]
+  文 ...
+case 式 [,式...]
+  文 ...
+[default
+  文...]
+}
+</pre>
+	switch文の式の値と、case節の式の値を <code>==</code>演算子 で比較して、等しければ続く文を実行する。
+	<ul>
+	  <li>case節には式を複数書く事ができ、どれかが等しければ続く文を実行する。
+		左から順番に比較していき、等しいものがあれば、それ以降の式は評価しない。
+	  </li>
+	  <li>1つのcase節の実行が終わった後、別のcase節は無視してswitch文を脱出する。
+		C++のようなbreak文は必要ない。
+	  </li>
+	  <li>switch文自体の値は、最後に実行した文の値となる。
+		case節を実行せず、default節も無く、実行した文が無いならば、nilとなる。
+	  </li>
+	</ul>
+<pre>
+switch (x) {
+case 1
+  f(10)    // x==1なら、ここを実行
+case 2,"abc",3.14
+  f(20)    // x==2, x=="abc", x==3.14 のどれかがtrueなら、
+  g(30)    // ここまで実行
+case 5,3+a(4),"xyz";  f(40);g(50)
+    // x==5ならf(40);g(50)を実行
+    // 3+a(4)を実行してその値がxと等しければ、f(40);g(50)を実行
+    // x=="xyz"ならf(40);g(50)を実行
+default
+  f(100)   // 上のどれにも当てはまらなければ、
+  f(200)   // ここまで実行
+}
+</pre>
+
+	<h4>sayCommand</h4>
+	他の言語の Here Document に類似しているが動作の異なる、
+	この言語独自の構文。
+
+	<ul>
+	  <li>インスタンスに続けて、<code>「</code> <code>」</code>で
+		くくられた文字列、または
+		<code>&lt;&lt;</code> <code>&gt;&gt;</code>
+		でくくられた文字列が続くもの。
+	  </li>
+	  <li>複数行に渡っていても良い。</li>
+	  <li>文字列定数と同じく \ は特殊文字として扱われる。</li>
+	  <li>行頭行末の空白文字(半角スペース、タブ、CR、全角スペース)は
+		削除される。行頭は自由にインデントするため、行末は
+		テキストファイルとして見た時に存在がわからないようなものは
+		削除するという方針。
+	  </li>
+	  <li>それ以外の途中にある空白文字はそのまま使用する。</li>
+	  <li>行頭行末に空白文字を入れたければ、 \ を使ってエスケープする。</li>
+	  <li>{ } で囲って式または代入文を書く事ができる。
+		式の値は sayCommand() メソッドに渡される。
+	  </li>
+
+	  <li>{# } のように、{ } の中を # で開始すると、
+		式の計算だけ行なって sayCommand() メソッドには渡さない。
+		<div class="anno">
+		  <code>{</code> と <code>#</code> の間を空けてはいけない。
+		</div>
+	  </li>
+	  <li>コンパイル時に、プログラムに変換される。
+<pre>
+x「こんにちは、{yourName}さん。
+  ごきげんいかが{#flag=true}？」
+</pre>
+
+	  ↓
+
+<pre>
+x.sayCommandStart(1,2)    // 通し番号1, トータル行数2行
+x.sayCommand("こんにちは、")
+x.sayCommand(yourName)
+x.sayCommand("さん。\n")
+x.sayCommand("ごきげんいかが")
+flag=true
+x.sayCommand("？")
+x.sayCommandEnd()
+</pre>
+	  </li>
+	  <li>文字列は、改行や { } で区切られて分割されて sayCommand に渡される。</li>
+	  <li>sayCommandStart(), sayCommand(), sayCommandEnd() はインスタンスメソッド。</li>
+	  <li>他のメソッド呼出しと異なり、インスタンスと 「 の間に <code>.</code> は不要。</li>
+	  
+	  <li>sayCommandStartに渡される2つの引数は、
+		1つ目はsayCommand通し番号、
+		2つ目は文字列の行数。
+	  </li>
+	  <li>sayCommand文字列を使うためには、
+		対象となるインスタンスが3つのメソッド sayCommandStart(),
+		sayCommand(), sayCommandEnd() を持っていて適切に
+		処理するようになっていれば良い。
+	  </li>
+	  <li>インスタンスを省略する事ができる。
+		省略した場合、new StringBuffer() がインスタンスとして
+		生成されて使用される。
+<pre>
+sb = new StringBuffer()
+sb「1 + 2 = {1+2}」
+func(sb)
+// 上の3行と下の1行の動作は同じになる。
+func(「1 + 2 = {1+2}」)
+</pre>
+	  </li>
+	  <li>StringBufferでは、sayCommand はオブジェクトを文字列化して
+		末尾に追加するという動作をする。
+		<div class="anno">
+		  文字列化には、それぞれのオブジェクトの concatToStringBuffer メソッドを使用する。
+		</div>
+	  </li>
+
+	  <li>{% } のように、{ } の中を % で開始すると、
+		sprintfのような フォーマット文字列を使った、データの文字列への
+		変換をする事ができる。
+		<br>
+		<code>{%フォーマット文字列 % データ}</code>
+		<div class="anno">
+		  <code>{</code> と <code>%</code> の間を空けてはいけない。
+		</div>
+	    フォーマット文字列と値との間に % を挟む。
+		この % の前後には空白文字を入れても良い。
+		<br>
+		<table>
+		  <tr>
+			<th colspan=2>フォーマット文字列に使用可能な文字</th>
+		  </tr>
+		  <tr>
+			<th>flag</th>
+			<td>'<code>#</code>', '<code>-</code>', '<code> </code>', '<code>+</code>'</td>
+		  </tr>
+		  <tr>
+			<th>field width</th>
+			<td>10進数。'*' は使用できない。</td>
+		  </tr>
+		  <tr>
+			<th>precision</th>
+			<td>10進数。浮動小数においては省略時は 6。'*' は使用できない。</td>
+		  </tr>
+		  <tr>
+			<th>conversion specifier</th>
+			<td>'<code>d</code>', '<code>i</code>',
+				'<code>o</code>', '<code>u</code>',
+				'<code>x</code>', '<code>X</code>',
+				'<code>c</code>', '<code>lc</code>',
+				'<code>e</code>', '<code>E</code>',
+				'<code>f</code>', '<code>F</code>',
+				'<code>s</code>', '<code>ls</code>'
+			</td>
+		  </tr>
+		</table>
+<pre>
+「x = {%04d % x}, theta = {%10.2f%theta}」
+// x が 12, theta が 34.5 だとすると、
+// x = 0012, theta =      34.50
+// となる。
+</pre>
+		フォーマット文字列についての詳細は、C言語のprintfの仕様を参照して下さい。
+	  </li>
+
+	</ul>
+
+
+	<h4>wait</h4>
+	現在実行中のスレッドで、1フレーム待つ。
+	<br>
+	<code>wait(n)</code> とすると、nフレーム待つ。(nは整数)
+
+	<h4>require</h4>
+	別個コンパイルされたHayataroスクリプトを読み込み、リンクする。
+	<pre>require "foo"</pre>
+	<ul>
+	  <li>上記の例では、 foo.hy で記述されたスクリプトを読んでリンクする。</li>
+	  <li>コンパイル時には、foo.hyをコンパイルして生成された
+		パッケージファイル foo.hyp が必要となる。
+	  </li>	
+	  <li>実行時には、foo.hyをコンパイルして生成された
+		バイトコードファイル foo.hyb が必要となる。
+	  </li>
+	  <li>コンパイルして生成されるファイルは、通常は out ディレクトリ
+		に作られる。
+		コンパイルオプションによって違う場所に生成される場合がある。
+	  </li>
+	</ul>
+	なお、 stdlib についてはrequireを記述しなくても
+	自動的に読み込まれてリンクされる。
+
+	<div class="note">
+	  ※内部的には、require はパッケージクラスの継承として実装され
+	  ている。パッケージクラスは class 宣言をしていないが、
+	  ファイル名から .hy を除いた名前のクラスと見做す事ができる。
+<pre>
+// このファイルは foo.hy である
+require "bar"
+require "baz"
+class Hoge
+  …
+</pre>
+	  これは内部的には以下のようなコードであるかのようにコンパイルされている。
+<pre>
+class foo < bar,baz
+  class Hoge
+    …
+</pre>
+	</div>	
+
+
+	<h4>include</h4>
+	ファイルをまるごと取り込む。 C の #include と同じ。
+	<div class="note">
+	  ※ 将来削除する可能性あり。require の使用を推奨。
+	</div>
+
+
+	<h4>例外処理</h4>
+	<code>try ～ catch, throw</code>
+	<ul>
+	  <li>try節の実行中に例外が発生すると、catch節にジャンプする。</li>
+	  <li>throw文で例外を発生させる事ができる。
+		任意の値を例外オブジェクトに乗せる事ができる。
+	  </li>
+	  <li>catch節で変数を指定すると、そこに例外オブジェクト(Exceptionクラスのインスタンス)が代入される。
+<pre>
+def foo () { throw 123 }
+try {
+  foo()
+} catch (e) {
+  p(e.val())  // =&gt; 123
+}
+</pre>
+	  </li>
+
+	  <li>変数指定を省略する事も可能。この場合例外オブジェクトは捨てられる。
+		<pre>catch { … }</pre>
+	  </li>
+
+	  <li>throwでは、例外タイプをシンボルで指定する事ができる。
+		省略すると <code>:exception</code> となる
+		<pre>throw :mysignal, 234</pre>
+	  </li>
+
+	  <li>例外タイプは<code>Exception::type()</code>で取得できる。</li>
+	  <li>例外タイプが <code>:fatal_error</code> のものはcatchする事ができない。</li>
+	  <li>gotoも例外の一種なので、catchできる。例外タイプは <code>:goto</code> となっている。</li>
+	</ul>
+
+
+
+
+	<h3>インスタンス生成</h3>
+	<pre>obj = new クラス名 (引数)</pre>
+	<ul>
+	  <li>new演算子によりインスタンスを生成する。</li>
+	  <li>引数は、インスタンス生成直後に <code>initialize()</code>
+		インスタンスメソッドに渡される。
+	  </li>
+	  <li>組込みクラス(stdlibパッケージ)の一部は、
+		newでのインスタンス生成はできない。
+		<pre>Int, Float, Bool, Nil, Class, String</pre>
+	  </li>
+	</ul>
+
+
+	<h3>クラス定義</h3>	
+
+<pre>
+class クラス名
+   定義
+end
+</pre>
+
+	<ul>
+	  <li>定義部分には、定数の代入文、クラス変数の代入文、
+		メソッド定義、クラス定義、通常の文など、
+		メンバ変数を使用しない文を書く事ができる。
+	  </li>
+	  <li>クラス定義とメソッド定義以外は、
+		バイトコードをロードした時点でクラス初期化時に実行される。
+	  </li>
+	  <li>クラス定義中にクラス定義を書く事ができる(インナークラス)</li>
+	  <li>多重継承が可能。
+		<pre>class クラス名 &lt; 親クラス名1,親クラス名2,...</pre>
+	  </li>
+	  <li>親クラス同士でメンバ変数名等がかぶっている場合、
+		後に指定した親クラスのものが使用される。
+	  </li>
+	  <li>C++のvirtual継承のような機能は無い。</li>
+	</ul>
+
+	<h3>メソッド定義</h3>
+<pre>
+def メソッド名 (引数) {
+   定義
+}
+</pre>
+	<ul>
+	  <li>クラス定義中に書く事ができる。</li>
+	  <li>引数が無くても ( ) は省略できない。</li>
+	  <li>最後に実行した文の値がメソッドの戻り値になる。</li>
+	  <li>インスタンスメソッド定義とクラスメソッド定義の書き方に違いはない。
+		<div class="anno">
+		  クラスメソッド的な呼出し方をされた時、
+		  メソッド内でメンバ変数を使用している部分を実行すると、エラーになる。
+		</div>
+	  </li>
+	  <li>引数は、多重代入左辺と同じ書き方ができる。</li>
+	  <li>デフォルト引数を指定できる。
+		<ol>
+		  <li>メソッド定義の時には多重代入と異なり、
+			引数にデフォルト値を与える事ができる。
+<pre>
+def f (a,b=0) { }
+def f (a,b=1,c=2,d=3,*e) { }
+def f (a,b=10,*c='(20,30)) { }
+def f (a,'(b,*c),'(d,e,f=0),*g=[10,20]) { }
+</pre>
+		  </li>
+		  <li>デフォルト引数を与えた後は、デフォルト引数もしくは
+			*付きの引数 のみ続ける事ができる。
+		  </li>
+		  <li>*付き引数の後には他の引数を続ける事はできない。</li>
+		  <li>*付き引数にデフォルト値を指定しなかった場合、
+			'() を指定した事になる。
+<pre>
+def f (a,*b) { }
+def f (a,*b='()) { }
+// この2つは同じ。
+</pre>
+		  </li>
+		</ol>
+	  <li>デフォルト値の計算タイミング
+		<ol>
+		  <li>バイトコードを頭から実行していって、
+			def 文が来たタイミングで、左側のデフォルト値から順番に計算され、
+			デフォルト値格納領域に格納される。
+<pre>
+X = 10
+def f(a) {a + X}
+def g(x = f(20)) { … }
+</pre>
+			<ol>
+			  <li>X に 10 が代入される</li>
+			  <li>f(20)が計算され、その結果の30が g() のデフォルト値格納領域に
+				格納される。
+			  </li>
+			</ol>
+		  <li>まだ def 文に到達していないメソッドで、
+			それがデフォルト値を使用するような場合、
+			まだデフォルト値が用意されていないのでエラーとなる。
+<pre>
+def f (x = g()) { }
+def g (a = 10) { … }
+</pre>
+			gの引数aのデフォルト値 10 がまだ用意されないうちに、
+			fの引数xのデフォルト値を計算しようとするため、エラーになってしまう。
+			<br>
+			この例の場合、fとgの順番を入れ替えるとエラーにならなくなる。
+		  </li>
+
+		</ol>
+	  </li>
+	</ul>
+
+	<h4>演算子定義</h4>
+	<div>
+	  演算子は記号を使っているが、実体はメソッド。
+	</div>
+	演算子を " で囲ってメソッド定義と同じように定義する。
+<!-- " emacsのhtmlモード用のダブルクォート数合わせ -->
+<pre>
+def "==" (obj) { ... } // 二項演算子 ==
+def "+" (obj) { ... } // 二項演算子 +
+def "+@" () { ... }   // 単項演算子 + は、 "+@" と記述する。
+def "-@" () { ... }   // 単項演算子 - は、 "-@" と記述する。
+def "[]" (index) { ... }   // a[i] の時、index=iでこの演算子が呼ばれる
+def "[]=" (val,index) { ... }  // a[i] = x の時、val=x,index=iでこの演算子が呼ばれる
+</pre>
+	<ul>
+		<li>三項演算子 <code>? :</code> は定義できない。</li>
+		<li><code>|| , &amp;&amp;</code> 演算子は右辺が計算されない場合があるため、
+			演算子を呼ばないで条件分岐するようにコンパイルされる。
+			このため、定義したとしても通常はそれが呼ばれる事はない。
+		</li>
+	</ul>
+
+
+	<h3>コンストラクタ</h3>
+	new演算子によりインスタンスを生成する際に呼ばれる。
+	<br>
+	メモリ領域が確保された後、initializeメソッドが呼ばれる。
+<pre>
+class Hoge
+  def initialize() { … }
+  def initialize(x,y) { … }
+end
+</pre>
+	複数の initialize がある場合、Signatureのマッチするものが呼ばれる。
+	マッチするものが無い場合、何も呼ばれないままとなる。
+	<div class="note">
+	  これは例外を投げるようにすべきと考えているがまだ対応していない。(2009-12)
+	</div>
+	例: <code>a = new Hoge(1,2)</code> とした場合の動作
+	<ol>
+	  <li>メモリが確保される</li>
+	  <li>initialize(1,2) が実行される</li>
+	  <li>a に生成されたHogeオブジェクトが代入される</li>
+	</ol>
+
+	<h3>デストラクタ</h3>
+	ガーベジコレクションにてどこからも参照されなくなったオブジェクトが
+	破棄される際に、 finalize() メソッドが存在すれば、呼ばれる。
+	<br>
+	呼ばれるタイミングがいつになるかは保証されない。
+	finalize() に重い処理をさせると、予測できないタイミングで呼ばれて
+	処理落ちの原因となる。
+	<br>
+	finalize() で重い処理をせざるを得ない場合には、処理が遅れても良い
+	タイミングで、オブジェクトを参照されないようにして、GC.full() を
+	呼ぶと良い。
+
+	<h3>パッケージクラス</h3>
+	Hayatプログラムをコンパイルすると、*.hy ファイル1つにつき、
+	暗黙のクラスが1つ作られる。
+	これはファイル名と同じ名前のクラスで、パッケージクラスと呼ぶ。
+	<br>
+	「バイトコードの先頭」 と 「パッケージクラスの初期化コード」
+	 は同じものである。
+	
+	<br>
+	require命令は、必要なら別パッケージを読み込む命令だが、
+	同時にパッケージクラスにその別パッケージを継承させる。
+	つまり、パッケージクラスはrequireした別パッケージクラスの
+	子クラスとなる。
+
+
+	<h3>クロージャ</h3>
+	lambda 文にてクロージャ(無名関数)を生成できる。
+	<pre>lambda (引数1,引数2,...) { … }</pre>
+	引数を省略すると、(*args_) を指定した事になる。
+	<div style="margin-left:2em;">
+	  以下の2つはまったく同じ。
+<pre>
+lambda { … }
+lambda (*args_) { … }
+</pre>
+	</div>
+
+	クロージャオブジェクトは、callまたはcallAwayメソッドで実行可能。
+<pre>
+f = lambda(x,y){x + y}
+p(f.call(1,2))   // =&gt; 3
+</pre>
+
+	クロージャの外側のローカル変数を参照可能で、外側のメソッドが実行終了したとしてもローカル変数は消えない。
+<pre>
+def foo () {
+  a = 10
+  f = lambda(x){x + a}
+  p(f.call(5))  // =&gt; 15
+  a = 20
+  p(f.call(5))  // =&gt; 25
+  return f
+}
+g = foo()
+p(g.call(10))  // =&gt; 30
+</pre>
+
+	クロージャは、メソッドに引数として渡す時に、( ) の外側に書く事ができる。
+	その時は lambda (...) を書かず、 { の次に引数を | と | ではさんで書く。
+<pre>
+def f(c) { c.call(1) }
+p(f(lambda(x){x+1})) // =&gt; 2
+p(f(){|x| x + 1})    // =&gt; 2
+</pre>
+
+	クロージャをメソッドの外に書く時、
+	クロージャ以外のメソッドの引数が0個ならば、
+	メソッド引数の<code>()</code>自体を省略できる。
+<pre>
+p(f{|x| x + 1})   // =&gt; 2
+</pre>
+
+	クロージャの引数は省略できる。省略すると、 |*args_| を指定したのと同じ事になる。
+<pre>
+def g (c) { c.call(1,2,3) }
+p(g{   // ここでクロージャの引数を省略。|*args_| を指定した事になる。
+  y = 0
+  args_.each{|x| y += x}
+  y
+})    // =&gt; 6
+</pre>
+
+	call()メソッドの代わりに、<code>()</code>演算子を使用できる。
+<pre>
+f = lambda(x,y){x + y}
+p(f.call(1,2))  // =&gt; 3
+p(f(1,2))       // =&gt; 3
+</pre>
+
+	<h3>Fiber</h3>
+	ファイバーとは、yield文を実行できるメソッドである。
+	yield文は、実行を一時中断して別のメソッドに処理を渡す。
+	これにより、イテレータ、ジェネレータ、コルーチンのようなものが簡潔に記述できる。
+	<br>
+	ファイバーは、<code>new Fiber { … }</code>で生成するか、<code>defFiber</code>で定義したメソッドの実行で生成される。
+	<code>defFiber</code> にて定義したメソッドは、Fiberオブジェクトを返すメソッドになる。
+<pre>
+// foo()とbar()は同じ。(バイトコードレベルでは異なるが、機能は同一)
+defFiber foo() { … }
+def bar () {
+  return new Fiber {
+    …
+  }
+}
+</pre>
+	ファイバーはyield文を実行すると、一旦呼び出し元に処理を戻す。
+	<br>
+	iterate()メソッドとクロージャの組合せで、イテレータとしてする。
+		
+<pre>
+// nからmまで1つずつ増えていく整数を提供するファイバー
+defFiber range(n,m) {
+  for ( ; n &lt;= m; n += 1) {
+    yield n
+  }
+}
+range(2,4).iterate(lambda(x){ foo(x) })
+range(2,4).iterate{|x| foo(x) }
+range(2,4)-&gt;{|x| foo(x) }
+// 上の3つは同じ動作をし、どれも foo(2), foo(3), foo(4) を実行する。
+
+// さらにメソッドオーバーロードを利用すると、-&gt; も省略できる。
+def range(n,m,f) { range(n,m).iterate(f) }
+range(2,4){|x| foo(x) }
+</pre>
+
+
+	例：素数を計算するプログラム
+<pre>
+defFiber genFrom (n) {
+  for ( ; true; n += 1) {
+    yield n
+  }
+}
+defFiber sieve (gen) {
+  x = gen.generate()
+  yield x
+  z = sieve(gen.filter{|i| i % x &lt;&gt; 0})
+  loop { yield z.generate() }
+}
+sieve(genFrom(2)).take(10).toArray()  // =&gt; [2,3,5,7,11,13,17,19,23,29]
+</pre>
+
+	<ol>
+	  <li>sieveメソッドはファイバgenから最初の値を受け取る。
+		Fiberのgenerate()は、yieldまで実行してその値を受け取るメソッド。
+	  </li>
+	  <li>受け取った値をyield文で外部に提供する。</li>
+	  <li>ファイバgenから次々に値を受け取り、その内で最初の値では割り切れない値だけを
+		外部に提供し続けるような新たなfiberをfilter()で作る。
+		Fiberのfilter()は、条件に合う値だけをyieldするようなファイバを作るメソッド。
+	  </li>
+	  <li>そのファイバを再帰的にsieveに渡し、そこから受け取った値を外部に提供し続けるという動作をする。
+	  </li>
+	</ol>
+	<ol>
+	  <li>最初のsieve()に渡されるfiberはgenFrom(2)なので、2,3,4,5,6,... という値を提供する。</li>
+	  <li>fiberから最初の1つを受け取り、外部に提供(yield)する。</li>
+	  <li>次の再帰的なsieve()に渡されるfiberは、3,4,5,6,7,... のうちで2で割り切れない 3,5,7,9,11,13,... を提供する。</li>
+	  <li>さらに次のsieve()に渡されるfiberは、5,7,9,11,13,15,... のうちで3で割り切れない 5,7,11,13,17,... を提供する。</li>
+	  <li>…</li>
+	  <li>loopでは、それぞれのfiberから提供された最初の値を受け取り、それを外部に提供する。</li>
+	  <li>take(10)で10個分を取り出し、toArray()で配列に格納すると、素数10個の配列ができる。</li>
+	</ol>
+
+	<h3>多重代入</h3>
+	多重代入とは、左辺が複数ある代入である。
+
+	<ul>
+	  <li>
+<pre>
+a,b = 1,2
+x,y = y,x
+</pre>
+		上の例では、a==1, b==2 となる。
+		下の例では、x と y の値が交換される。
+	  </li>
+
+	  <li>
+		左辺値の前に * を付けると、複数の値を受け取る事ができる。
+		受け取った値は List または Fiber に格納された形になっている。
+		例えば1つずつ取り出したい場合には、each()を使えば良い。
+<pre>
+a,*b = 1,2,3,4,5
+b.each{|x| …}
+</pre>
+	  </li>
+
+	  <li>
+		右辺値の前に * を付けると、複数の値を渡す事ができる。
+		渡す値は Array,List など、each() で1つずつ値を取り出す事が
+		可能なもの、もしくは Fiber でなければならない。
+<pre>
+x = [5,7,11]
+a,b,c,d,e = 2,3,*x
+// a==2, b==3, c==5, d==7, e==11 となる。
+</pre>
+	  </li>
+
+	  <li>
+		左辺にリスト構文を使って、ネスティングできる。
+		対応する右辺は、 each() で1つずつ値を取り出せるものを指定する。
+		<table>
+		  <tr>
+			<td><code class="sample">a,'(b,c) = 1,'(2,3)</code></td>
+			<td>a==1, b==2, c==3</td>
+		  </tr>
+		  <tr>
+			<td><code class="sample">a,'(b,c) = 1,[2,3]</code></td>
+			<td>a==1, b==2, c==3</td>
+		  </tr>
+		  <tr>
+			<td><code class="sample">a,'(b,*c) = 1,'(2,3,4,5)</code></td>
+			<td>a==1, b==2, c.toArray() == [3,4,5]</td>
+		  </tr>
+		</table>
+	  </li>	
+
+	  <li>
+		* は、基本的に右辺も左辺も最後にしか置けない。
+		但し、ネスティングが複数ある時、それぞれの最後に置く事はできる。
+		<table>
+		  <tr>
+			<td><code class="sample">a,'(b,*c),'(d,*e),*f = 1,'(2),'(3,4,5),6,7</code></td>
+			<td>c.toArray()==[], e.toArray()==[4,5]</td>
+		  </tr>
+		</table>
+	  </li>
+
+	  <li>
+		ネスティングと * を併用する事で、同じ動作をする多重代入文を
+		複数種類書く事ができる
+<pre>
+a = '(1,2,3)
+    の時、
+x,y,z = *a
+    と
+'(x,y,z) = a
+    と
+'(x,y,z) = '(*a)
+    は、同じ結果となる。
+</pre>
+	  </li>
+
+	  <li>
+		x に * を付けて使用する事が可能ならば、 x と '(*x) は
+		同じ効果をもたらす。
+		<div style="margin-left:2em;">
+		  実際には状況に応じて List になったり Fiber になったりするので、
+		  内部動作は同一ではない。
+		</div>
+	  </li>
+	</ul>
+
+	<h4>match</h4>
+
+	多重代入の仕組みを使って条件分岐する構文。
+<pre>
+match (右辺値) {
+case (左辺値) { }
+case (左辺値) { }
+ ...
+default { }
+}
+</pre>
+
+	<p>
+	  複数の左辺値のうち、右辺値が代入可能ものを上から順番に調べていき、
+	  代入可能だったらそれに対応するプログラムを実行する。
+	  どれにも代入可能でなければ、defaultを実行する。
+	</p>
+
+<pre>
+match (*a) {
+case () { Ａ }
+case (x,*y) { Ｂ }
+case (x,y,*z) { Ｃ }
+default { Ｄ }
+}
+</pre>
+	<ol>
+	  <li>a = '() ならば、Ａを実行する。</li>
+	  <li>a = '(1,2)ならば、Ｂを実行する。</li>
+	  <li>Ｃのcase文にも代入可能なものは、
+		全てＢのcase文にも代入可能なので、Ｂのcaseにマッチしなければ
+		Ｃのcaseにもマッチしないので、Ｃが実行される事はない。</li>
+	  <li>a = 1 ならば *a は展開できないので、
+		どんなcase文ともマッチする事はなく、
+		default文に対応するＤを実行する。</li>
+	</ol>
+
+	<h4>Signature</h4>
+	多重代入の値の並びを区別する表記法。
+	<ul>
+	  <li>通常値の並びは、並んだ個数</li>
+	  <li>*は、*</li>
+	  <li>ネスティングは ( )</li>
+	  <li>右辺で*を展開した結果、内容が尽きた時は、 / </li>
+	</ul>
+
+	<table>
+	  <tr>
+		<th>値の並び</th>
+		<th>Signature</th>
+	  </tr>
+	  <tr>
+		<td>(1,2,3)</td>
+		<td>(3)</td>
+	  </tr>
+	  <tr>
+		<td>(a,b,*c)</td>
+		<td>(2,*)</td>
+	  </tr>
+	  <tr>
+		<td>(1,2,'(3,4,*x),*y)</td>
+		<td>(2,(2,*),*)</td>
+	  </tr>
+	</table>
+
+	<h4>メソッドオーバーロード</h4>
+	異なるSignatureを持つ同名メソッドを複数定義する事ができる。
+
+	<ul>
+	  <li>メソッド引数は、多重代入左辺と同じ表記を用いる事ができる。</li>
+	  <li>メソッド呼出しの時に、引数の値によって、適切なメソッドが検索されて実行される。
+<pre>
+def f() { Ａ }
+def f(x,*y) { Ｂ }
+の2つのメソッド定義がある時、
+f() はＡを実行し、
+f(1,2,3) はＢを実行する。
+</pre>
+	  </li>
+	</ul>
+
+	<h4>代入可能判定</h4>
+	match構文やメソッドオーバーロードでは、
+	左辺値に*やネスティングがある場合には実際の値を調べて
+	代入可能かどうかを判定する。
+
+	<h5>動作例</h5>
+<pre>
+a = '(0, 1)
+match (*a) {
+case () { Ａ }
+case (x,y,z,*w) { Ｂ }
+case (x,*y) { Ｃ }
+default { Ｄ }
+}
+</pre>
+	<ol>
+	  <li>右辺値である引数 (*a) のSignatureは (*)</li>
+	  <li>まず () をチェック、Signatureは (0)</li>
+	  <li>右辺が空の時にマッチするので、空かどうかを調べるために1つ取り出してみる。
+		<table>
+		  <tr>
+			<th>時系列</th>
+			<th>引数の変化</th>
+			<th>右辺Signatureの変化</th>
+			<th>何をした結果か</th>
+		  </tr>
+		  <tr>
+			<td>1</td>
+			<td>(*a)</td>
+			<td>(*)</td>
+			<td></td>
+		  </tr>
+		  <tr>
+			<td>2</td>
+			<td>(0,*aの残り)</td>
+			<td>(1,*)</td>
+			<td>aから値を1つ取り出した (値は 0 だった)</td>
+		  </tr>
+		</table>
+	  </li>
+
+	  <li>1つ取り出せたので、空ではないので、マッチしなかった。</li>
+
+	  <li>次に、(x,y,z,*w) をチェック、左辺Signatureは、(3,*)
+		<table>
+		  <tr>
+			<th>時系列</th>
+			<th>引数の変化</th>
+			<th>右辺Signatureの変化</th>
+			<th>何をした結果か</th>
+		  </tr>
+		  <tr>
+			<td>1</td>
+			<td>(0,*aの残り)</td>
+			<td>(1,*)</td>
+			<td></td>
+		  </tr>
+		  <tr>
+			<td>2</td>
+			<td>(0,1,*aの残り)</td>
+			<td>(2,*)</td>
+			<td>aから値を1つ取り出した (値は 1 だった)</td>
+		  </tr>
+		  <tr>
+			<td>3</td>
+			<td>(0,1)</td>
+			<td>(2,/)</td>
+			<td>aから値を1つ取り出そうとして取り出せなかった</td>
+		  </tr>
+		</table>
+	  </li>
+	  <li>右辺は2個しかなく、zに代入できる値がないのでマッチしなかった。
+		左辺Signature (3,*) に対して 右辺Signature (2,/) が
+		マッチしないという事。
+	  </li>
+
+	  <li>次に、(x,*y) をチェック、左辺Signatureは、(1,*)</li>
+	  <li>右辺Signature (2,/) はこれにマッチする。</li>
+	  <li>xに0を代入し、yには残り全部を代入する。
+		残りの状況によってyはListになったりFiberになったりするが、
+		この場合はListになり、yの値は '(1) となる。
+	  </li>
+	  <li>そしてＣ文が実行される。</li>
+	  <li>マッチしたcase文があったので、defaultのＤ文が実行される事はない。</li>
+	</ol>
+
+	<h5>代入可能判定中のFiberの動作</h5>
+	代入可能判定時に実際の値を調べる必要がある場合に、
+	右辺値のFiberのプログラムが動作する場合がある。
+
+	<ul>
+	  <li>例1
+<pre>
+f = 3.times()
+x,*y = *f
+</pre>
+		<ol>
+		  <li>f は、 0, 1, 2 の3つの整数を順に生成するFiberである。</li>
+		  <li>この場合、xに代入する値が存在するかどうかを調べるため、
+			Fiber f から値を1つ取り出す。このときFiberのプログラムが動作する。
+		  </li>
+		  <li>この結果、x には 0 が代入され、y には 1,2 の2つの整数を
+			順に生成するFiberが代入される事となる。
+		  </li>
+		</ol>
+		<br>
+	  </li>
+
+	  <li>例2
+<pre>
+f = 3.times()
+*x = *f
+</pre>
+		<ol>
+		  <li>この場合にはFiber f から値を取り出さなくても代入可能だと
+			判定できるので、f のプログラムは動作しないまま x に代入される。
+		  </li>
+		</ol>
+		<br>
+	  </li>
+
+	  <li>例3
+<pre>
+f = 5.times()
+match (*f) {
+case(x) { Ａ }
+case(x,y) { Ｂ }
+}
+</pre>
+		<ol>
+		  <li>Ａを実行すべきかどうか判定するために、fから2つの値が生成され、
+			1つだけではなかったのでＡは実行されなかった。
+		  </li>
+		  <li>次にＢを実行すべきかどうか判定するために、fからもう1つの値が
+			生成され、2つだけではなかったのでＢは実行されなかった。
+		  </li>
+		  <li>最終的にどのcase文ともマッチせず、defaultも無いので、
+			どれも実行されなかった。
+		  </li>
+		  <li>しかし、代入可能判定中に f から3つの値が生成されたので、
+			結果として f は残りのあと2つの値 3,4 を生成するFiberとなった。
+		  </li>
+		  <li>代入可能判定中に生成された3つの値 0,1,2 は、
+			それを受け取る変数が無いので消滅した。
+		  </li>
+		</ol>
+	  </li>
+	</ul>
+
+
+	<hr>
+	<a href="index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

@@ -1,0 +1,231 @@
+# -*- ruby -*-
+
+def chdir(dir, &block)
+  puts "Entering directory `#{File.expand_path(dir)}'"
+  Dir.chdir(dir, &block)
+  puts "Leaving directory `#{File.expand_path(dir)}'" if block
+end
+def myDefMethod(name, &block)
+  self.class.send(:define_method, name, &block)
+end
+
+
+machdepDir = '../machdep/unix'
+if File.exist?('../compiler/MACHDEP')
+  File.foreach('../compiler/MACHDEP') do |line|
+    if /^MACHDEP_DIR\s*=\s*(.*)/ =~ line.strip
+      machdepDir = $1
+    end
+  end
+end
+commonDir = '../common'
+compilerDir = '../compiler'
+engineDir = '../engine'
+parserDir = '../parser'
+
+
+# ../common/*.cpp
+COMMON_SRC_FILES = ["hyEndian", "hyMemPool", 'hyMMes']
+# machdepDir/*.cpp
+MACHDEP_SRC_FILES = ['machdep', 'mbcsconv']
+
+# hdbdump 
+HDBDUMP_SRC_FILES = []
+# gokou
+GOKOU_SRC_FILES = [
+  'htGokou.cpp',
+  engineDir + '/hyDebugSourceInfo.cpp',
+  engineDir + '/hySymbolTable.cpp',
+  engineDir + '/hyDebug.cpp',
+  compilerDir + '/hyCCommandLine.cpp'
+]
+# hydas
+HYDAS_SRC_FILES = [
+  'htDisasm.cpp',
+  'htPrintOpcode.cpp',
+  commonDir + '/hySignatureBase.cpp',
+  engineDir + '/hyDebugSourceInfo.cpp',
+  engineDir + '/hySymbolTable.cpp',
+  engineDir + '/hyDebug.cpp',
+  engineDir + '/opcode_nameTable.cpp',
+  compilerDir + '/hyCCommandLine.cpp'
+]
+# hydebdump
+HYDEBDUMP_SRC_FILES = [
+  'htDebdump.cpp',
+  engineDir + '/hyDebugSourceInfo.cpp',
+  engineDir + '/hySymbolTable.cpp',
+  engineDir + '/hyDebug.cpp'
+]
+
+
+
+
+if RUBY_PLATFORM =~ /cygwin/
+  exeext = '.exe'
+  linklibs = ["-liconv"]
+else
+  exeext = ''
+  linklibs = []
+end
+gokouBin = 'gokou' + exeext
+hydasBin = 'hydas' + exeext
+hydebdumpBin = 'hydebdump' + exeext
+
+
+
+task :default => [:makeGokou, :makeHydas, :makeHydebdump]
+
+
+
+
+$objDir = 'obj'
+directory $objDir
+
+$incs = ['-I.', '-I../common', '-I'+compilerDir, '-I'+engineDir, '-I'+parserDir, '-I'+machdepDir]
+
+COMMON_GPP_OPTS = ['-Wall', '-O0', '-g', '-DHY_TOOLS_BUILD','-DHY_WORK_WITHOUT_VM']
+$gcccmd_sjis = ['g++', '--input-charset=cp932'] + COMMON_GPP_OPTS + $incs
+$gcccmd_utf8 = ['g++', '--input-charset=UTF-8'] + COMMON_GPP_OPTS + $incs
+
+def makeDepend (srcFile)
+  depFile = $objDir + '/' + File.basename(srcFile).sub(/\.cpp$/, '.d')
+  puts "making #{depFile}"
+  target = dep = nil
+  if /\.tab\./ =~ srcFile
+    gcccmd = $gcccmd_utf8
+  else
+    gcccmd = $gcccmd_sjis
+  end
+  open("| #{gcccmd.join(' ')} -MM #{srcFile}") do |fd|
+    target,dep = fd.read.gsub(/\\\s/, '').split(':', 2)
+  end
+  depends = dep.split(/\s+/)
+  depends.delete('')
+  target = $objDir + '/' + target
+  open(depFile, 'w') do |out|
+    a = ([target] + depends).join(',')
+    out.puts a
+  end
+  file target => depends do
+    compileCommand = gcccmd + ['-c', '-o', target, srcFile]
+    # puts compileCommand.join(' ')
+    sh *compileCommand
+  end
+end
+
+def readDepend (srcFile)
+  depFile = $objDir + '/' + File.basename(srcFile).sub(/\.cpp$/, '.d')
+  if /\.tab\./ =~ srcFile
+    gcccmd = $gcccmd_utf8
+  else
+    gcccmd = $gcccmd_sjis
+  end
+  begin
+    open(depFile) do |fd|
+      depends = fd.read.chomp.split(',')
+      target = depends.shift
+      file target => depends do
+        compileCommand = gcccmd + ['-c', '-o', target, srcFile]
+        # puts compileCommand.join(' ')
+        sh *compileCommand
+      end
+    end
+    return true
+  rescue Errno::ENOENT
+    return false
+  end
+end
+
+
+#==================================================
+#		gokou
+#==================================================
+
+gokouSrcs = FileList.new
+gokouSrcs.include GOKOU_SRC_FILES
+gokouSrcs.include COMMON_SRC_FILES.map{|f| commonDir+"/#{f}.cpp"}
+gokouSrcs.include MACHDEP_SRC_FILES.map{|f| machdepDir+"/#{f}.cpp"}
+# gokouSrcs.include ['hpInputBuffer'].map{|f| parserDir+"/#{f}.cpp"}
+# gokouSrcs.include ['hyCSymbolTable'].map{|f| compilerDir+"/#{f}.cpp"}
+
+gokouObjs = gokouSrcs.ext('o').map{|x| $objDir + '/' + File.basename(x)}
+
+desc "make gokou depend"
+task :gokouDepend => [$objDir] do
+  gokouSrcs.each do |src|
+    readDepend(src) or makeDepend(src)
+  end
+end
+
+desc "create gokou"
+task :makeGokou => [:gokouDepend, gokouBin]
+
+file gokouBin => gokouObjs do
+  sh 'g++', '-o', gokouBin, *(gokouObjs + linklibs)
+end
+
+
+#==================================================
+#		hydas
+#==================================================
+
+hydasSrcs = FileList.new
+hydasSrcs.include HYDAS_SRC_FILES
+hydasSrcs.include COMMON_SRC_FILES.map{|f| commonDir+"/#{f}.cpp"}
+hydasSrcs.include MACHDEP_SRC_FILES.map{|f| machdepDir+"/#{f}.cpp"}
+
+hydasObjs = hydasSrcs.ext('o').map{|x| $objDir + '/' + File.basename(x)}
+
+desc "make hydas depend"
+task :hydasDepend => [$objDir] do
+  hydasSrcs.each do |src|
+    readDepend(src) or makeDepend(src)
+  end
+end
+
+desc "create hydas"
+task :makeHydas => [:hydasDepend, hydasBin]
+
+file hydasBin => hydasObjs do
+  sh 'g++', '-o', hydasBin, *(hydasObjs + linklibs)
+end
+
+
+#==================================================
+#		hydebdump
+#==================================================
+
+hydebdumpSrcs = FileList.new
+hydebdumpSrcs.include HYDEBDUMP_SRC_FILES
+hydebdumpSrcs.include COMMON_SRC_FILES.map{|f| commonDir+"/#{f}.cpp"}
+hydebdumpSrcs.include MACHDEP_SRC_FILES.map{|f| machdepDir+"/#{f}.cpp"}
+
+hydebdumpObjs = hydebdumpSrcs.ext('o').map{|x| $objDir + '/' + File.basename(x)}
+
+desc "make hydebdump depend"
+task :hydebdumpDepend => [$objDir] do
+  hydebdumpSrcs.each do |src|
+    readDepend(src) or makeDepend(src)
+  end
+end
+
+desc "create hydebdump"
+task :makeHydebdump => [:hydebdumpDepend, hydebdumpBin]
+
+file hydebdumpBin => hydebdumpObjs do
+  sh 'g++', '-o', hydebdumpBin, *(hydebdumpObjs + linklibs)
+end
+
+
+#==================================================
+#		clean
+#==================================================
+
+desc "cleanup"
+task :clean do
+  FileUtils.rm_rf($objDir, :verbose => true)
+  FileUtils.rm_f(gokouBin, :verbose => true)
+  FileUtils.rm_f(hydasBin, :verbose => true)
+  FileUtils.rm_f(hydebdumpBin, :verbose => true)
+end

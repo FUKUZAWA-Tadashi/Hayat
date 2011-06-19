@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Int クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Int</h2>
+	32bit符号付き整数型。
+	<br>
+	newによるインスタンス生成はできない。
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>演算子</h3>
+	二項演算は整数型同士でないとできない。
+
+	<table>
+	  <tr>
+		<td class="code">+ (単項演算子)</td>
+		<td>単項プラス</td>
+	  </tr>
+	  <tr>
+		<td class="code">+ (二項演算子)</td>
+		<td>加算</td>
+	  </tr>
+	  <tr>
+		<td class="code">- (単項演算子)</td>
+		<td>単項マイナス</td>
+	  </tr>
+	  <tr>
+		<td class="code">- (二項演算子)</td>
+		<td>減算</td>
+	  </tr>
+	  <tr>
+		<td class="code">*</td>
+		<td>乗算</td>
+	  </tr>
+	  <tr>
+		<td class="code">/</td>
+		<td>除算</td>
+	  </tr>
+	  <tr>
+		<td class="code">%</td>
+		<td>剰余</td>
+	  </tr>
+	  <tr>
+		<td class="code">**</td>
+		<td>べき乗</td>
+	  </tr>
+	  <tr>
+		<td class="code">==</td>
+		<td>比較：等しい時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">&lt;&gt;</td>
+		<td>比較：等しくない時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">!=</td>
+		<td>比較：等しくない時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">&lt;=&gt;</td>
+		<td>比較：左辺が小さい時に -1, 大きい時に 1, 同じ場合は 0</td>
+	  </tr>
+	  <tr>
+		<td class="code">&lt;</td>
+		<td>比較：左辺が小さい時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">&lt;=</td>
+		<td>比較：左辺が小さいか等しい時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">&gt;</td>
+		<td>比較：左辺が大きい時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">&gt;=</td>
+		<td>比較：左辺が大きいか等しい時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">&amp;</td>
+		<td>ビットAND</td>
+	  </tr>
+	  <tr>
+		<td class="code">|</td>
+		<td>ビットOR</td>
+	  </tr>
+	  <tr>
+		<td class="code">^</td>
+		<td>ビットXOR</td>
+	  </tr>
+	  <tr>
+		<td class="code">~</td>
+		<td>(単項演算子) ビットNOT</td>
+	  </tr>
+	</table>
+
+	<h3>インスタンスメソッド</h3>
+	<dl>
+	  <dt>toFloat()</dt>
+	  <dd>Float化</dd>
+
+	  <dt>abs()</dt>
+	  <dd>絶対値</dd>
+
+	  <dt>times()</dt>
+	  <dd>数値の回数だけ繰り返すFiberを作る。
+		yieldする値は、0 から self-1 まで。
+	  </dd>
+
+	  <dt>times(closure)</dt>
+	  <dd>数値の回数だけ繰り返して closure を呼ぶ。
+		closureの引数として、 0 から self-1 までの値を渡す。
+<pre>
+5.times{|i| a[i] = i * 10}
+</pre>
+		times().iterate(closure)より高速。
+	  </dd>
+
+	  <dt>upto(max)</dt>
+	  <dd>selfからmaxまでの値をyieldするFiberを作る。
+	  </dd>
+
+	  <dt>upto(max, closure)</dt>
+	  <dd>selfからmaxまでの値をclosureの引数として渡しながら繰り返す。
+<pre>
+5.upto(7){|i| x += a[i]}  // x に a[5],a[6],a[7] の値を加算する
+</pre>
+		upto(max).iterate(closure)より高速。
+	  </dd>
+	</dl>
+
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

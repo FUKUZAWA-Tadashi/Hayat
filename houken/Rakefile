@@ -1,0 +1,109 @@
+# -*- ruby -*-
+
+
+task :default => :parsergen
+
+$objDir = "obj"
+directory $objDir
+if RUBY_PLATFORM =~ /cygwin/
+  exeext = '.exe'
+  linklibs = ["-liconv"]
+else
+  exeext = ''
+  linklibs = []
+end
+
+srcs = FileList["../parser/*.cpp"]
+srcs += FileList["*.cpp"]
+srcs += FileList["../common/*.cpp"]
+srcs.exclude("*.tab.cpp")
+srcs.include("../machdep/unix/machdep.cpp")
+srcs.include("../machdep/unix/mbcsconv.cpp")
+objs = srcs.ext('.o').map{|x| $objDir + "/" + File.basename(x)}
+deps = srcs.ext('.d').map{|x| $objDir + "/" + File.basename(x)}
+bin = 'houken' + exeext
+
+
+def makeDepend (srcFile)
+  depFile = $objDir + "/" + File.basename(srcFile).sub(/\.cpp$/, '.d')
+  puts "makind #{depFile}"
+  target = dep = nil
+  open("| g++ -MM -DHY_WORK_WITHOUT_VM=1 -I../parser -I../common -I../machdep/unix -I. #{srcFile}") do |fd|
+    target,dep = fd.read.gsub(/\\\s/, '').split(':', 2)
+  end
+  depends = dep.split(/\s+/)
+  depends.delete('')
+  target = $objDir + "/" + target
+  open(depFile, 'w') do |out|
+    a = ([target] + depends).join(',')
+    out.puts a
+  end
+  file target => depends do
+    sh 'g++', '-Wall', '-DHY_WORK_WITHOUT_VM=1', '-I../parser', '-I../common', '-I../machdep/unix', '-I.', '-O0', '-g', '-c', '-o', target, srcFile
+  end
+end
+
+
+def readDepend (srcFile)
+  depFile = $objDir + "/" + File.basename(srcFile).sub(/\.cpp$/, '.d')
+  begin
+    open(depFile) do |fd|
+      depends = fd.read.chomp.split(',')
+      target = depends.shift
+      file target => depends do
+        sh 'g++', '-Wall', '-DHY_WORK_WITHOUT_VM=1', '-I../parser', '-I../common', '-I../machdep/unix', '-I.', '-O0', '-g', '-c', '-o', target, srcFile
+      end
+    end
+    return true
+  rescue Errno::ENOENT
+    return false
+  end
+end
+
+task :depend => $objDir do
+  srcs.each do |src|
+    readDepend(src) or makeDepend(src)
+  end
+end
+
+
+
+desc 'build parser generator'
+task :parsergen => bin
+
+file bin => [:depend] + objs do
+  sh 'g++', '-Wall', '-O2', '-o', bin, *(objs + linklibs)
+end
+
+
+desc 'run parser generator to peg.peg'
+task :tab => bin do
+  sh "./#{bin}", 'peg.peg'
+end
+
+
+desc 'cleanup generated files'
+task :clean do
+  FileUtils.rm_f(bin, :verbose => true)
+  FileUtils.rm_f(bin + '.stackdump', :verbose => true)
+  FileUtils.rm_f(Dir['peg.tab.*'], :verbose => true)
+  FileUtils.rm_f(Dir['*.bak'], :verbose => true)
+  FileUtils.rm_rf("obj", :verbose => true)
+end
+
+desc 'compare PegParser* and peg.tab.*'
+task :diff do
+  sh 'diff pgPegParser.h peg.tab.h || true'
+  sh 'diff pgPegParser.cpp peg.tab.cpp || true'
+  sh 'diff userActionFuncDef.h peg.tab.ua || true'
+end
+
+desc 'copy peg.tab.* to PegParser.*'
+task :install_tab do
+  sh 'mv', '-f', 'pgPegParser.h', 'pgPegParser.h.bak'
+  sh 'mv', '-f', 'pgPegParser.cpp', 'pgPegParser.cpp.bak'
+  sh 'mv', '-f', bin, bin + '.bak'
+  sh %q(sed 's/_peg_TAB_H_/_PGPEGPARSER_H_/' < peg.tab.h > pgPegParser.h)
+  sh %q(sed 's/include "peg.tab.h"/include "pgPegParser.h"/' < peg.tab.cpp > pgPegParser.cpp)
+  sh %q(sed 's:/\*.*\*/::' < peg.tab.ua > userActionFuncDef.h)
+end

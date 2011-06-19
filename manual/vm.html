@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="default.css" type="text/css" />
+	<title>バーチャルマシン</title>
+  </head>
+  <body>
+
+	<h2>Hayat バーチャルマシン 概要</h2>	
+
+	<h3>スタックマシン</h3>	
+	Hayatバーチャルマシンはスタックマシンで、値の受け渡しはスタックを介する。
+	<br>
+	メソッド呼出しを行なう時、スクリプトから与えられた引数は、
+	最初の引数から順にスタックに積まれていく。
+	つまり、最後の引数がスタックのトップに積まれる。
+	<br>
+	その上に、レシーバオブジェクトが積まれる。
+	インスタンスメソッドの場合はレシーバはそのインスタンスであり、
+	クラスメソッドの場合はレシーバはクラスである。
+	<br>
+	積まれた引数の数が int numArgs としてC++関数に与えられる。
+<pre>
+obj.method(x1,x2,x3)  の場合には、スタックは
+[obj, x3, x2, x1] というようになる。(左がスタックトップ)
+numArgs は 3 になる。
+スタックに乗る値は、全て Value である。
+</pre>
+
+	<h3>Value</h3>	
+	Hayat VMの値はC++レベルでは全て Value である。
+	Valueは型情報(type)と値(data)を持つ。
+	<br>
+	値は、Valueで完結している場合と、完結せず別のデータへのポインタを
+	持つ場合がある。
+	<br>
+	Valueで完結している場合は、Valueのコピーをした後にコピー側を変更
+	したとしても、コピー元に影響する事はない。
+	<br>
+	別のデータへのポインタを持つ場合は、そのメモリを確保するため、
+	インスタンス生成は new 演算子により行なう。
+	この場合、type は *REFという名前の疑似クラス、
+	 data はインスタンスへのポインタ(Object*) となる。
+	<br>
+	stdlib内のクラスを分類すると、以下のようになる。	
+	<table>
+	  <tr>
+		<td>クラスメソッドしか持たないのでインスタンスを作る意味が無い</td>	
+		<td><code>Debug, Math, Bytecode, Random, GC</code></td>
+	  </tr>
+	  <tr>
+		<td>Valueだけで完結するので、外部のメモリを確保する必要が無く、
+		インスタンス生成の new 演算子が必要ない
+		</td>
+		<td><code>NilClass, Symbol, Int, Float, Bool, String, Class</code></td>
+	  </tr>
+	  <tr>
+		<td>自分自身はインスタンスを作らないので外部メモリを確保する必要が無く、
+		インスタンス生成の new 演算子が必要ないが、
+		継承されて継承先で使われるためのインスタンスメソッドを持つ
+		</td>
+		<td><code>Enumerable</code></td>
+	  </tr>
+	  <tr>
+		<td>外部メモリを確保してそこにインスタンスの実体を置くので、
+		インスタンス生成の new 演算子が必要
+		</td>
+		<td><code>Closure, Array, BitArray, StringBuffer, Hash, List, Stack,
+		Thread, Context, Exception, Method, Fiber</code>
+		</td>
+	  </tr>
+	</table>
+
+
+	<h3>Object</h3>	
+	new 演算子で確保され、インスタンスを格納するメモリ領域を占有する。
+	<br>
+	メンバ変数を格納する領域と、C++インスタンスを格納する領域の
+	どちらか、または両方を持つ。
+	<br>
+	Objectの属するクラスの情報を持つ。
+	<br>
+	メンバ変数へのアクセスは、以下の関数を使う。
+<pre>
+Value* HClass::getMembVarAddr(Object* obj, SymbolID_t varSymbol)
+</pre>
+
+	C++インスタンスへのアクセスは以下の関数を使う。
+<pre>
+// ValueからC++インスタンスポインタへ変換：ValueがObjectでなければエラー
+template &lt;typename T&gt; T* Value::toCppObj(void)
+
+// Objectのクラスシンボルが引数symと合致していなければエラー(デバッグビルド時のみ)
+template &lt;typename T&gt; T* Value::toCppObj(SymbolID_t sym)
+</pre>
+
+	<h3>シンボル</h3>
+	クラス名、メソッド名、変数名等は、C++レベルでは SymbolID_t 型
+	として扱われる。中身は整数であり、コンパイラにより一意な値が
+	割り振られる。
+	<br>
+	コンパイラによりヘッダファイル HSymbol.h が
+	(通常はffioutディレクトリ内に)自動生成され、その中に
+	C++で使用できるラベルが定義されているので、それを使用する。
+	<br>
+	スクリプト内のシンボル名と、 HSymbol.h でのラベルの対応は、
+	以下のルールに従う。
+
+	<table>
+	  <tr>
+		<th>シンボル</th>
+		<th>C++でのラベルのパターン</th>
+		<th>シンボル例</th>
+		<th>ラベル例</th>
+	  </tr>
+
+	  <tr>
+		<td>半角英数字とアンダースコアのみを使用したシンボル</td>
+		<td><code>HSym_名前</code></td>
+		<td><code>sym_name05</code></td>
+		<td><code>HSym_sym_name05</code></td>
+	  </tr>
+
+	  <tr>
+		<td>頭に * が付いているシンボル</td>
+		<td><code>HSymR_名前</code></td>
+		<td><code>*name</code></td>
+		<td><code>HSymR_name</code></td>
+	  </tr>
+
+	  <tr>
+		<td>それ以外の、例えば記号を含むようなシンボル</td>
+		<td><code>HSymx_16進変換名</code></td>
+		<td><code>&lt;=&gt;</code></td>
+		<td><code>HSymx_3c3d3e</code></td>
+	  </tr>
+	</table>
+
+
+	<h4>symbols.sym</h4>
+
+	<p>
+	  コンパイラは、シンボル情報を symbols.sym というファイルに
+	  格納する。通常このファイルは out ディレクトリ内に作られ、
+	  また次回コンパイル時に参照される。
+	  通常は、同一ディレクトリ内にある複数のスクリプトは
+	  共通の symbols.sym ファイルを参照する事になる。
+	</p>
+
+	<p>
+	  前回のコンパイル時に作られた symbols.sym ファイルの他に、
+	  -I オプションによって指定されたパスにある symbols.sym ファイル
+	  も、コンパイル開始時に読み込まれる。
+	  シンボル名の衝突が検出されるとエラーとなる。
+	</p>
+
+	<p>
+	  他スクリプトの symbols.sym を参照せずにコンパイルした場合、
+	  そのスクリプトとは名前衝突が発生する。
+	  例えば、dir01 ディレクトリにあるスクリプトをコンパイルした時
+	  dir01/out/symbols.sym が作成されるが、これを参照せずに
+	  dir02 ディレクトリにあるスクリプトをコンパイルすると、
+	  dir02/out/symbols.sym ファイルは dir01 のものとは名前が衝突
+	  した状態になっている。
+	  dir01のバイトコードとdir02のバイトコードを同時に読み込んで
+	  動作させようとすると、本来まったく異なるものを同じ名前で
+	  呼び出そうとするので、エラーが発生するだろう。
+	</p>
+
+	<p>
+	  コンパイル時には、このような事情を考慮して -I オプションを
+	  適切に指定する必要がある。
+	</p>
+
+  </body>
+</html>

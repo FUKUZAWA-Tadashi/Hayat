@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="default.css" type="text/css" />
+	<title>C++とエンジンのリンク</title>
+  </head>
+  <body>
+	
+	<a href="index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h2>C++とエンジンのリンク</h2>
+
+	<h3>機種依存部分</h3>
+
+	機種依存の部分は、machdepのサブディレクトリに分割されて置かれている。
+	<br>
+	少なくとも2種類のファイルが含まれる。
+	<table>
+		<tr><td>machdep.h , machdep.cpp</td>
+			<td>基本関数、マクロ定義</td></tr>
+		<tr><td>mbcsconv.h , mbcsconv.cpp</td>
+			<td>文字コード変換ルーチン</td></tr>
+	</table>
+	
+	VisualC++用には、他の機種場合にはコンバータによって作り出されるファ
+	イルが入っている。
+	これはWindowsで動作するコンバータが用意されていないためである。
+
+
+
+	<h3>初期化</h3>
+
+	<h4>ロードパス定義</h4>
+
+	hayatがファイルを読み込む時に、ファイルを探すパスを定義する。
+	<br>
+	グローバル変数 const char** HMD_LOADPATH に、NULLを終了マークとし
+	てパス文字列を定義する。
+<pre>
+const char* m_HMD_LOADPATH[] = {
+    "out",
+    "../../../stdlib/out",
+    "../../znlib/out",
+    "../../../engine",           //  for mm_sjis.mm
+    ".",
+    (const char*)NULL
+};
+const char** HMD_LOADPATH = m_HMD_LOADPATH;
+</pre>
+	
+
+
+	<h4>メモリ確保</h4>
+	hayatが使うメモリを確保する。hayatはこの範囲内でメモリを管理する。
+	
+<pre>
+void* hayatMem = HMD_ALLOC(HAYAT_MEM_SIZE);
+Hayat::Engine::initMemory(hayatMem, HAYAT_MEM_SIZE);
+</pre>
+
+
+	<h4>デバッグ用設定</h4>
+	メインで管理するメモリとは別に、デバッグ用のメモリを確保する事もできる。
+	これにより、開発機材では実機より使用可能なメモリが多い場合に、
+	メインメモリに影響を与えずにデバッグ情報を読む事ができる。
+	<br>
+	デバッグ用メモリには、シンボル文字情報(symbols.sym)、
+	バイトコードとソースコードの位置対応情報(*.hdb)、
+	エラーメッセージの多国語対応データ(mm_*.mm)、
+	を読む事ができる。
+	デバッグ用メモリを確保せずにデバッグ用情報を読み込んだ場合には、
+	メインのメモリ領域に読み込まれる。
+
+<pre>
+void* hayatDebugMem = HMD_ALLOC(HAYAT_DEBUG_MEM_SIZE);
+Hayat::Engine::initializeDebug(hayatDebugMem, HAYAT_DEBUG_MEM_SIZE);
+
+// ↓バイトコードのデバッグ情報(*.hdb)読み込みをオフにする場合は以下を使う
+// Hayat::Engine::Bytecode::setFlagReadDebugInfo(false);
+
+// デバッグ用シンボル(symbols.sym)読み込み (無くても良い)
+Hayat::Engine::gSymbolTable.readFile("symbols.sym");
+
+// エラーメッセージのShift-JISバージョンを読み込み (無くても良い)
+MMes::readTable("mm_sjis.mm");
+</pre>
+
+
+
+	<h4>stdlib初期化</h4>
+	エンジンに付属のライブラリ stdlib をまず読み込む。
+	stdlib.hyb がロードパス上に存在する必要がある。
+<pre>
+// stdlib初期化
+Hayat::Engine::initStdlib();
+</pre>
+
+
+	<h4>バイトコード読み込み</h4>
+	メモリ上にバイトコードファイル(*.hyb)を読み込む。
+<pre>
+// それぞれのプロジェクトで必要なバイトコード読み込み
+// 大元を読めばrequire先は芋蔓式に自動で読み込む
+Hayat::Engine::readLibrary("project_library_bytecode.hyb");
+   
+// 実行したいバイトコードを読み込む
+Hayat::Engine::Bytecode* pBytecode = Hayat::Engine::gCodeManager.readBytecode("target.hyb");
+</pre>	
+
+
+
+	<h3>実行</h3>
+
+	実行したいバイトコードの先頭位置から、スレッド実行するようにする。
+<pre>
+// バイトコード先頭からスレッドで実行開始
+Hayat::Engine::ThreadID_t tid = Hayat::Engine::startThread(pBytecode);
+</pre>
+
+
+	スレッドを、1フレームに1回実行させる。
+	さらに、ガーベジコレクターを呼び出す。
+	<br>
+	エラーを捕捉するならば、setjmpを使い、 hmd_halt_jmpbuf を設定する。
+<pre>
+#include &lt;setjmp.h&gt;
+
+jmp_buf hayatJmpBuf;
+if (setjmp(hayatJmpBuf) == 0) {
+    hmd_halt_jmpbuf = &amp; hayatJmpBuf;
+    // 1フレーム毎にexec1tick()を呼ぶ
+    Hayat::Engine::gThreadManager.exec1tick();
+    // ガーベジコレクターを少し進行させる
+    Hayat::Engine::GC::incremental();
+} else {
+    // エラーが発生した
+}
+</pre>
+
+	全スレッドの実行が終了したかどうかは、
+	<code>Hayat::Engine::gThreadManager.isThreadRunning()</code>
+	によって判定できる。
+
+
+	<h3>終了処理</h3>
+
+	後始末をして、メモリを解放する。
+<pre>
+// 後始末
+Hayat::Engine::finalizeAll();
+ 
+// デバッグ後始末  (デバッグ用設定をしたならば呼ぶ)
+Hayat::Engine::finalizeDebug();
+
+// デバッグ用メモリ解放 (確保したならば)
+HMD_FREE(hayatDebugMem);
+
+// メモリ解放
+HMD_FREE(hayatMem);
+</pre>
+
+
+	<hr>
+	<a href="index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

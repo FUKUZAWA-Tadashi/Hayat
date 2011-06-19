@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>NilClass クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>NilClass</h2>
+	NilClassクラス。
+	<br>
+	nilが唯一のインスタンス。
+	<br>
+	<code>nil</code>は、条件判断の時に「偽」と判定される。
+	他に偽と判定されるものは、<code>false</code>のみである。
+	<code>NilClass</code> は「真」と判定されるので注意。
+	<br>
+	newによるインスタンス生成はできない。
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>演算子</h3>
+
+	<table>
+	  <tr>
+		<td class="code">==</td>
+		<td>右辺がnilならば true、それ以外なら false</td>
+	  </tr>
+	  <tr>
+		<td class="code">! (単項演算子)</td>
+		<td>trueを返す。</td>
+	  </tr>
+	</table>
+
+	<h3>インスタンスメソッド</h3>
+	<dl>
+	  <dt>concatToStringBuffer(sb,mode)</dt>
+	  <dd>StringBufferオブジェクトsbの末尾に、文字列表現を追加する。
+		mode&lt;0 なら "nil:&lt;NilClass&gt;"、 mode==0 なら "nil" を追加、
+		mode&gt;0 なら何も追加しない。
+	  </dd>
+	</dl>
+
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

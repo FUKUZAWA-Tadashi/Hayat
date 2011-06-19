@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Hash クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Hash</h2>
+	連想配列。
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>コンストラクタ</h3>
+
+	<dl>
+	  <dt>new Hash(bucketSize, loadFactor)</dt>
+	  <dd>新しいハッシュを作成する。
+		bucketSizeは初期容量で、デフォルト値は 31 。
+		loadFactorは、内容物の個数がbucketSizeに対してこの比率を越えた
+		時、bucketSizeを増やしれrehashする数値。デフォルト値は 0.75 。
+	  </dd>
+	</dl>
+
+	<h3>演算子</h3>
+
+	<table>
+	  <tr>
+		<td class="code">==</td>
+		<td>比較：全内容が等しい時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">[]</td>
+		<td>キーに関連づけられた値を取り出す。</td>
+	  </tr>
+	  <tr>
+		<td class="code">[]=</td>
+		<td>キーに対して値を関連づける。</td>
+	  </tr>
+	</table>
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>size()</dt>
+	  <dd>入っているデータの個数</dd>
+
+	  <dt>capacity()</dt>
+	  <dd>バケットの容量</dd>
+
+	  <dt>keys()</dt>
+	  <dd>全keyを配列に入れる</dd>
+
+	  <dt>values()</dt>
+	  <dd>関連付けられた全要素を配列に入れる</dd>
+
+	  <dt>rehash()</dt>
+	  <dd>ハッシュ再計算再構築
+		<br>
+		ハッシュのキーにしたオブジェクトが、外部で変化させられて
+		hashCode値が変わってしまう場合がある。そうすると、 <code>[]</code>
+		演算子によって検索できなくなってしまう。
+		rehash()を実行すると、全てのキーオブジェクトのhashCodeを再計算
+		して格納し直すので、再び検索できるようになる。
+	  </dd>
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

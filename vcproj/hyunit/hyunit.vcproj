@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="shift_jis"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="hyunit"
+	ProjectGUID="{83B8753B-1411-4392-B683-120A5360AA71}"
+	RootNamespace="hyunit"
+	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+		<ToolFile
+			RelativePath="..\hayat.rules"
+		/>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="10"
+			CharacterSet="1"
+			DeleteExtensionsOnClean="*.obj;*.ilk;*.tlb;*.tli;*.tlh;*.tmp;*.rsp;*.pgc;*.pgd;*.hyb;*.hyp;*.hdb;*.sym;$(TargetPath)"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="Hayat Script Compile"
+				AdditionalDependencies="$(InputDir)..\out\hyUnit.hyp"
+				IncludePath="..\..\stdlib\out;..\out;out"
+				InputCharset="UTF-8"
+				OutputCharset="UTF-8"
+				MemorySize="16M"
+				MessageFile="$(SolutionDir)..\compiler\mm_sjis.mm"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="10"
+			CharacterSet="1"
+			DeleteExtensionsOnClean="*.obj;*.ilk;*.tlb;*.tli;*.tlh;*.tmp;*.rsp;*.pgc;*.pgd;*.hyb;*.hyp;*.hdb;*.sym;$(TargetPath)"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine=""
+			/>
+			<Tool
+				Name="Hayat Script Compile"
+				AdditionalDependencies="$(InputDir)..\out\hyUnit.hyp"
+				IncludePath="..\..\stdlib\out;..\out"
+				InputCharset="UTF-8"
+				OutputCharset="UTF-8"
+				MemorySize="16M"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine=""
+				ExcludedFromBuild="true"
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="hyunit"
+			>
+			<File
+				RelativePath="..\..\hyunit\hyUnit.hy"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="compile hyUnit.hy"
+						CommandLine="$(SolutionDir)$(ConfigurationName)\hayatc.exe -C $(InputDir) -I..\stdlib\out $(InputFileName)&#x0D;&#x0A;"
+						AdditionalDependencies="$(InputDir)..\stdlib\out\stdlib.hyp;$(InputDir)out\testCount.hyb"
+						Outputs="$(InputDir)out\$(InputName).hyp;$(InputDir)out\$(InputName).hyb;$(InputDir)out\$(InputName).hdb;$(InputDir)ffiout\HSymbol.h;$(InputDir)out\symbols.sym"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="compile hyUnit.hy"
+						CommandLine="$(SolutionDir)$(ConfigurationName)\hayatc.exe -C $(InputDir) -I..\stdlib\out $(InputFileName)&#x0D;&#x0A;"
+						AdditionalDependencies="$(InputDir)..\stdlib\out\stdlib.hyp"
+						Outputs="$(InputDir)out\$(InputName).hyp;$(InputDir)out\$(InputName).hyb;$(InputDir)out\$(InputName).hdb;$(InputDir)ffiout\HSymbol.h;$(InputDir)out\symbols.sym"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\hyunit\testCount.hy"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="compile testCount.hy"
+						CommandLine="$(SolutionDir)$(ConfigurationName)\hayatc.exe -C $(InputDir) -I..\stdlib\out $(InputFileName)&#x0D;&#x0A;"
+						AdditionalDependencies="$(InputDir)..\stdlib\out\stdlib.hyp"
+						Outputs="$(InputDir)out\$(InputName).hyp;$(InputDir)out\$(InputName).hyb;$(InputDir)out\$(InputName).hdb;$(InputDir)ffiout\HSymbol.h;$(InputDir)out\symbols.sym"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="compile testCount.hy"
+						CommandLine="$(SolutionDir)$(ConfigurationName)\hayatc.exe -C $(InputDir) -I..\stdlib\out $(InputFileName)&#x0D;&#x0A;"
+						AdditionalDependencies="$(InputDir)..\stdlib\out\stdlib.hyp"
+						Outputs="$(InputDir)out\$(InputName).hyp;$(InputDir)out\$(InputName).hyb;$(InputDir)out\$(InputName).hdb;$(InputDir)ffiout\HSymbol.h;$(InputDir)out\symbols.sym"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

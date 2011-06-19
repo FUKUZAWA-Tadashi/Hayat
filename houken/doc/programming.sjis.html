@@ -1,0 +1,716 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+  
+  
+  <meta content="text/html; charset=Shift_JIS" http-equiv="content-type">
+
+
+  
+  
+  <title>programming</title>
+</head>
+
+
+<body>
+
+
+
+<h1>プログラミングガイド</h1>
+
+
+<br>
+
+
+
+<h2>パーサの生成</h2>
+
+
+PEG文法定義ファイルからパーサを生成するには、houkenコマンドに定義ファイルを与える。<br>
+
+
+<code>houken sample.peg</code><br>
+
+
+すると、５つのファイルが生成される。<br>
+
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
+
+  <tbody>
+
+
+    <tr>
+
+
+      <td><code>sample.tab.h</code></td>
+
+
+      <td>自動生成されたパーサのヘッダファイル</td>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td><code>sample.tab.cpp</code></td>
+
+
+      <td>自動生成されたパーサのソースファイル</td>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td><code>sample.tab.tmpl</code></td>
+
+
+      <td>ユーザが実装すべきアクション関数のテンプレート。これをコピーして中身を実装していくと良い。</td>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td><code>sample.tab.up</code></td>
+
+
+      <td><code><span style="font-style: italic;">A</span>
+&lt;% <span style="font-style: italic;">e</span>
+      </code>ルールにより自動生成を停止された、ユーザが実装すべきパーサ関数のテンプレート。これをコピーして中身を実装し
+ていくと良い。</td>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td><code>sample.tab.ua</code></td>
+
+
+      <td>宝剣ソースコード中で使用するアクション関数の宣言をまとめたヘッダファイル。これを
+userActionFuncDef.h にコピーすると良い。</td>
+
+
+    </tr>
+
+
+  
+  
+  </tbody>
+</table>
+
+
+<br>
+
+
+これらを元に実装していく。<br>
+
+
+この他に、システム依存の処理を行う <code>sysDep.h</code> と <code>sysDep.cpp</code>
+を用意する。<br>
+
+
+<br>
+
+
+
+<h2>parse関数</h2>
+
+
+自動生成される関数。<br>
+
+
+ルールから生成されたクラスは全て <code>Parser</code> クラスの子クラスであり、メンバ関数<code>
+SyntaxTree* parse(void)</code> を持つ。<br>
+
+
+例えばルールの名前が <code>Number</code> であれば、クラス名は <code>P_Number</code>
+というように、頭に <code>P_</code> がついたものとなる。<br>
+
+
+そのクラスのインスタンスが1つ自動生成される。こちらは頭に <code>p_</code> がついたものとなる。<br>
+
+
+<code>P_Number </code>クラスなら <code>p_Number</code>
+という名前のインスタンスとなる。<br>
+
+
+<code>Number</code> の解析をしたいのであれば、<br>
+
+
+<code>SyntaxTree* st = p_Number-&gt;parse();</code><br>
+
+
+とする。<br>
+
+
+<br>
+
+
+<br>
+
+
+
+<h2>アクション関数</h2>
+
+
+peg文法定義ファイル中で <code>$action</code> にて指定したアクション関数をユーザは実装する。<br>
+
+
+<br>
+
+
+<div style="margin-left: 40px;"><code>$action
+&nbsp;action(Application*)</code><br>
+
+
+<code>Number &lt;- [0-9]+</code><br>
+
+
+</div>
+
+
+<br>
+
+
+というルールを記述すると、SyntaxTreeクラスにメンバ関数<br>
+
+
+<code>virtual void SyntaxTree::action(Application*)</code><br>
+
+
+が宣言される。<br>
+
+
+<code>Parser</code>クラスを継承した<code>P_Number</code>ク
+ラスと、<code>SyntaxTree</code>クラスを継承した<code>ST_Number</code>ク
+ラスが定義され、メンバ関数<br>
+
+
+<code>void
+ST_Number::action(Application*)</code><br>
+
+
+と<br>
+
+
+<code>void P_Number::actionAtParse(SyntaxTree*)</code><br>
+
+
+が宣言のみで実装は
+無いまま残される。<br>
+
+
+ユーザはこれらを実装する。<br>
+
+
+<br>
+
+
+<code>actionAtParse()</code> は、パースが成功した時点で呼ばれる。<br>
+
+
+これはパーサ自身の動作を変更したい場合に使用すると良い。<br>
+
+
+<span style="font-weight: bold;">宝剣</span>では、 <code>$ctype</code>
+を実現するために使用している。<br>
+
+
+他にもC言語の <code>#include</code> のような動作をさせるために使用できるだろう。<br>
+
+
+<br>
+
+
+アクション関数は、パースが正常終了したらその結果のSyntaxTreeから呼び出すようにして使う。<br>
+
+
+<table style="background-color: rgb(153, 255, 255); width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+
+  <tbody>
+
+
+    <tr>
+
+
+      <td colspan="1" rowspan="1"><code></code>void ST_Number::action(Application* ap) {<br>
+
+
+&nbsp; // 処理して結果を ap に入れる<br>
+
+
+}<br>
+
+
+      <br>
+
+
+SyntaxTree*
+st = p_Number-&gt;parse(); &nbsp;// p_Number からは ST_Number オブジェクトが生成される<br>
+
+
+if (st-&gt;isValidTree()) { <br>
+
+
+&nbsp;&nbsp;Application app;<br>
+
+
+&nbsp;
+st-&gt;action(&amp;app); &nbsp; &nbsp;// ST_Number::action() が呼び出される<br>
+
+
+&nbsp; // 結果が app に入っている<span style="font-family: monospace;"><br>
+
+
+}</span></td>
+
+
+    </tr>
+
+
+  
+  
+  </tbody>
+</table>
+
+
+<br>
+
+
+
+<h2>errorMessage関数</h2>
+
+
+ErrorCut ($数字) を実行した後にパース失敗すると、エラーとなって異常終了するが、その時に出力する<br>
+
+
+メッセージをこの関数で決める事ができる。<br>
+
+
+<code>$ownErrorMessage の指定がある場合に有効で、無ければ自動生成される。</code><br>
+<br>
+
+
+<code>A &lt;- B $3 C<br>
+
+
+<br>
+
+
+というルールがあり、これを元にパースし、B が成功して $3 を通過した後 C が失敗するとエラーとなり、A の
+errorMessage関数が呼ばれる。<br>
+
+
+引数として、3 と、パースに失敗した位置(この場合は C の位置)が渡される。<br>
+
+
+</code><br>
+
+
+<br>
+
+
+
+<h2>uParse関数</h2>
+
+
+<br>
+
+
+<code>A &lt;% e</code><br>
+
+
+というルールを定義した場合、これはパーサをC++で作成するという事になる。<br>
+
+
+<code>SyntaxTree* P_A::uParse(void)</code><br>
+
+
+という関数が宣言され、未実装のまま残される。この時<code>actionAtParse()</code>関数は宣言され
+ない。<br>
+
+
+ユーザは <code>uParse()</code>
+関数を実装する。<br>
+
+
+<code></code><br>
+
+
+
+<h2>SyntaxTree</h2>
+
+
+<br>
+
+
+パースされた結果は <code>SyntaxTree</code> オブジェクトに格納される。<br>
+
+
+<code>SyntaxTree</code>は、<br>
+
+
+<ul>
+
+
+  <li>&nbsp; それを生成した<code>Parser</code>オブジェクトへのポイン
+タ</li>
+
+
+  <li>&nbsp; 子が生成した<code>SyntaxTree</code>の配列オブジェク
+トへのポインタ</li>
+
+
+  <li>&nbsp; 消費した入力(<code>Substr</code>構造体で入力開始位置と
+終了位置)</li>
+
+
+</ul>
+
+
+を持つ。<br>
+
+
+<br>
+
+
+<code>Number &lt;- [0-9]+</code><br>
+
+
+でパースした結果であれば、Numberの子は複数の <code>[0-9]</code> となる。<br>
+
+
+<code>123ab</code> を<code>Number</code>でパースすると、消
+費した入力は <code>123</code> となる。<br>
+
+
+子が生成した<code>SyntaxTree</code>は3つとなり、最初の子は 1 を消費し、<br>
+
+
+最後の子は 3 を消費している。<br>
+
+
+<br>
+
+
+<code>Number &lt;- %[0-9]+</code><br>
+
+
+とすると、<code>%</code> の機能により子が生成した<code>SyntaxTree</code>は
+全部捨てられ、0個になる。<br>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+
+中置演算子左結合と中置演算子右結合では、それぞれの<code>SyntaxTree</code>は3つの子<br>
+
+
+を持つような形で結合順の通りに整理されている<br>
+
+
+<br>
+
+
+<code>"+"</code> が <code>infixl</code>、 <code>"**"</code>
+が <code>infixr</code>
+の場合、入力とそのパース結果のSyntaxTreeをおおまかに示すと以下の
+ようになる。<br>
+
+
+<br>
+
+
+<code>1+2+3&nbsp; &rarr;&nbsp; (("1","+","2"),"+","3")<br>
+
+
+1**2**3&nbsp; &rarr;&nbsp; ("1","**",("2","**","3"))<br>
+
+
+<br>
+
+
+</code>これを元に演算を実行する場合、各子のアクション関数を呼んで、その結果を使って自分の演算をするようなアクション関数をプロ
+グラムすれば良い。<br>
+
+
+<br>
+
+
+SyntaxTreeには特殊な値が存在する。<br>
+
+
+<table style="width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
+
+  <tbody>
+
+
+    <tr>
+
+
+      <td></td>
+
+
+      <th>真となる判定関数</th>
+
+
+      <th>意味</th>
+
+
+      <th>定義済み値</th>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td>正常値</td>
+
+
+      <td><code>isValidTree()</code></td>
+
+
+      <td>成功したパース結果を保持する。</td>
+
+
+      <td></td>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td>結果を削除</td>
+
+
+      <td><code>== m_NO_SYNTAX_TREE</code></td>
+
+
+      <td>成功だが、値を捨てた状態。</td>
+
+
+      <td><code>m_NO_SYNTAX_TREE</code></td>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td>パース失敗</td>
+
+
+      <td><code>isFail(), isFailNotError()</code></td>
+
+
+      <td>パースに失敗した状態。</td>
+
+
+      <td><code>m_PARSE_FAILED</code></td>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td>エラーカット</td>
+
+
+      <td><code>isErrorCut()</code></td>
+
+
+      <td>ErrorCutを示す。この後にパース失敗するとそれはエラーとなるように内部的に処理される。ErrorCut番号
+を保持する。</td>
+
+
+      <td></td>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td>エラー</td>
+
+
+      <td><code>isFail(), isError()</code></td>
+
+
+      <td>ErrorCut機能によりパース失敗がエラーに変換されたもの。ErrorCut番号を保持する。内部的に
+ErrorMessage()を呼び出し、その後は致命的エラー状態になる。</td>
+
+
+      <td></td>
+
+
+    </tr>
+
+
+    <tr>
+
+
+      <td>致命的エラー</td>
+
+
+      <td><code>isFail(), isError(), isFatalError()</code></td>
+
+
+      <td>パースもエラー処理もこれ以上行わないで終了させる状態。</td>
+
+
+      <td><code>m_FATAL_PARSER_ERROR</code></td>
+
+
+    </tr>
+
+
+  
+  
+  </tbody>
+</table>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+
+
+<h2>Token使用時の注意</h2>
+
+
+Token機能(<code>'token'</code>)を使う場合は、ユーザーが <code>NotTokenPred</code>
+ルールを定義しなければならない。<br>
+
+
+1文字先読みして、それがTokenの一部ではない事を示すルールを定義する。<code><br>
+
+
+</code>入力を消費しないようにする事。 <code>!</code> か <code>&amp;</code>
+を使えば入力を消費しない。<br>
+
+
+以下の定義が多くの場合に有用であろう。<br>
+
+
+<code>NotTokenPred &lt;- !([a-z]/[A-Z]/[0-9]/"_")</code><br>
+
+
+<br>
+
+
+<br>
+
+
+
+<h2>メインプログラムの流れ</h2>
+
+
+<ol>
+
+
+  <li><code>InputBuffer</code>を生成し、<code>Houken::gpInp</code> に代入する。</li>
+
+
+  <li><code>Parser::initialize()</code>を呼ぶ</li>
+
+
+  <li>パースしたいルールの <code>parse()</code> を呼ぶ<br>
+
+
+結果が<br>
+
+
+    
+    
+    <ul>
+
+
+      <li><code>m_PARSE_FAILED</code> ならパース失敗</li>
+
+
+      <li><code>m_NO_SYNTAX_TREE</code> なら成功だが結果の情報は無し</li>
+
+
+      <li><code>m_FATAL_PARSER_ERROR</code>
+ならこれ以上パース出来ない致命的エラー状態</li>
+
+
+      <li><code>isValidTree()</code>が<code>true</code>を
+返せば、有効な<code>SyntaxTree</code>オブジェクト</li>
+
+
+    
+    
+    </ul>
+
+
+  </li>
+
+
+  <li><code>SyntaxTree</code>オ
+ブジェクトのアクション関数を呼ぶ。</li>
+
+
+  <li>不要になった <code>SyntaxTree</code>
+やユーザーが使用したオブジェクトは <code>delete</code> する。</li>
+
+
+  <li>最後に <code>Parser::finalize() と SyntaxTree::finalizePool()</code>
+を呼ぶ。これで、生成された <code>Parser</code> と <code>SyntaxTree</code> は全て <code>delete</code>
+される。ユーザーは自分で <code>new</code> したものであっても <code>Parser</code>
+を自分で <code>delete</code> してはいけない。</li>
+
+
+</ol>
+
+
+
+<h2>サンプル</h2>
+
+
+簡単な整数の四則演算ができるサンプルを sample 以下に置いたので、詳しくは sample/calc.peg と
+sample/calc.cpp を見て欲しい。<br>
+
+
+<span style="font-weight: bold;">宝剣</span>自身も参考になる。
+houken/peg.peg と houken/PegParserAction.cpp, houken/main.cpp を見ると良い。<br>
+
+
+</body>
+</html>

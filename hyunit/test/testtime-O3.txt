@@ -1,0 +1,5 @@
+133 tests, 2261 assertions
+all OK
+real    0m2.971s
+user    0m2.858s
+sys     0m0.187s

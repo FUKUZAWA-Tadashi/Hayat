@@ -1,0 +1,11 @@
+#
+# ‘¼‚ÌMakefile‚©‚çinclude‚³‚ê‚é (test/Makefile“™)
+#
+
+COMMON_SRCS =	$(COMMON_DIR)/hyEndian.cpp		\
+		$(COMMON_DIR)/hyMemPool.cpp             \
+		$(COMMON_DIR)/hyMMes.cpp                \
+		$(COMMON_DIR)/hySignatureBase.cpp       \
+
+
+#

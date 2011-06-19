@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Array クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Array</h2>
+	1次元配列。
+
+	<h3>親クラス</h3>
+	Object, Enumerable
+
+	<h3>コンストラクタ</h3>
+	<pre>initialize(n)</pre>
+	n 個のオブジェクトが入るメモリを確保して初期化する。
+	n は配列のサイズではない。
+	配列のサイズが増えた時にメモリ容量が不足していると、
+	新たなメモリ領域を確保して内容のコピーが行なわれるが、
+	最初に適切なサイズのメモリ領域を確保しておくとこのコピーが
+	起こりにくくなり、速度低下やメモリ断片化をある程度防ぐ事ができる。
+	n を省略すると、0 を使う。
+
+
+	<h3>演算子</h3>
+
+	<table>
+	  <tr>
+		<td class="code">==</td>
+		<td>比較：等しい時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">[]</td>
+		<td>値を取り出す。</td>
+	  </tr>
+	  <tr>
+		<td class="code">[]=</td>
+		<td>値を代入する。</td>
+	  </tr>
+	</table>
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>clear()</dt>
+	  <dd>中身を全部削除する。
+		配列サイズは 0 になるが、確保してあるメモリ領域は減らさない。
+		戻り値は self 。</dd>
+
+	  <dt>size()</dt>
+	  <dd>配列のサイズを取得。</dd>
+
+	  <dt>include?(x)</dt>
+	  <dd>配列の中に x があるかどうか調べる。</dd>
+
+	  <dt>removeAt(i)</dt>
+	  <dd>i 番目の値を削除する。削除した値を返す。</dd>
+
+	  <dt>remove(x)</dt>
+	  <dd>x と等しい値を1つ削除する。削除した値のあった位置を返す。
+		無かったら -1 を返す。</dd>
+
+	  <dt>insertAt(i,x)</dt>
+	  <dd>i の位置に x を挿入する。 戻り値は x 。</dd>
+
+	  <dt>clone()</dt>
+	  <dd>中身をコピーした新たな配列を作る。コピーは浅いコピーである。</dd>
+
+	  <dt>sort!()</dt>
+	  <dd>クイックソート。 要素の比較には &lt;=&gt; 演算子を用いる。
+		戻り値は self 。
+	  </dd>
+
+	  <dt>sort!(func)</dt>
+	  <dd>クイックソート。 要素の比較には func を用いる。
+		func(x,y) がマイナスなら x &lt; y 、
+		func(x,y) がゼロなら x == y 、
+		func(x,y) がプラスなら x &gt; y であると解釈して昇順ソートする。
+		戻り値は self 。
+	  </dd>
+
+	  <dt>sortBy!(func)</dt>
+	  <dd>各要素に対してfuncを適用し、その値によってクイックソートする。
+		sort!(f) を使うと各要素に同じ計算を何回も繰り返してしまう
+		ような場合には、こちらを使うと速くなる。
+<pre>
+arr.sort!{|x,y| x.slowFunc() &lt;=&gt; y.slowFunc()}
+ これは下のように書換えると速くなる。
+arr.sortBy!{|x| x.slowFunc()}
+</pre>
+	  </dd>
+
+	  <dt>push(x)</dt>
+	  <dd>配列の末尾に x を追加する。</dd>
+
+	  <dt>add(x)</dt>
+	  <dd>配列の末尾に x を追加する。</dd>
+
+	  <dt>pop()</dt>
+	  <dd>配列の末尾を1つ取り除いて返す。</dd>
+
+	  <dt>shift()</dt>
+	  <dd>配列の先頭の値を1つ取り除いて返す。</dd>
+
+	  <dt>unshift(x)</dt>
+	  <dd>配列の先頭に x を挿入する。</dd>
+
+	  <dt>each()</dt>
+	  <dd>配列の各要素を先頭から順番に提供するようなファイバを作る。</dd>
+
+	  <dt>toArray()</dt>
+	  <dd>何もしない。 self を返す。</dd>
+
+	  <dt>eacheach()</dt>
+	  <dd>各要素に対して、さらにyieldするようなファイバを作る。
+<pre>
+[[1,2],[3,4],[5,6]].eacheach().toArray()  // =&gt; [1,2,3,4,5,6]
+</pre>
+	  </dd>
+
+	  <dt>shuffle!()</dt>
+	  <dd>中身の順番をランダムでばらばらに入れ替える。</dd>
+
+	  <a name="pack"></a>
+	  <dt>pack(tmpl)</dt>
+	  <dd>配列の中身を、テンプレート文字列に従ってバイナリ化し、
+		StringBufferに入れて返す。
+		<br>
+		<a href="StringBuffer.html#unpack">StringBuffer::unpack</a>の逆変換ができる。
+		<table>
+		  <tr><th>テンプレート文字</th><th>出力バイナリ</th></tr>
+		  <tr><td>n</td><td>BIG Endian 16bit整数</td></tr>
+		  <tr><td>N</td><td>BIG Endian 32bit整数</td></tr>
+		  <tr><td>v</td><td>LITTLE Endian 16bit整数</td></tr>
+		  <tr><td>V</td><td>LITTLE Endian 32bit整数</td></tr>
+		  <tr><td>c</td><td>8bit整数</td></tr>
+		  <tr><td>C</td><td>8bit整数</td></tr>
+		  <tr><td>s</td><td>16bit整数</td></tr>
+		  <tr><td>S</td><td>16bit整数</td></tr>
+		  <tr><td>i</td><td>32bit整数</td></tr>
+		  <tr><td>f</td><td>32bit浮動小数</td></tr>
+		  <tr><td>a</td><td>終端がナルバイト(0x00)の文字列</td></tr>
+		  <tr><td>A</td><td>符号無し16bit整数で文字列長が
+			  指定された文字列</td></tr>
+		  <tr><td>x</td><td>ナルバイト(0x00)</td></tr>
+		  <tr><td>それ以外</td><td>効果無し、単に無視される</td></tr>
+		</table>
+<pre>
+[1,2,3].pack("nV s")    // V と s の間の空白文字は無視される
+// CPUがLITTLE Endianなら、 00 01 02 00 00 00 03 00 の8バイトが入ったStringBufferとなる
+// CPUがBIG Endianなら、 00 01 02 00 00 00 00 03 の8バイトが入ったStringBufferとなる
+</pre>
+	  </dd>
+
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

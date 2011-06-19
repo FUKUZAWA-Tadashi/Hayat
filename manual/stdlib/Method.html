@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Method クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Method</h2>
+	レシーバとメソッドをペアにして保持するオブジェクト。
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>コンストラクタ</h3>
+
+	<dl>
+	  <dt>new Method(obj, methodSymbol)</dt>
+	  <dd>新しいMethodオブジェクトを作成する。
+		<br>
+		objはメソッドを実行するインスタンス。 methodSymbol は、
+		メソッド名を表わすシンボル。
+	  </dd>
+	</dl>
+
+
+	<h3>演算子</h3>
+	<table>
+	  <tr>
+		<td class="code">()</td>
+		<td>メソッド呼び出し。 call() と同じ。</td>
+	  </tr>
+	</table>
+
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>call(...)</dt>
+	  <dd>メソッド呼び出し。</dd>
+<pre>
+x = new Method(a, :foo)
+x.call(1,2)
+// これは、 a.foo(1,2) を実行する。
+</pre>
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

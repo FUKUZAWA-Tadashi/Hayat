@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>List クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>List</h2>
+	リスト。
+	<br>内部実装は、consセルを持つのではなく、一方向リストである。
+	C++レベルでは空リストはNULLポインタでありメモリを確保しない。
+	空でないリストは、Valueと、次のリストへのポインタを持つメモリ領域
+	を確保している。
+
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>演算子</h3>
+	<table>
+	  <tr>
+		<td class="code">==</td>
+		<td>比較：全内容が等しい時に true</td>
+	  </tr>
+	</table>
+
+	<h3>クラスメソッド</h3>
+	<dl>
+	  <dt>List.cons(hd,tl)</dt>
+	  <dd>リスト tl の先頭に、要素 hd を追加したリストを作成</dd>
+	</dl>
+
+	<h3>インスタンスメソッド</h3>
+	<dl>
+		<dt>cons(hd)</dt>
+		<dd>先頭に要素 hd を追加した新しいリストを作成。
+		  自分自身(self)は変化しない。</dd>
+
+		<dt>empty?()</dt>
+		<dd>空リストだったらtrue</dd>
+
+		<dt>head()</dt>
+		<dd>先頭要素を取得。
+		  空リストだったら empty_list 例外が発生。
+		  自分自身(self)は変化しない。</dd>
+
+		<dt>tail()</dt>
+		<dd>先頭を取り除いたリストを取得。
+		  空リストだったら empty_list 例外が発生。
+		  自分自身(self)は変化しない。</dd>
+
+		<dt>append(x)</dt>
+		<dd>リスト x を末尾に結合させた新しいリストを作成。
+		  自分自身(self)は変化しない。</dd>
+
+		<dt>append!(x)</dt>
+		<dd>自分自身の末尾にリスト x を結合させ、変化した自分自身を返す。
+		  <br>
+		  但し、空リスト '() は決して変化する事はないので、空リストに適用
+		  した場合には新しいリストが返る事になる。
+<pre>
+a = '()
+b = a.append!('(1,2))
+// a は '() のまま、 b は '(1,2) となる。
+a = '(0)
+b = a.append!('(1,2))
+// a も b も同じオブジェクト '(0,1,2) となる。
+</pre>
+		  この仕様は変更したい。
+		</dd>
+
+		<dt>clone()</dt>
+		<dd>コピーを作成する。再帰的にclone()を呼ばない、浅いコピー。</dd>
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

@@ -1,0 +1,104 @@
+# -*- ruby -*-
+
+#
+# ユニットテスト用スクリプト
+#
+
+def chdir(dir, &block)
+  puts "Entering directory `#{File.expand_path(dir)}'"
+  Dir.chdir(dir, &block)
+  puts "Leaving directory `#{File.expand_path(dir)}'" if block
+end
+def myDefMethod(name, &block)
+  self.class.send(:define_method, name, &block)
+end
+
+
+hayatDir = '../..'
+
+compilerDir = hayatDir + '/compiler'
+exeext = (RUBY_PLATFORM =~ /cygwin/) ? '.exe' : ''
+compiler = compilerDir + '/hayatc' + exeext
+engineDir = hayatDir + '/engine'
+hayatFfiDir = engineDir + '/ffi'
+libhayat = engineDir + '/lib/libhayat.a'
+libhayatffi = engineDir + '/lib/libhayatffi.a'
+stdlibDir = hayatDir + '/stdlib'
+stdlibOutDir = stdlibDir + '/out'
+symbolFile = stdlibDir + '/symbols.sym'
+hsymbolh = stdlibDir + '/HSymbol.h'
+
+
+outDir = 'out'
+ffiOutDir = 'ffiout'
+
+directory outDir
+directory ffiOutDir
+
+rule '.hyb' => [
+  proc {|tn| tn.sub(/\.hyb$/,'.hy').sub(outDir+'/', '') }
+] do |t|
+  sh compiler, '-M16M', '-I', stdlibOutDir, '-o', outDir, t.source
+  ## -zi と -zo がデフォルトと同じなので指定無し
+end
+
+sources = FileList['*.hy']
+binaries = sources.ext('.hyb').map{|f| outDir + '/' + f}
+
+
+task :default => [:hayatlink, :compiler, :symbols, :compile]
+
+
+desc "hayat machine dependent setup"
+task :hayatlink do
+  sh "make -C #{hayatDir} setup-unix"
+end
+
+desc "build library"
+task :library do
+  chdir File.expand_path(stdlibDir) do
+    sh 'rake'
+  end
+end
+
+desc "build library and symbol file"
+task :symbols => symbolFile
+
+file symbolFile => [:library]
+
+desc "build compiler"
+task :compiler do
+  chdir File.expand_path(compilerDir) do
+    sh 'rake'
+  end
+end
+desc "compile all script"
+task :compile => [outDir] + binaries
+
+file hsymbolh => :default
+
+
+def install (*params)
+  destDir = params.pop
+  params.each do |src|
+    if Array === src
+      install(*(src + [destDir]))
+    else
+      puts "copy #{src} to #{destDir}"
+      FileUtils.install(src, destDir)
+    end
+  end
+end
+
+
+desc "cleanup script binaries"
+task :clean => [:libclean] do
+  FileUtils.rm_rf(outDir)
+  FileUtils.rm_rf(ffiOutDir)
+end
+
+task :libclean do
+  chdir File.expand_path(stdlibDir) do
+    sh 'rake', 'clean'
+  end
+end

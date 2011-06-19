@@ -1,0 +1,26 @@
+
+  +----- (A)
+  | void* m_type         bit0 = GCマークフラグ (0 = mark, 1 = unmark)
+  |                     上位ビット = HClass*
+  +----- field(0)のアドレス
+  |
+  | メンバ変数領域
+  | 
+  |
+  +----- (B)
+  | hyu32 メンバ変数領域のバイト数
+  +----- (C)
+  |
+  | C++ インスタンス領域
+  |
+  |
+  +-----
+
+
+(A) -> (C)
+  T* Object::cppObj<T>()
+  T* Value::toCppObj<T>()
+
+(C) -> (A)
+  Object* Object::fromCppObj(const void*)
+

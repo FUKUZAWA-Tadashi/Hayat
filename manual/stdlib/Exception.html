@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Exception クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Exception</h2>
+	例外クラス。
+	<br>
+	例外オブジェクトは、1つの値と例外タイプシンボルを持つ。
+	例外の種類は、例外タイプによって区別する。他の言語と異なり、
+	継承を使用していない。
+
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>コンストラクタ</h3>
+
+	<dl>
+	  <dt>new Exception(val = nil, type = :exception)</dt>
+	  <dd>新しい例外オブジェクトを生成する。
+		<br>
+		保持するオブジェクトと、例外タイプシンボルを指定できる。
+		例外タイプを省略すると、 :exception となる。
+		保持するオブジェクトを省略すると、 nil となる。
+	  </dd>
+	</dl>
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>type()</dt>
+	  <dd>例外タイプシンボルを取得</dd>
+
+	  <dt>setVal(v)</dt>
+	  <dd>保持するオブジェクトを設定する。</dd>
+
+	  <dt>val()</dt>
+	  <dd>保持するオブジェクトを取得。</dd>
+
+	  <dt>getLabel()</dt>
+	  <dd>typeが :goto の時のみ、飛び先ラベルを取得。そうでなければ
+		nil。
+		<br>
+		goto 命令は、catch によって捕捉される。その時の例外タイプは
+		:goto となっている。
+		保持するオブジェクトは、goto直前に実行していた文の値である。
+	  </dd>
+
+	  <dt>backTraceSize()</dt>
+	  <dd>backtraceの個数を取得。</dd>
+
+	  <dt>backTraceStr(i)</dt>
+	  <dd>i番目のbacktrace情報をStringBufferで取得する。 (0 &lt;= i &lt; backTraceSize())
+		<br>
+		i = 0 が一番深いレベルでExceptionが発生した場所。
+		<br>
+		i が範囲を越えていたら nil が返る。
+	  </dd>
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

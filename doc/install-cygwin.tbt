@@ -1,0 +1,68 @@
+cygwinでHayatの開発環境を構築する方法
+
+	Hayatのコンパイルには、cygwin, ruby, rake, make, c++  が必要。
+	テストコードの実行には、cppunit が必要。
+	
+	cygwinのインストール (想定バージョンは1.7.1)
+		http://cygwin.com/ に行き、「Install or update NOW!」をクリックして setup.exe を実行する。
+		C:\cygwinにインストール。
+		All Users, Unix/binary を選ぶ。
+		ダウンロードサイトは、 http://ftp.jaist.ac.jp あたりがいいかも。
+		インストールするパッケージを選ぶ時、g++,make,ruby,cppunitがインストールされるようにする。
+			develの前の+記号をクリックしてツリーを開く
+			gcc4をクリック (gccではない)
+			makeをクリック
+			rubyをクリック
+
+	システム環境変数を設定
+		SHELL	/bin/bash
+		CYGWIN	glob nodosfilewarning
+
+	ruby gems のインストール
+		Q:\software\rubygems-0.9.0.zip をローカルディスクに展開する。
+		cygwinを起動して、展開したディレクトリに cd する。
+		セットアップを実行。
+			|ruby setup.rb  
+
+	rake のインストール
+		cygwin上でgemsを使ってインストール
+			|gem install rake
+		エラーが出てインストールに失敗する場合、以下を実行してみる
+			|gem install --local /cygdrive/q/software/rake-0.8.1.gem
+
+	Hayat をチェックアウト
+		リンクするプロジェクトの隣にチェックアウトする。
+			プロジェクトを C:\xyz\proj_friday にチェックアウトしているのならば、hayat を C:\xyz\hayat にチェックアウトするという事。
+
+	cygwinヘッダ調整
+		gcc で --input-charset=CP932 オプションを付けると、 /usr/include/iconv.h でエラーになる。
+		CP932では認識できないUTF-8コードがiconv.hのコメント中に存在するため。
+		これを防ぐため、/usr/include/iconv.h を加工する。
+		|cp /usr/include/iconv.h /usr/include/iconv.h.org
+		|tools/cvhdrch.rb -c /usr/include/iconv.h.org > /usr/include/iconv.h
+		|diff /usr/include/iconv.h.org  /usr/include/iconv.h
+		これで、iconv.h 中のコメント内のシングル引用符が \u2018,\u2019 に変換された。
+
+
+		|VisualStudioが読めるソースコードは、デフォルトの文字コード(日本の場合は
+		|CP932)、もしくはBOM付きのUTF-8でなければならない。
+		|一方GCCでは --input-charset オプションにて文字コード指定はできるのだが、
+		|UTF-8はBOM無しでなければならない。
+		|このため、日本語を含むソースコードがVisualStudioとGCCの両方で通る
+		|ものにするためには、CP932(シフトJIS) で書くしかない。
+
+	コンパイル準備
+		Hayatは、cygwin、linux、ds、psp に現状対応している。
+		どのプロジェクトに対応させるかを最初に設定する必要がある。
+		但しそれぞれのプロジェクトのMakefileで自動的に実行されるようになっていれば不要
+		hayatディレクトリで以下のコマンドを実行
+			プロジェクト	コマンド
+			cygwin,linux	make setup-unix
+			ds	make setup-ds
+
+	cygwinで動作チェック
+		|cd hayat
+		|make setup-unix
+		|make
+		ユニットテストが5種類実行される
+		特にエラーが出なければOK

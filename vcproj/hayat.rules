@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VisualStudioToolFile
+	Name="Hayat Script Compile"
+	Version="8.00"
+	>
+	<Rules>
+		<CustomBuildRule
+			Name="Hayat Script Compile"
+			DisplayName="Hayat Script Compile"
+			CommandLine="$(SolutionDir)$(ConfigurationName)\hayatc.exe [Verbose] -C $(InputDir) [MemorySize] [NotUseMemoize] [IncludePath] [OutputPath] [FfiPath] [FfiOutPath] [FfiOverWrite] [InputCharset] [OutputCharset] [WarnLevelLabel] [WarnLevelNumSay] [MessageFile] [inputs]&#x0D;&#x0A;"
+			Outputs="$(InputDir)out\$(InputName).hyb;$(InputDir)out\$(InputName).hyp;$(InputDir)out\$(InputName).hdb"
+			FileExtensions="*.hy"
+			ExecutionDescription="Hayat Script Compile [inputs]"
+			SupportsFileBatching="true"
+			ShowOnlyRuleProperties="false"
+			>
+			<Properties>
+				<StringProperty
+					Name="IncludePath"
+					DisplayName="インクルードパス"
+					Category="path"
+					Description="ファイル読み込みパスの追加"
+					Switch="-I [value]"
+					Delimited="true"
+				/>
+				<StringProperty
+					Name="OutputPath"
+					DisplayName="出力パス"
+					Category="path"
+					Description="生成ファイル出力パス"
+					Switch="-o [value]"
+					DefaultValue="out"
+				/>
+				<StringProperty
+					Name="FfiPath"
+					DisplayName="システムコールソースコードパス"
+					Category="path"
+					Description="システムコールソースコードの位置"
+					Switch="-zi [value]"
+					DefaultValue="ffi"
+				/>
+				<StringProperty
+					Name="InputCharset"
+					DisplayName="入力スクリプトファイルcharset"
+					Category="charset"
+					Description="スクリプトファイルの文字コードセット"
+					Switch="-ci [value]"
+					DefaultValue="SJIS"
+				/>
+				<StringProperty
+					Name="OutputCharset"
+					DisplayName="出力ファイルcharset"
+					Category="charset"
+					Description="出力ファイルの文字コードセット"
+					Switch="-co [value]"
+					DefaultValue="SJIS"
+				/>
+				<StringProperty
+					Name="FfiOutPath"
+					DisplayName="システムコール出力パス"
+					Category="path"
+					Description="システムコール自動生成ファイル出力パス"
+					Switch="-zo [value]"
+					DefaultValue="ffiout"
+				/>
+				<BooleanProperty
+					Name="Verbose"
+					DisplayName="Verbose"
+					Category="switch"
+					Switch="-v"
+				/>
+				<StringProperty
+					Name="MemorySize"
+					DisplayName="使用メモリ容量"
+					Category="Memory"
+					Description="使用メモリ容量 メガバイトなら後ろにMを付ける(例 4M)"
+					Switch="-M[value]"
+					DefaultValue="4M"
+				/>
+				<BooleanProperty
+					Name="NotUseMemoize"
+					DisplayName="メモ化機能オフ"
+					Category="switch"
+					Description="メモ化機能を使用しない"
+					Switch="-m"
+				/>
+				<StringProperty
+					Name="WarnLevelNumSay"
+					DisplayName="sayCommand個数制限"
+					Category="warnlevel"
+					Description="sayCommandの個数を制限する"
+					Switch="-Wnumsay=[value]"
+					DefaultValue="0"
+				/>
+				<StringProperty
+					Name="WarnLevelLabel"
+					DisplayName="gotoラベルチェックレベル"
+					Category="warnlevel"
+					Description="gotoのラベルの飛び先が存在するかどうかをチェックするレベル"
+					Switch="-Wlabel=[value]"
+					DefaultValue="1!"
+				/>
+				<BooleanProperty
+					Name="FfiOverWrite"
+					DisplayName="C++自動生成プログラムタイムスタンプ強制更新"
+					Category="switch"
+					Description="Trueにすると、システムコールの自動生成プログラム類(ffiout/*.h,*.cpp)の内容に変化が無くてもタイムスタンプを変更する"
+					Switch="-zw"
+				/>
+				<StringProperty
+					Name="MessageFile"
+					DisplayName="メッセージファイル指定"
+					Description="エラーメッセージなどのメッセージファイルを指定する"
+					Switch="-T[value]"
+				/>
+			</Properties>
+		</CustomBuildRule>
+	</Rules>
+</VisualStudioToolFile>

@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="default.css" type="text/css" />
+	<script type="text/javascript"><!--
+		function toggleSubmenu(item) {
+			var s = document.getElementById('submenu_' + item).style;
+			var b = document.getElementById('button_' + item);
+			if (s.display == "none") {
+				s.display = "block";
+				b.value = "－";
+			} else {
+				s.display = "none";
+				b.value = "＋";
+			}
+		}
+	// --></script>
+	<title>Hayatリファレンスマニュアル</title>
+  </head>
+  <body>
+
+	<h1>Hayatリファレンスマニュアル</h1>
+
+	<ul>
+	  <li><a href="spec.html">言語仕様</a></li>
+
+	  <li><a href="compileopt.html">コンパイルオプション</a></li>
+	  <li><a href="ffi.html">FFI (Foreign Function Interface)</a></li>
+	  <li><a href="link.html">C++とスクリプトエンジンのリンク</a></li>
+
+
+	  <li>クラスライブラリ
+
+		<ul>
+		  <li>
+			<input type="button" id="button_stdlib" value="－"
+			onclick="toggleSubmenu('stdlib');" />
+			stdlib
+			<div id="submenu_stdlib" style="display: block;">
+			  <table>
+				<tr>
+				  <td class="code"><a href="stdlib/builtin.html">組込みメソッド</a></td>
+				  <td></td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Array.html">Array</a></td>
+				  <td>配列</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Bool.html">Bool</a></td>
+				  <td>真偽値</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Bytecode.html">Bytecode</a></td>
+				  <td>バイトコード管理</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Class.html">Class</a></td>
+				  <td>クラス</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Closure.html">Closure</a></td>
+				  <td>クロージャ</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Debug.html">Debug</a></td>
+				  <td>デバッグサポート</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Enumerable.html">Enumerable</a></td>
+				  <td>繰り返し処理サポート</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Exception.html">Exception</a></td>
+				  <td>例外</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Fiber.html">Fiber</a></td>
+				  <td>ファイバ</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Float.html">Float</a></td>
+				  <td>32bit浮動小数点数</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/GC.html">GC</a></td>
+				  <td>ガーベジコレクタ制御</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Hash.html">Hash</a></td>
+				  <td>連想配列</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Int.html">Int</a></td>
+				  <td>32bit符号付き整数</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/List.html">List</a></td>
+				  <td>リスト</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Math.html">Math</a></td>
+				  <td>数値演算関数群</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Method.html">Method</a></td>
+				  <td>メソッド</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/NilClass.html">NilClass</a></td>
+				  <td></td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Object.html">Object</a></td>
+				  <td>全てのクラスのスーパークラス</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Random.html">Random</a></td>
+				  <td>乱数生成</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/String.html">String</a></td>
+				  <td>固定文字列</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/StringBuffer.html">StringBuffer</a></td>
+				  <td>文字列操作</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/StringReader.html">StringReader</a></td>
+				  <td>文字列からデータを読み取る</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Symbol.html">Symbol</a></td>
+				  <td>シンボル</td>
+				</tr><tr>
+				  <td class="code"><a href="stdlib/Thread.html">Thread</a></td>
+				  <td>スレッド</td>
+				</tr>
+			  </table>
+			</div>
+		  </li>
+
+		</ul>
+	  </li>
+	</ul>
+  </body>
+</html>
+

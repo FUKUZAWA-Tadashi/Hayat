@@ -1,0 +1,28 @@
+VisualStudio 2008 でコンパイルできるようにプロジェクトが用意されています。
+vcproj/Hayat.sln を開いて下さい。
+
+
+テストを実行するには、CppUnit のインストールが必要です。
+$(VCInstallDir)CppUnit にインストールされているという前提で
+プロジェクトが構築されていますので、それ以外の場所にインストールした
+場合には、 $(VCInstallDir)CppUnit と指定されている箇所を書換えて下さい。
+
+
+Release でビルドすると、vcproj/hayatc.exe が作成されます。
+これがHayatコンパイラです。
+Debugビルドの場合、vcproj/Debug/hayatc.exe が作成されます。
+
+
+ビルドすると、vcproj/Debug/libhayat.lib または vcproj/Release/libhayat.lib
+が生成されます。これがHayatエンジンとなります。
+Hayatエンジンを実行するプログラムを作るには、このどちらかをリンクし
+て下さい。
+さらに、実行時に stdlib/out/stdlib.hyb を読み込む必要があります。
+
+
+Hayatスクリプトをコンパイルするには、コンパイラ vcproj/hayatc.exe と
+stdlib/out/stdlib.hyp , stdlib/out/symbols.sym が必要です。
+hayatc.exe の -I オプションで、stdlib/out にパスを通しておく必要があり
+ます。
+スクリプトのコンパイルルールとして、vcproj/hayat.rules を用意してあ
+ります。

@@ -1,0 +1,111 @@
+# -*- ruby -*-
+
+#
+# Rakefile for Houken unittest
+#
+
+require 'fileutils'
+
+task :default => [:testerCommand, :run]
+
+
+$parserSrcDir = '..'
+$commonSrcDir = '../../common'
+$machdepUnixDir = '../../machdep/unix'
+$objDir = 'obj'
+
+directory $objDir
+
+$ldflags = ['-lcppunit']
+if RUBY_PLATFORM =~ /cygwin/
+  exeext = '.exe'
+  $ldflags.push '-liconv' 
+else
+  exeext = ''
+  # $ldflags.unshift '-static'
+end
+$cppflags = ["-g", "-DHY_WORK_WITHOUT_VM=1", "--input-charset=CP932", "-I#{$parserSrcDir}", "-I#{$commonSrcDir}", "-I#{$machdepUnixDir}", "-I."]
+target = 'tester' + exeext
+
+srcs = FileList['*.cpp']
+srcs += FileList["#{$parserSrcDir}/*.cpp"]
+srcs += FileList["#{$commonSrcDir}/*.cpp"]
+srcs.include($machdepUnixDir + '/machdep.cpp')
+srcs.include($machdepUnixDir + '/mbcsconv.cpp')
+objs = srcs.ext('.o').map{|f| $objDir + '/' + File.basename(f)}
+deps = srcs.ext('.d').map{|f| $objDir + '/' + File.basename(f)}
+
+
+def makeDepend (srcFile)
+  depFile = $objDir + '/' + File.basename(srcFile).sub(/\.cpp$/, '.d')
+  puts "makind #{depFile} ..."
+  target = dep = nil
+  open("| g++ -MM #{$cppflags.join(' ')} #{srcFile}") do |fd|
+    target,dep = fd.read.gsub(/\\\s/, '').split(':', 2)
+  end
+  depends = dep.split(/\s+/)
+  depends.delete('')
+  target = $objDir + '/' + target
+  open(depFile, 'w') do |out|
+    a = ([target] + depends).join(',')
+    out.puts a
+  end
+  file target => depends do
+    cmds = ['g++', '-Wall', '-c', '-o', target] + $cppflags + [srcFile]
+    # puts cmds.join(' ')
+    sh *cmds
+  end
+end
+
+
+def readDepend (srcFile)
+  depFile = $objDir + '/' + File.basename(srcFile).sub(/\.cpp$/, '.d')
+  begin
+    open(depFile) do |fd|
+      depends = fd.read.chomp.split(',')
+      target = depends.shift
+      file target => depends do
+        cmds = ['g++', '-Wall', '-c', '-o', target] + $cppflags + [srcFile]
+        # puts cmds.join(' ')
+        sh *cmds
+      end
+    end
+    return true
+  rescue Errno::ENOENT
+    return false
+  end
+end
+
+
+task :depend => [$objDir] do
+  srcs.each do |src|
+    readDepend(src) or makeDepend(src)
+  end
+end
+
+
+desc "build tester"
+task :testerCommand => [:depend, target]
+
+file target => objs do
+  cmds = ['g++', '-o', target] + objs.to_a + $ldflags
+puts cmds.join(' ')
+  sh *cmds
+end
+
+
+desc "run tester"
+task :run => target do
+  puts '-=-=-=-=-=-=-=-=-=-=-{ parser/test'
+  ok = false
+  sh './' + target do |ok, res| end
+  puts '-=-=-=-=-=-=-=-=-=-=-}'
+  fail unless ok
+end
+
+
+desc "cleanup unittest binaries"
+task :clean do
+  FileUtils.rm_f(target, :verbose => true)
+  FileUtils.rm_rf($objDir, :verbose => true)
+end

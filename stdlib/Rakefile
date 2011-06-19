@@ -1,0 +1,85 @@
+# -*- ruby -*-
+
+# スクリプトライブラリコンパイル用Rakefile
+
+def chdir(dir, &block)
+  puts "Entering directory `#{File.expand_path(dir)}'"
+  Dir.chdir(dir, &block)
+  puts "Leaving directory `#{File.expand_path(dir)}'" if block
+end
+def myDefMethod(name, &block)
+  self.class.send(:define_method, name, &block)
+end
+
+
+compilerDir = '../compiler'
+if /cygwin/ =~ RUBY_PLATFORM
+  #vcCompiler = '../vcproj/hayatc.exe'
+  #if File.exist? vcCompiler
+  #  compiler = vcCompiler
+  #else
+    vcCompiler = nil
+    compiler = compilerDir + '/hayatc.exe'
+  #end
+else
+  vcCompiler = nil
+  compiler = compilerDir + '/hayatc'
+end
+
+outDir = 'out'
+ffiDir = 'ffi'
+ffiOutDir = 'ffiout'
+
+symbolFile = outDir + '/symbols.sym'
+hsymbolh = outDir + '/HSymbol.h'
+
+directory outDir
+directory ffiOutDir
+
+sources = FileList['*.hy']
+binaries = []
+sources.each do |s|
+  b = outDir + '/' + s.ext('.hyb')
+  file b => [s, compiler] do
+    sh compiler, '-o', outDir, '-I', compilerDir, '-Tmm_sjis.mm', s
+    ## -zi と -zo がデフォルトと同じなので指定無し
+  end
+  binaries.push b
+end
+
+
+task :default => [:compile]
+
+desc "build script compiler"
+task :compiler do
+  unless vcCompiler
+    chdir File.expand_path(compilerDir) do
+      sh 'rake'
+    end
+  end
+end
+
+desc "compile all script"
+task :compile => [:compiler, outDir] + binaries
+
+file hsymbolh => :default
+
+desc "cleanup script binaries"
+task :clean do
+  FileUtils.rm_rf(outDir)
+  FileUtils.rm_rf(ffiOutDir)
+  # FileUtils.rm_f([symbolFile, hsymbolh])
+end
+
+
+def install (*params)
+  destDir = params.pop
+  params.each do |src|
+    if Array === src
+      install(*(src + [destDir]))
+    else
+      puts "copy #{src} to #{destDir}"
+      FileUtils.install(src, destDir)
+    end
+  end
+end

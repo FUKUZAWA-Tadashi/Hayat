@@ -1,0 +1,166 @@
+# -*- ruby -*-
+
+def chdir(dir, &block)
+  puts "Entering directory `#{File.expand_path(dir)}'"
+  Dir.chdir(dir, &block)
+  puts "Leaving directory `#{File.expand_path(dir)}'" if block
+end
+def myDefMethod(name, &block)
+  self.class.send(:define_method, name, &block)
+end
+
+
+machdepDir = '../machdep/unix'
+if File.exist?('MACHDEP')
+  File.foreach('MACHDEP') do |line|
+    if /^MACHDEP_DIR\s*=\s*(.*)/ =~ line.strip
+      machdepDir = $1
+    end
+  end
+end
+
+
+# ../common/*.cpp
+COMMON_SRC_FILES = ["hyEndian", "hyMemPool", "hyMMes", "hySignatureBase"]
+# machdepDir/*.cpp
+MACHDEP_SRC_FILES = ['machdep', 'mbcsconv']
+
+
+task :default => [:compiler]
+
+$objDir = 'obj'
+
+parserDir = '../parser'
+houkenDir = '../houken'
+$incs = ['-I.', '-I'+parserDir, '-I../common', '-I'+machdepDir]
+if RUBY_PLATFORM =~ /cygwin/
+  exeext = '.exe'
+  linklibs = ["-liconv"]
+else
+  exeext = ''
+  linklibs = []
+end
+compilerBin = 'hayatc' + exeext
+opcodeDef = '../common/opcodeDef.rb'
+tabcpp = 'grammar.tab.cpp'
+opcodecpp = 'hyC_opcode.cpp'
+houkenExe = houkenDir + '/houken' + exeext
+
+
+directory $objDir
+$gcccmd_sjis = ['g++', '-Wall', '-O0', '-g', '--input-charset=cp932', '-DHY_WORK_WITHOUT_VM'] + $incs
+$gcccmd_utf8 = ['g++', '-Wall', '-O0', '-g', '--input-charset=UTF-8', '-DHY_WORK_WITHOUT_VM'] + $incs
+
+def makeDepend (srcFile)
+  depFile = $objDir + '/' + File.basename(srcFile).sub(/\.cpp$/, '.d')
+  puts "making #{depFile}"
+  target = dep = nil
+  if /\.tab\./ =~ srcFile
+    gcccmd = $gcccmd_utf8
+  else
+    gcccmd = $gcccmd_sjis
+  end
+  open("| #{gcccmd.join(' ')} -MM #{srcFile}") do |fd|
+    target,dep = fd.read.gsub(/\\\s/, '').split(':', 2)
+  end
+  depends = dep.split(/\s+/)
+  depends.delete('')
+  target = $objDir + '/' + target
+  open(depFile, 'w') do |out|
+    a = ([target] + depends).join(',')
+    out.puts a
+  end
+  file target => depends do
+    compileCommand = gcccmd + ['-c', '-o', target, srcFile]
+    # puts compileCommand.join(' ')
+    sh *compileCommand
+  end
+end
+
+def readDepend (srcFile)
+  depFile = $objDir + '/' + File.basename(srcFile).sub(/\.cpp$/, '.d')
+  if /\.tab\./ =~ srcFile
+    gcccmd = $gcccmd_utf8
+  else
+    gcccmd = $gcccmd_sjis
+  end
+  begin
+    open(depFile) do |fd|
+      depends = fd.read.chomp.split(',')
+      target = depends.shift
+      file target => depends do
+        compileCommand = gcccmd + ['-c', '-o', target, srcFile]
+        # puts compileCommand.join(' ')
+        sh *compileCommand
+      end
+    end
+    return true
+  rescue Errno::ENOENT
+    return false
+  end
+end
+
+
+file tabcpp => [houkenExe, 'grammar.peg'] do
+  cmds = [houkenExe, '-c', 'UTF-8', '-M8M', 'grammar.peg']
+  # puts cmds.join(' ')
+  sh *cmds
+end
+
+file opcodecpp => [opcodeDef] do
+  ruby opcodeDef, '-C'
+end
+
+file houkenExe => [:houkenMake]
+
+task :houkenMake do
+  chdir File.expand_path(houkenDir) do
+    sh 'rake'
+  end
+end
+
+desc "create parser"
+task :tab => tabcpp
+
+
+srcs = FileList['*.cpp'] + FileList[parserDir + '/*.cpp']
+srcs.include(tabcpp) unless srcs.include?(tabcpp)
+srcs.include(opcodecpp) unless srcs.include?(opcodecpp)
+COMMON_SRC_FILES.each{|cs| srcs.include("../common/#{cs}.cpp")}
+MACHDEP_SRC_FILES.each{|cs| srcs.include("#{machdepDir}/#{cs}.cpp")}
+objs = srcs.ext('o').map{|x| $objDir + '/' + File.basename(x)}
+
+desc "make depend"
+task :depend => [$objDir, opcodecpp] do
+  srcs.each do |src|
+    readDepend(src) or makeDepend(src)
+  end
+end
+
+desc "create compiler"
+task :compiler => [tabcpp, :depend, compilerBin]
+
+file compilerBin => objs do
+  sh 'g++', '-o', compilerBin, *(objs + linklibs)
+end
+
+desc "cleanup compiler"
+task :clean do
+  FileUtils.rm_rf($objDir, :verbose => true)
+  FileUtils.rm_f(Dir["grammar.tab.*"], :verbose => true)
+  FileUtils.rm_f(Dir["hyC_opcode.*"], :verbose => true)
+  FileUtils.rm_f('hayatc', :verbose => true)
+  FileUtils.rm_f('hayatc' + exeext, :verbose => true)
+end
+
+
+require 'find'
+task :t do
+  compilerAbs = File.expand_path(compilerBin)
+  Dir.chdir('../../proj_friday/dataplant/script') do |dir|
+    Find.find('.') do |path|
+      next unless /\.hy$/ =~ path
+      sh compilerAbs, path
+    end
+  end
+end

@@ -1,0 +1,517 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="default.css" type="text/css" />
+	<title>FFI</title>
+  </head>
+  <body>
+
+	<a href="index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h2>FFI</h2>	
+	Foreign Function Interface.
+	<br>
+	HayatとC++関数の間のインターフェース。
+
+	<h3>宣言</h3>
+	各クラス定義中に、そのクラスC++関数を呼び出すFFIを宣言できる。
+<pre>
+class Foo
+  c++ {
+    FFI宣言
+  }
+end
+</pre>
+	
+	<h4>FFI宣言</h4>
+
+	<ul>
+	  <li>メソッド名と、その引数、引数の型、戻り値の型を指定する事ができる。</li>
+	  <li>型は省略する事ができる。</li>
+	  <li>可変長引数を指定でき、 <code>...</code>	と記述する。</li>
+	  <li>デフォルト値を指定する事ができる。</li>
+	</ul>
+	<table>
+	  <tr>
+		<td><code>func()</code></td>
+		<td>引数無し、戻り値の型は不定</td>
+	  </tr>
+	  <tr>
+		<td><code>func(x)</code></td>
+		<td>引数1個で型は不定、戻り値の型は不定</td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Int)</code></td>
+		<td>Intの引数1個、戻り値の型は不定</td>
+	  </tr>
+	  <tr>
+		<td><code>func():Float</code></td>
+		<td>引数無し、戻り値の型は Float</td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Bool):NilClass</code></td>
+		<td>Boolの引数1個、戻り値は nil 固定</td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Int, y:Float):Bool</code></td>
+		<td>Intの引数とFloatの引数、戻り値は Bool</td>
+	  </tr>
+	  <tr>
+		<td><code>func(...):Int</code></td>
+		<td>引数の個数は不定、戻り値は Int</td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Int):Float</code></td>
+		<td>Intの引数1個、戻り値は Float</td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Int = 0):Int</code></td>
+		<td>Intの引数にデフォルト値 0 を設定</td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Int, y = 5.0)</code></td>
+		<td>型不定の引数 y にデフォルト値 5.0 を設定</td>
+	  </tr>
+	</table>
+
+
+	<h4>C++クラスの内包</h4>
+	Hayatクラス中に、C++クラスを1つ内包する事ができる。
+	2つ以上内包する事はできない。
+	インスタンスを生成すると、C++インスタンスを内部に持つ形で生成される。
+<pre>
+// Hayatのクラス Foo は、C++のクラス Bar を内包する。
+class Foo
+  c++ Bar {}
+end
+</pre>
+	
+	<h4>Hayatの継承とC++の継承</h4>
+	C++のクラスが継承を使っている場合、それに対応するHayatクラスも
+	同じように継承していなければならない。
+<pre>
+C++クラスが以下のような継承関係を持つとする。
+  class A;
+  class B : public virtual A;
+  class C : public virtual A;
+  class D : public B, public C;
+
+この時、A,B,C,D をそれぞれ内包するHayatクラス HA,HB,HC,HD は、
+以下のような継承関係にならなければならない。
+  class HA
+	c++ A {}
+  end
+  class HB &lt; HA
+	c++ B {}
+  end
+  class HC &lt; HA
+	c++ C {}
+  end
+  class HD &lt; HB,HC
+	c++ D {}
+  end
+</pre>
+	このような継承をしていない場合の動作は保証されない。
+	これをチェックする機構は存在しないので、十分注意する必要がある。
+
+
+	<h3>自動生成ファイル</h3>
+	FFIは HSca_クラス名.cpp または HScb_ファイル名.cpp という
+	C++ ソースファイルにプログラムする。
+	class宣言の内部に書いたFFIは HSca_クラス名.cpp に、
+	class宣言の外に書いたFFIは HScb_ファイル名.cpp に対応する。
+	<br>
+	コンパイラは HSca_クラス名.cpp(またはHScb_ファイル名.cpp)
+	の記述を読み込み、それに合わせてファイルを自動生成する。
+	通常は ffiout ディレクトリ内に生成する。
+
+	スクリプトをコンパイルすると、コンパイラが
+	HSca_クラス名.h(HScb_ファイル名.h) というヘッダファイルと
+	_HSca_クラス名.cpp(_HScb_ファイル名.cpp) という C++ ソースファイルを
+	自動生成する。
+	_HSca_クラス名.cpp(_HScb_ファイル名.cpp) 内には、プログラマが
+	記述した関数とHayatエンジンとの橋渡しをする関数が自動生成される。
+	HSca_クラス名.cpp(HScb_ファイル名.cpp) を基に生成するので、これが無いとエラーになる。
+
+	<br>
+	ファイル名先頭のアンダースコア _ に注意。
+	先頭にアンダースコアありのcppファイルはコンバータの自動生成であり、
+	先頭にアンダースコア無しのcppファイルはプログラマが記述する。
+
+	<img src="ffi_files.jpg">
+
+
+	<h4>インナークラス</h4>
+	インナークラスの自動生成ファイル名は、クラス名間を "__" でつなげた
+	ものとなる。
+<pre>
+class Foo
+  class Bar
+    c++ Bar {}
+  end
+end
+</pre>
+	このようなクラスがあった場合、自動生成ファイル名は
+	HSca_Foo__Bar.h と _HSca_Foo__Bar.cpp になる。
+
+
+	<h3>FFIの記述</h3>
+	class Foo のFFIの記述を例とする。
+
+	<h4>ソースファイル</h4>
+	ソースファイルは、 <code>ffi/HSca_Foo.cpp</code> となる。
+	これをプログラマが記述する。
+	<br>
+	まず #include "HSca_Foo.h" とする。このヘッダファイル中にほとんどの必要な定義がされている。
+
+	<h4>定義マクロ (1)</h4>
+	マクロを用いて、各関数を定義する。
+	<table>
+	  <tr>
+		<th>Hayatでの記述</th>
+		<th>C++での記述</th>
+	  </tr>	
+	  <tr>
+		<td><code>func()</code></td>
+		<td><code>Value FFI_FUNC(func) (Value selfVal, void)</code></td>
+	  </tr>
+	  <tr>
+		<td><code>func(x)</code></td>
+		<td><code>Value FFI_FUNC(func) (Value selfVal, Value x)</code></td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Int)</code></td>
+		<td><code>Value FFI_FUNC(func) (Value selfVal, s32 x)</code></td>
+	  </tr>
+	  <tr>
+		<td><code>func():Float</code></td>
+		<td><code>f32 FFI_FUNC(func) (Value selfVal, void)</code></td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Bool):NilClass</code></td>
+		<td><code>void FFI_FUNC(func) (Value selfVal, bool x)</code></td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Int, y:Float):Bool</code></td>
+		<td><code>bool FFI_FUNC(func) (Value selfVal, s32 x, f32 y)</code></td>
+	  </tr>
+	  <tr>
+		<td><code>func(x:Int):Float</code></td>
+		<td><code>f32 FFI_FUNC(func) (Value selfVal, s32 x)</code></td>
+	  </tr>
+	</table>
+
+	インスタンスメソッド呼出しの場合は、第1引数selfValにインスタンスが来る。
+	クラスメソッド呼出しの場合は、第1引数selfValにクラスが来る。
+
+	<h4>stdlibにおけるHayatクラス名とC++型名の対応</h4>
+	<table>
+	  <tr>
+		<th>Hayat</th>
+		<th>C++</th>
+	  </tr>
+	  <tr>
+		<td><code>Int</code></td>
+		<td><code>s32</code></td>
+	  </tr>
+	  <tr>
+		<td><code>Float</code></td>
+		<td><code>f32</code></td>
+	  </tr>
+	  <tr>
+		<td><code>Bool</code></td>
+		<td><code>bool</code></td>
+	  </tr>
+	  <tr>
+		<td><code>String</code></td>
+		<td><code>const char*</code></td>
+	  </tr>
+	  <tr>
+		<td><code>Object</code></td>
+		<td><code>Object*</code></td>
+	  </tr>
+	  <tr>
+		<td><code>Symbol</code></td>
+		<td><code>SymbolID_t</code></td>
+	  </tr>
+	  <tr>
+		<td><code>Class</code></td>
+		<td><code>HClass*</code></td>
+	  </tr>
+	  <tr>
+		<td><code>List</code></td>
+		<td><code>ValueList*</code></td>
+	  </tr>
+	  <tr>
+		<td><code>Array</code></td>
+		<td><code>ValueArray*</code></td>
+	  </tr>
+	  <tr>
+		<td><code>Hash</code></td>
+		<td><code>Hash*</code></td>
+	  </tr>
+	  <tr>
+		<td><code>StringBuffer</code></td>
+		<td><code>StringBuffer*</code></td>
+	  </tr>
+	  <tr>
+		<td><code>Thread</code></td>
+		<td><code>Thread*</code></td>
+	  </tr>
+	  <tr>
+		<td><code>Exception</code></td>
+		<td><code>Exception*</code></td>
+	  </tr>
+	  <tr>
+		<td><code>NilClass</code> (戻り値の型として)</td>
+		<td><code>void</code></td>
+	  </tr>
+	  <tr>
+		<td>無し</td>
+		<td><code>Value</code></td>
+	  </tr>
+	</table>
+
+	<h4>定義マクロ (2)</h4>
+	Hayatメソッド名がC++で記述できない名前の場合には、
+	FFI_FUNCマクロの替わりに別のマクロを使用する。
+	<table>
+	  <tr>
+		<th>Hayatメソッド名</th>
+		<th>C++マクロ</th>
+	  </tr>	
+	  <tr>
+		<td><code>func</code></td>
+		<td><code>FFI_FUNC(func)</code></td>
+	  </tr>	
+	  <tr>
+		<td><code>func?</code></td>
+		<td><code>FFI_FUNC_Q(func)</code></td>
+	  </tr>	
+	  <tr>
+		<td><code>func!</code></td>
+		<td><code>FFI_FUNC_E(func)</code></td>
+	  </tr>	
+	  <tr>
+		<td><code>func=</code></td>
+		<td><code>FFI_FUNC_S(func)</code></td>
+	  </tr>	
+	  <tr>
+		<td><code>その他非半角英数メソッド名</code></td>
+		<td><code>FFI_FUNC_X(ascii16進表記)</code></td>
+	  </tr>	
+	</table>
+<pre>
+例)
+  c++ {
+    include?():Bool
+    "=="(x):Bool
+  }
+
+bool FFI_FUNC_Q(include) (Value selfVal)
+bool FFI_FUNC_X(3d3d) (Value selfVal, Value x)
+</pre>
+
+	<h4>関数の自動生成</h4>
+	プログラマが関数を定義しない場合、C++クラスに同名の関数があるものとして
+	自動的にそれを呼び出すコードが _HSca_クラス名.cpp 内に生成される。
+<pre>
+class Foo
+  c++ Bar {
+    func1(Float x):Int
+    func2(Bool b):String
+  }
+end
+
+Hayatにて上記の記述をした場合で、HSca_Foo.cpp に func1,func2 を
+記述しなかった場合には、次の記述をしたものとほぼ同等の結果となる。
+
+s32 FFI_FUNC(func1) (Value selfVal, f32 x)
+{
+  Bar* self = selfVal.toCppObj&lt;Bar&gt;();
+  return self->func1(x);
+}
+const char* FFI_FUNC(func2) (Value selfVal, bool b)
+{
+  Bar* self = selfVal.toCppObj&lt;Bar&gt;();
+  return self->func2(b);
+}
+</pre>
+
+	<h4>複雑なメソッドの記述</h4>
+	可変引数のメソッドや、例外を投げるメソッド、
+	スレッドを操作するメソッドなど、単純な関数呼出しでは対応できない場合は、
+	<code>FFI_FUNC</code> では記述できない。
+	替わりに <code>DEEP_FFI_FUNC</code> を使用する。
+	<br>
+	HSca_クラス名.cpp に DEEP_FFI_FUNC が定義されている場合、コンパイラ
+	は _HSca_クラス名.cpp 中に橋渡し関数を自動生成しない。
+	DEEP_FFI_FUNC で記述するFFIは、橋渡し関数が行なっているような
+	スタック操作等をプログラマが記述しなければならない。
+	<br>
+	DEEP_FFI_FUNCで定義する関数の引数は (Context* context, u8 numArgs) で、
+	戻り値は void である。
+	<br>
+	contextに必要な情報が全て入っている。
+	スレッド上で動作しているなら、 context->thread がNULLではない
+	値になっている。
+	<br>
+	スタックトップには、selfの値が入っている。
+	インスタンスメソッド呼び出しなら、インスタンスが、
+	クラスメソッド呼び出しならクラスが入っているので、
+	どちらかを判定するにはselfのtypeが HC_Class かどうかで判定できる。
+<pre>
+Value selfVal = context->pop();
+if (selfVal.type == HC_Class) クラスメソッド呼出し
+</pre>
+	numArgs個の引数が、context内のstackに積まれている。
+	左の引数から順番に積まれるので、スタックの2番目は一番右の引数になる。
+	<br>
+	Hayat関数の戻り値は、引数を全部popした状態のスタックにpushしておく。
+	<br>
+	詳細については、stdlibのFFIなどを参考にして欲しい。
+
+
+	<h4>複雑なメソッドの記述 (2)</h4>
+	実は、DEEP_FFI_FUNC ではなく FFI_FUNC でも context を取得する方法は
+	ある。
+<pre>
+Context* VM::getContext(void);
+</pre>
+	この関数を使って context を取得すれば、それを通して
+	例外を投げたりスレッドを操作したりする事はできる。
+	(可変長引数は context だけでは操作できない)
+	<br>
+	但し、将来的には <code>getContext()</code> の仕様が変更される可能性
+	が高いので、使用は推奨されない。
+
+
+	<h4>ガーベジコレクション対応</h4>
+	C++クラス内でHayatインスタンスを扱うような場合、garbage collection の
+	対象となるようにしなければならない。
+	<br>
+	HSca_クラス名.cpp 内で <code>FFI_GCMARK_FUNC()</code> を定義する必要がある。
+	ArrayやHashなどのコンテナクラスをC++レベルで実現する場合は必須。
+	<br>
+	Hayatのガーベジコレクションはマーク＆スイープ方式である。
+	GCクラスの以下の2つの関数を使用し、必要なオブジェクトにマークを
+	つければ良い。
+<pre>
+void GC::markValue(Value&amp;);
+void GC::markObjP(Object**);
+</pre>
+	詳細については、stdlibのFFIなどを参考にして欲しい。
+
+
+	<h3>C++からHayatメソッドを呼び出す</h3>
+	即実行させる場合と、スレッドの動作をHayat VMに任せる場合がある。
+
+	<h4>即実行させる場合</h4>
+
+	<ol>
+	  <li>Contextオブジェクトを生成、初期化する。</li>
+	  <li>即実行の関数を呼び出す。</li>
+	  <li>戻り値をスタックから取り出す。</li>
+	  <li>ContextオブジェクトをC++から参照しない事をHayatに通知する。
+		Contextオブジェクトは、GCに回収される。</li>
+	</ol>
+<pre>
+using namespace Hayat;
+using namespace Hayat::Engine;
+Context* context = gPackage.createContext(myBytecode.mainClass());
+context-&gt;push(引数);
+context-&gt;execMethod(インスタンス, メソッドのシンボル, 引数の個数);
+Value retval = context->pop();
+gPackage.releaseContext(context); // C++からのContextオブジェクト使用終了宣言
+</pre>
+
+	即実行のための関数
+	<table>
+	  <tr>
+		<td><code>execMethod</code></td>
+		<td>メソッドの実行</td>
+	  </tr>
+	  <tr>
+		<td><code>execMethod_ifExist</code></td>
+		<td>メソッドを呼び出す事が可能なら実行</td>
+	  </tr>
+	  <tr>
+		<td><code>execBytecodeTop</code></td>
+		<td>バイトコードの先頭からの実行</td>
+	  </tr>
+	</table>
+			
+	<h4>スレッドで動かす場合</h4>
+	<ol>
+	  <li>Contextオブジェクトを生成、初期化する。</li>
+	  <li>Threadオブジェクトを生成、初期化する。</li>
+	  <li>ContextとThreadを結びつける。</li>
+	  <li>Contextをメソッド呼び出し開始状態にする。</li>
+	  <li>場合によって、ContextオブジェクトをC++から参照しない事をHayatに通知する。
+		Contextオブジェクトは、Threadが終了してどこからも参照されなくなると、GCに回収される。</li>
+	  <li>Thread実行開始。
+		1フレームに1回、ThreadManagerを走らせる。</li>
+	  <li>必要なら、Threadの実行が終わるのをstate()でチェックする。</li>
+	</ol>
+<pre>
+using namespace Hayat;
+using namespace Hayat::Engine;
+Context* context = gPackage.createContext(myBytecode.mainClass());
+ThreadID_t threadID = gThreadManager.createThread();
+Thread* pThread = gThreadManager.id2thread(threadID);
+pThread-&gt;initialize(context);
+context-&gt;push(引数);
+context-&gt;push(インスタンス);
+context-&gt;methodCall(メソッドのシンボル, 引数の個数);
+pThread-&gt;start();
+gPackage.releaseContext(context); // C++からのContextオブジェクト使用終了宣言
+
+// 1フレームに1回実行
+gThreadManager.exec1tick();
+
+// 1フレームに1回チェック
+Thread* pThread = gThreadManager.id2thread(threadID);
+if (pthread-&gt;state() == TERMINATED) 終了 else まだ実行中
+</pre>
+
+	メソッド開始状態にする関数
+	<table>
+	  <tr>
+		<td><code>methodCall</code></td>
+		<td>インスタンスメソッドの開始</td>
+	  </tr>
+	  <tr>
+		<td><code>sMethodCall</code></td>
+		<td>暗黙selfのインスタンスメソッド、クラスメソッド、組み込み関数の開始</td>
+	  </tr>
+	  <tr>
+		<td><code>callBytecodeTop</code></td>
+		<td>バイトコードの先頭からの開始</td>
+	  </tr>
+	</table>
+
+	<h4>インスタンスについて</h4>
+
+	<ul>
+	  <li>selfに相当するインスタンスとして、
+		クラスを渡すとクラスメソッド呼出しとなる。
+		インスタンスを渡すとインスタンスメソッド呼出しとなる。</li>
+
+	  <li>トップレベルのメソッドを呼ぶ場合、
+		パッケージクラスのクラスメソッドとして呼び出す。
+		パッケージクラスは、バイトコードの mainClass() で取得できる。
+<pre>
+Value::fromClass(bytecode.mainClass())
+</pre>
+		このValueをインスタンスとすれば良い。
+	  </li>
+	</ul>
+
+
+	<hr>
+	<a href="index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

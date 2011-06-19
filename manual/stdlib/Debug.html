@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Debug クラス</title>
+  </head>
+  <body>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Debug</h2>
+	Debug用クラスメソッド群。
+	デバッグ表示は、デバッグビルドしたエンジンでしか表示できないので注意。
+	<br>
+	newによるインスタンス生成はできない。
+
+	<h3>クラスメソッド</h3>
+
+	<dl>
+	  <dt>Debug.nop()</dt>
+	  <dd>何もしない。
+		C++のデバッガで、 HSca_Debug.cpp のこのメソッドの定義部分に
+		ブレークポイントを仕掛けるといった用途に使える。
+	  </dd>
+
+	  <dt>Debug.debug?()</dt>
+	  <dd>デバッグバージョンとしてビルドされたエンジンかどうか</dd>
+
+	  <dt>Debug.p(...)</dt>
+	  <dd>引数の値と型をデバッグ出力する。
+		<br>デバッグバージョンでなければ何もしない。
+	  </dd>
+
+	  <dt>Debug.assert(x)</dt>
+	  <dd>引数がfalseだとエラー停止する。
+		<br>デバッグバージョンでなければ何もしない。
+	  </dd>
+
+	  <dt>Debug.assertMsg(...)</dt>
+	  <dd>第一引数がfalseだと、残り引数をデバッグ出力してエラー停止する。
+		<br>デバッグバージョンでなければ何もしない。
+	  </dd>
+
+	  <dt>Debug.print(...)</dt>
+	  <dd>引数をデバッグ出力する。
+		<br>デバッグバージョンでなければ何もしない。
+	  </dd>
+
+	  <dt>sayCommandStart(x,n), sayCommand(x), sayCommandEnd()</dt>
+	  <dd>デバッグ出力する。
+<pre>
+// 以下のように使う。
+Debug「x = {x}, y = {y}」
+</pre>
+		デバッグバージョンでなければ何もしない。
+	  </dd>
+
+
+	  <dt>Debug.setPrintOpcode(b)</dt>
+	  <dd>VM命令1ステップ毎にバイトコードをデバッグ表示するかどうかを
+		設定する。 true で表示設定、false で非表示設定。
+		<br>デバッグバージョンでなければ設定しても何も表示しない。
+	  </dd>
+
+	  <dt>Debug.setPrintStack(b)</dt>
+	  <dd>VM命令1ステップ毎にVMのスタック状態をデバッグ表示するか
+		どうかを設定する。 true で表示設定、false で非表示設定。
+		<br>デバッグバージョンでなければ設定しても何も表示しない。
+	  </dd>
+
+	  <dt>Debug.printAllStackTrace()</dt>
+	  <dd>全スレッドのスタックトレースを表示する。
+		<br>デバッグバージョンでなければ何もしない。
+	  </dd>
+
+	  <dt>Debug.printGCPhase()</dt>
+	  <dd>ガーベジコレクションの進行状況をデバッグ表示する。
+		<br>デバッグバージョンでなければ何もしない。
+	  </dd>
+
+	  <dt>Debug.printGCMark(val)</dt>
+	  <dd>オブジェクトvalのガーベジコレクション用markフラグの状況をデバッグ表示する。
+		<br>デバッグバージョンでなければ何もしない。
+	  </dd>
+
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Object クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Object</h2>
+	Objectは、全てのクラスの親クラスとなる。
+	なので、どのオブジェクトもこのクラスのメソッドを呼ぶ事ができる。
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	<dt>getClass()</dt>
+	<dd>オブジェクトのクラスを返す</dd>
+
+	<dt>classSymbol()</dt>
+	<dd>オブジェクトのクラスのシンボルを返す</dd>
+
+	<dt>concatToStringBuffer(sb,mode)</dt>
+	<dd>StringBufferオブジェクトsbの末尾に、文字列表現を追加する</dd>
+
+	<dt>hashCode()</dt>
+	<dd>Hashのキーとなるのに必要なハッシュ値を計算</dd>
+
+	<dt>sameObject?(x)</dt>
+	<dd>参照レベルで self と x が同じオブジェクトかどうか調べる
+<pre>
+x = [1,2,3]
+y = x
+z = [1,2,3]
+である時、
+x.sameObject?(y) は true
+x.sameObject?(z) は false
+x == y は true
+x == z は true
+となる。
+</pre>
+	</dd>
+
+	<dt>getMethod(methodSymbol)</dt>
+	<dd>メソッドシンボルから、Methodオブジェクトを作成して返す
+<pre>
+a = []
+f = a.getMethod(:push)
+f(100)    // a.push(100)  =&gt;  a == [100]
+f(99)     // a.push(99)   =&gt;  a == [100,99]
+</pre>
+	</dd>
+
+	<dt>haveMethod?(methodSymbol)</dt>
+	<dd>self がメソッド methodSymbol を持っているかを調べる
+<pre>
+a = [1]
+a.haveMethod?(:foobar)  // =&gt; false  Arrayクラスはfoobarメソッドを持っていない
+</pre>
+	</dd>
+
+	<dt>callIfMethodExist(methodSymbol, *args)</dt>
+	<dd>もしselfがメソッドmethodSymbolを持っているならば、
+	  引数argsを渡して呼び出す。
+	  メソッドを持っていなければ、 nil を返す。
+	</dd>
+
+	</dl>
+
+	<h3>演算子</h3>
+	<table>
+	  <tr>
+		<td>==</td>
+		<td>内容が一致するか比較する。一致していれば true</td>
+	  </tr>
+	  <tr>
+		<td>&lt;&gt;</td>
+		<td>内容が一致しなければ true。 <code>==</code>の否定。
+		  子クラスは、 <code>==</code> を実装すれば <code>&lt;&gt;</code>
+		  を使える。
+		</td>
+	  </tr>
+	  <tr>
+		<td>!=</td>
+		<td>内容が一致しなければ true。 <code>&lt;&gt;</code>と同じ。
+		  子クラスは、 <code>==</code> を実装すれば <code>!=</code>
+		  を使える。
+		</td>
+	  </tr>
+	</table>
+
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

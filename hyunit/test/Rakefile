@@ -1,0 +1,248 @@
+# -*- ruby -*-
+
+#
+# HyUnit テスト用 Rakefile
+#
+
+def chdir(dir, &block)
+  puts "Entering directory `#{File.expand_path(dir)}'"
+  Dir.chdir(dir, &block)
+  puts "Leaving directory `#{File.expand_path(dir)}'" if block
+end
+def myDefMethod(name, &block)
+  self.class.send(:define_method, name, &block)
+end
+
+
+hayatDir = '../..'
+#dataDir = './'
+
+compilerDir = hayatDir + '/compiler'
+if /cygwin/ =~ RUBY_PLATFORM
+  # vcCompiler = hayatDir + '/vcproj/hayatc.exe'
+  #if File.exist? vcCompiler
+  #  compiler = vcCompiler
+  #else
+    vcCompiler = nil
+    compiler = compilerDir + '/hayatc.exe'
+  #end
+else
+  vcCompiler = nil
+  compiler = compilerDir + '/hayatc'
+end
+engineDir = hayatDir + '/engine'
+engineBuildDir = '/test'
+commonDir = hayatDir + '/common'
+libhayatDir = engineDir + '/lib' + engineBuildDir
+libhayat = libhayatDir + '/libhayat.a'
+stdlibDir = hayatDir + '/stdlib'
+stdlibOutDir = stdlibDir + '/out'
+hyUnitDir = '..'
+hyUnitOutDir = hyUnitDir + '/out'
+hyUnitBytecode = hyUnitOutDir + '/hyUnit.hyb'
+outDir = 'out'
+ffiDir = 'ffi'
+ffiOutDir = 'ffiout'
+objDir = 'obj'
+
+machdepDir = '../machdep/unix'
+if File.exist?(engineDir + '/MACHDEP')
+  File.foreach(engineDir + '/MACHDEP') do |line|
+    if /^MACHDEP_DIR\s*=\s*(.*)/ =~ line.strip
+      machdepDir = $1
+    end
+  end
+end
+machdepDir = engineDir + '/' + machdepDir
+
+
+directory outDir
+directory objDir
+
+
+tester_name = 'tester'
+compileOptions = ['-I', stdlibOutDir, '-I', hyUnitOutDir, '-ci', 'UTF-8', '-o', outDir, '-Wlabel=1!']
+if /cygwin/ =~ RUBY_PLATFORM
+  tester_exe = tester_name + '.exe'
+else
+  tester_exe = tester_name
+  compileOptions += ['-T', compilerDir+'/mm_sjis.mm']
+end
+tester_srcs = ['../tester.cpp', machdepDir+'/machdep.cpp', 'testConf.cpp']
+
+hyUnitSuite = 'hy_suite'
+hyUnitSuite_hy = hyUnitSuite + '.hy'
+hyUnitSuite_hyb = hyUnitSuite + '.hyb'
+
+
+myDefMethod :compileWOpt do |*opts|
+  cmds = [compiler] + compileOptions + opts
+puts cmds.join(' ')
+  sh *cmds
+end
+  
+
+
+precs_files = ['scope_required', 'reload', 'reload2']
+precs = precs_files.map{|p| outDir + '/' + p + '.hyb'}
+
+precs_files.each do |p|
+  src = p + '.hy'
+  dst = outDir + '/' + p + '.hyb'
+  file dst => [src, hyUnitBytecode, compiler] do
+    compileWOpt '-M8M', src
+  end
+end
+
+sources = FileList['hyTest_*.hy']
+binaries = []
+sources.each do |s|
+  b = outDir + '/' + s.ext('.hyb')
+  file b => [s] do
+    compileWOpt '-M16M', s
+  end
+  binaries.push b
+end
+
+
+
+CFLAGS = "-g -Wall -pg -O3"
+CXXFLAGS = CFLAGS + " -fno-rtti -fno-exceptions"
+
+
+task :default => [:hayatlink, :compiler, :compile, libhayat, tester_exe]
+
+desc "run test"
+task :run => :default do
+  puts '-=-=-=-=-=-=-=-=-=-=-{ hyunit/test'
+  sh "./#{tester_exe}"
+  puts '-=-=-=-=-=-=-=-=-=-=-}'
+end
+
+desc "hayat machine dependent setup"
+task :hayatlink do
+  sh "make -C #{hayatDir} setup-unix"
+end
+
+file libhayat => :engine
+
+desc "build hayat engine library"
+task :engine do
+  sh "make -C #{engineDir} all CFLAGS=\"#{CFLAGS}\" CXXFLAGS=\"#{CXXFLAGS}\" BUILDDIR=/test"
+end
+
+
+desc "build compiler"
+task :compiler do
+  unless vcCompiler
+    chdir File.expand_path(compilerDir) do
+      sh 'rake'
+    end
+  end
+end
+
+desc "compile all script"
+task :compile => [:hyunit, outDir, hyUnitSuite_hyb]
+
+desc "build hyUnit library"
+task :hyunit do
+  chdir File.expand_path(hyUnitDir) do
+    sh 'rake'
+  end
+end
+
+file hyUnitBytecode => [:hyunit]
+
+
+file hyUnitSuite_hy => precs + binaries do
+  ruby "#{hyUnitDir}/mksuite.rb", "-I#{hyUnitDir}", *sources
+end
+
+file hyUnitSuite_hyb => [hyUnitSuite_hy, compiler] + Dir["*.hyi"] do
+  cmds = [compiler, '-M16M', '-I', stdlibOutDir, '-I', hyUnitOutDir, '-I', hyUnitDir, hyUnitSuite_hy]
+  # puts cmds.join(' ')
+  sh *cmds
+end
+
+
+ffiSrcs = Dir[ffiDir + '/*.cpp'] + Dir[ffiOutDir + '/*.cpp']
+ffiObjs = []
+ffiSrcs.each do |src|
+  obj = objDir + '/' + File.basename(src).sub('.cpp', '.o')
+  file obj => [src] do
+    command = "g++ #{CXXFLAGS} -I#{ffiOutDir} -I#{ffiDir} -I#{engineDir} -I#{commonDir} -I#{machdepDir} -c -o #{obj} #{src}"
+    puts command
+    sh command
+  end
+  ffiObjs.push obj
+end
+
+task :ffiCompile => ffiObjs
+  
+
+tester_objs = []
+tester_srcs.each do |src|
+  obj = objDir + '/' + File.basename(src).sub('.cpp', '.o')
+  file obj => [src] do
+    command = "g++ #{CXXFLAGS} -I#{ffiOutDir} -I#{ffiDir} -I#{engineDir} -I#{commonDir} -I#{machdepDir} -c -o #{obj} #{src}"
+    puts command
+    sh command
+  end
+  tester_objs.push obj
+end
+
+
+file tester_exe => precs + binaries + [:link_tester_exe]
+
+task :link_tester_exe => [objDir] do
+  sh 'rake', 'do_link_tester_exe'
+end
+
+
+task :do_link_tester_exe => (tester_objs + ffiObjs + [libhayat, hyUnitSuite_hyb]) do
+  command = "g++ #{CXXFLAGS} -I#{ffiOutDir} -I#{engineDir} -I#{commonDir} -I#{machdepDir} -o #{tester_exe} #{tester_objs.join(' ')} #{ffiObjs.join(' ')} -L#{libhayatDir} -lhayat"
+  sh command
+end
+
+
+def install (*params)
+  destDir = params.pop
+  params.each do |src|
+    if Array === src
+      install(*(src + [destDir]))
+    else
+      puts "copy #{src} to #{destDir}"
+      FileUtils.install(src, destDir)
+    end
+  end
+end
+
+
+desc "cleanup script binaries"
+task :clean => [:hyunitclean, :engineclean] do
+  FileUtils.rm_f(tester_name)
+  FileUtils.rm_f(tester_exe)
+  FileUtils.rm_f(tester_exe + '.stackdump')
+  FileUtils.rm_rf(outDir)
+  FileUtils.rm_rf(objDir)
+  FileUtils.rm_rf(ffiOutDir)
+  FileUtils.rm(hyUnitSuite_hy, {:force => true})
+end
+
+task :hyunitclean do
+  chdir File.expand_path(hyUnitDir) do
+    sh 'rake', 'allclean'
+  end
+end
+task :engineclean do
+  sh "make -C #{engineDir} clean"
+end
+  
+task :gokou do
+  ruby "../../compiler/gokou.rb"
+end
+
+
+task :multiTest do
+  compileWOpt '-M16M', 'scope_required.hy', 'hyTest_thread.hy', 'hyTest_stack.hy', 'hyTest_shortcut.hy', 'hyTest_goto.hy', 'hyTest_fiber.hy'
+end

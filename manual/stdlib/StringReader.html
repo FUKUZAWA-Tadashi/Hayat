@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>StringReader クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>StringReader</h2>
+	可変長文字列を保持する。
+
+	<h3>コンストラクタ</h3>
+	<dl>
+	  <dt>new StringReader(str)</dt>
+	  <dd>文字列 str からデータを読み取る StringReader を作成する。
+		strは String でも StringBuffer でも良い。
+	  </dd>
+	</dl>
+
+
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>pos()</dt>
+	  <dd>読み取り位置を返す。
+	  </dd>
+		
+	  <dt>pos=(newPos)</dt>
+	  <dd>読み取り位置を設定する。
+		設定できない位置だったら -1 を返す。
+	  </dd>
+		
+	  <dt>length()</dt>
+	  <dd>文字列長を返す。読み取り位置とは無関係。</dd>
+
+	  <dt>getc()</dt>
+	  <dd>1バイト読み取り、その文字コードを返す。
+		読み取り位置は次のバイトに移動。
+	  </dd>
+
+	  <dt>gets(delim = "\n")</dt>
+	  <dd>delimの中に含まれる文字を終端とする文字列を取得する。
+		読み取り位置は終端文字の次に移動。
+	  </dd>
+
+	  <dt>search(c)</dt>
+	  <dd>c が Int なら、その文字を探す。
+		c が文字列なら、その中に含まれる文字を探す。
+		見付かった場合は読み取り位置をその文字に移動してtrueを返す。
+		見付からなければ移動せずにfalseを返す。
+	  </dd>
+
+	  <dt>skip(c)</dt>
+	  <dd>c が Int なら、その文字について、
+		c が文字列なら、その中に含まれる文字について、
+		それらを読み飛ばして、そうでない文字の位置に
+		読み取り位置を移動する。
+		読み取り位置を返す。
+	  </dd>
+
+	  <dt>skip(c1,c2)</dt>
+	  <dd>c1 <= c <= c2 となるような文字 c を読み飛ばして、
+		そうでない文字の位置に読み取り位置を移動する。
+		読み取り位置を返す。		
+	  </dd>
+
+	  <dt>substr(head,tail)</dt>
+	  <dd>部分文字列をStringBufferに入れて返す。
+		(head位置を含み、tail位置を含まない部分文字列)
+	  </dd>
+
+	  <dt>read(len)</dt>
+	  <dd>読み取り位置からlenバイト分の部分文字列をStringBufferに入れて返す。
+		読み取り位置はその次の位置に移動する。
+	  </dd>
+
+	  <dt>getInt()</dt>
+	  <dd>整数を読み取る。読み取り位置はその次の位置に移動する。
+		1文字も整数として読み取れなければ、読み取り位置は変わらず 0 を
+		返す。
+		+,-,0x(16進数),0o(8進数),0b(2進数) に対応している。
+	  </dd>
+
+	  <dt>getFloat()</dt>
+	  <dd>浮動小数を読み取る。読み取り位置はその次の位置に移動する。
+		1文字も浮動小数として読み取れなければ、読み取り位置は変わらず
+		0 を返す。
+		e表記にも対応している。
+	  </dd>
+
+
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

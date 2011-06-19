@@ -1,0 +1,16 @@
+$action	calc(int*)
+
+
+Start <- %Spc Exp %EOF
+
+Exp <- Number / Paren
+Exp << infixl 10 ("+" / "-") %Spc
+Exp << infixl 20 ("*" / "/") %Spc
+Exp << infixr 30 "**" %Spc
+Exp << prefix 40 ("+" / "-") %Spc
+Exp << ternary 5 %("?" Spc) %(":" Spc)
+
+
+Number <- %[0-9]+ %Spc
+Paren <- %"(" %Spc Exp %")" %Spc
+Spc <- %(" " / "\t")*

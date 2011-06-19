@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Thread クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Thread</h2>
+	スレッド。
+	<br>
+	ノンプリエンプティブなスレッドであり、スレッドの切り替えは明示的に
+	行なわれる。
+	<br>
+	スレッドの切り替えは、 wait 命令、または sleep 命令によって起きる。
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>コンストラクタ</h3>
+
+	<dl>
+	  <dt>new Thread(obj = nil)</dt>
+	  <dd>新しいスレッドを生成する。
+		<br>
+		obj が渡された場合、スレッドは obj.run() を実行する。
+		run()メソッドを持っているオブジェクトであれば、どんなクラスでも良い。
+		<br>
+		Closureクラスは run() を持っているので、クロージャを渡して良い。
+		( run() は call() と同じ。 )
+<pre>
+// 例
+new Thread {
+    wait(10)
+    do_something(1)
+    wait(10)
+    do_something(2)
+}
+</pre>
+	  </dd>
+	</dl>
+
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>startRun(x)</dt>
+	  <dd>引数オブジェクトの run() メソッドから実行開始</dd>
+
+	  <dt>kill()</dt>
+	  <dd>実行を中止する。</dd>
+
+	  <dt>sleep()</dt>
+	  <dd>sleep状態にする。</dd>
+
+	  <dt>wakeup()</dt>
+	  <dd>sleep状態から実行を再開する。</dd>
+
+	  <dt>running?()</dt>
+	  <dd>実行中ならば true を返す。 (wait, sleep も実行中扱い)
+	  </dd>
+
+	  <dt>join()</dt>
+	  <dd>終了するまでwaitする。
+<pre>
+t.join() 
+// 上と下は同じ動作をする。
+while (t.running?()) wait
+</pre>
+	  </dd>
+
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

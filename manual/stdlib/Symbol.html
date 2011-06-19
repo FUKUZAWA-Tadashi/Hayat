@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Symbol クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Symbol</h2>
+	シンボル。
+	<br>
+	ソースコード上では <code>:識別子</code> という形で表現される。
+	内部的には整数として扱われている。
+	<br>
+	newによるインスタンス生成はできない。
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>演算子</h3>
+
+	<table>
+	  <tr>
+		<td class="code">==</td>
+		<td>比較：等しい時に true</td>
+	  </tr>
+	</table>
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>concatToStringBuffer(sb,mode)</dt>
+	  <dd>StringBufferオブジェクトsbの末尾に、文字列表現を追加する。
+		シンボル情報ファイル symbols.sym から、文字列情報を取得
+		出来ない場合、 <code>{数値}</code> という表現になる。
+	  </dd>
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

@@ -1,0 +1,112 @@
+# -*- ruby -*-
+
+#
+# HyUnitƒRƒ“ƒpƒCƒ‹
+#
+
+def chdir(dir, &block)
+  puts "Entering directory `#{File.expand_path(dir)}'"
+  Dir.chdir(dir, &block)
+  puts "Leaving directory `#{File.expand_path(dir)}'" if block
+end
+def myDefMethod(name, &block)
+  self.class.send(:define_method, name, &block)
+end
+
+
+extSymDir = ENV['EXT_SYM_DIR']
+if extSymDir
+  extOpts = ['-I', extSymDir]
+else
+  extOpts = []
+end
+
+hayatDir = '..'
+
+compilerDir = hayatDir + '/compiler'
+if /cygwin/ =~ RUBY_PLATFORM
+  #vcCompiler = hayatDir + '/vcproj/hayatc.exe'
+  #if File.exist? vcCompiler
+  #  compiler = vcCompiler
+  #else
+    vcCompiler = nil
+    compiler = compilerDir + '/hayatc.exe'
+  #end
+else
+  vcCompiler = nil
+  compiler = compilerDir + '/hayatc'
+end
+stdlibDir = hayatDir + '/stdlib'
+stdlibOutDir = stdlibDir + '/out'
+stdlibBytecode = stdlibOutDir + '/stdlib.hyb'
+
+
+outDir = 'out'
+
+directory outDir
+
+sources = FileList['*.hy']
+binaries = []
+sources.each do |s|
+  b = outDir + '/' + s.ext('.hyb')
+  file b => [s, stdlibBytecode] do
+    cmds = [compiler, '-I', stdlibOutDir] + extOpts + ['-o', outDir, s]
+    sh *cmds
+  end
+  binaries.push b
+end
+
+task :default => [:compiler, :stdlib, :compile]
+
+desc "build stdlib library"
+task :stdlib do
+  chdir File.expand_path(stdlibDir) do
+    sh 'rake'
+  end
+end
+
+file stdlibBytecode => [:stdlib]
+
+desc "build compiler"
+task :compiler do
+  unless vcCompiler
+    chdir File.expand_path(compilerDir) do
+      sh 'rake'
+    end
+  end
+end
+
+desc "compile all script"
+task :compile => [outDir] + binaries
+
+def install (*params)
+  destDir = params.pop
+  params.each do |src|
+    if Array === src
+      install(*(src + [destDir]))
+    else
+      puts "copy #{src} to #{destDir}"
+      FileUtils.install(src, destDir)
+    end
+  end
+end
+
+
+desc "cleanup script binaries"
+task :clean do
+  FileUtils.rm_rf(outDir);
+end
+
+task :allclean => [:clean, :stdlibclean]
+
+task :stdlibclean do
+  chdir File.expand_path(stdlibDir) do
+    sh 'rake', 'clean'
+  end
+end
+
+
+
+# depend
+
+# file "sample.hyb" => ["sample.hy"] + Dir["*.hyi"]

@@ -1,0 +1,101 @@
+; hydll.def : DLL のモジュール パラメータを宣言します。
+
+LIBRARY		 "hydll"
+
+EXPORTS
+	; 明示的なエクスポートはここへ記述できます
+
+	setMemSize
+	setFlagReadDebugInfos
+	setDebugMemSize
+	init_memory
+	addLoadPath
+	init_main
+	start_main
+	tick_main
+	term_main
+	reload_bytecode
+	addUpdateFunc
+	insertUpdateFunc
+	addDrawFunc
+	addTermFunc
+
+	hmd_set_debug_out_mode
+	hmd_isFileExist
+	hmd_fileSize
+	hmd_loadFile
+	hmd_loadFileAll
+	hmd_loadFile_inPath
+	hmd_allocFileBuf
+	hmd_freeFileBuf
+	hmd_isNoWait
+	hmd_halt
+	hmd_printf
+	hmd_vprintf
+	hmd_errprintf
+	hmd_fatalError
+
+	?linkRootFfiTable@HClass@Engine@Hayat@@SAXPBUClassFfiEntry_t@123@@Z
+	?toFloat@Value@Engine@Hayat@@QBEMXZ
+	?getMMes@MMes@Common@Hayat@@SAPBDPBD@Z
+	?getExpandCapacity@?$Stack@VValue@Engine@Hayat@@@Common@Hayat@@QAEIXZ
+	?realloc@MemPool@Common@Hayat@@QAEPAVMemCell@23@PAV423@II@Z
+	?alloc@MemPool@Common@Hayat@@QAEPAVMemCell@23@I@Z
+	?setMemID@MemCell@Common@Hayat@@QAEXPBD@Z
+	?toString@Value@Engine@Hayat@@QBEPBDXZ
+	?fromCppObj@Object@Engine@Hayat@@SAPAV123@PBX@Z
+	?m_toCppObj@Value@Engine@Hayat@@IAEPAXXZ
+	?getClassVarAddr@HClass@Engine@Hayat@@QBEPAVValue@23@G@Z
+	?getType@Value@Engine@Hayat@@QBEPBVHClass@23@XZ
+	?getTypeSymbol@Value@Engine@Hayat@@QBEGXZ
+	?getTypeName@Value@Engine@Hayat@@QBEPBEXZ
+	??1Signature@Engine@Hayat@@QAE@XZ
+	?execMethod@Context@Engine@Hayat@@QAE_NGPAVSignature@23@@Z
+	?setNumOnStack@Signature@Engine@Hayat@@QAEXI@Z
+	??0Signature@Engine@Hayat@@QAE@EPAVContext@12@@Z
+	?markObjP@GC@Engine@Hayat@@SAXPAPAVObject@23@@Z
+	?fieldSize@HClass@Engine@Hayat@@QBEIXZ
+	?createInstance_noInit@HClass@Engine@Hayat@@QBEPAVObject@23@I@Z
+	?throwException@Context@Engine@Hayat@@QAAXGPBDZZ
+	?setClassVar@Context@Engine@Hayat@@QAEXGABVValue@23@@Z
+	?searchClass@Bytecode@Engine@Hayat@@QBEPBVHClass@23@G@Z
+	??3StringBuffer@Engine@Hayat@@SAXPAX@Z
+	?concatenated@StringBuffer@Engine@Hayat@@QAEXXZ
+	??2StringBuffer@Engine@Hayat@@SAPAXI@Z
+	?initialize@StringBuffer@Engine@Hayat@@QAEXG@Z
+	?binaryAdded@StringBuffer@Engine@Hayat@@QAEXPBX@Z
+	?create@Object@Engine@Hayat@@SAPAV123@PBVHClass@23@I@Z
+	?create@Object@Engine@Hayat@@SAPAV123@GGI@Z
+	?incremental@GC@Engine@Hayat@@SAXXZ
+	?exec1tick@ThreadManager@Engine@Hayat@@QAEXXZ
+
+	?gMemPool@Common@Hayat@@3PAVMemPool@12@A		DATA
+	?gThreadManager@Engine@Hayat@@3VThreadManager@12@A	DATA
+	?hmd_halt_jmpbuf@@3PAY0BA@HA					DATA
+	?HC_Object@Engine@Hayat@@3PBVHClass@12@B		DATA
+	?HC_NilClass@Engine@Hayat@@3PBVHClass@12@B		DATA
+	?HC_Int@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_Float@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_Math@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_Class@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_Bool@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_Symbol@Engine@Hayat@@3PBVHClass@12@B		DATA
+	?HC_String@Engine@Hayat@@3PBVHClass@12@B		DATA
+	?HC_Thread@Engine@Hayat@@3PBVHClass@12@B		DATA
+	?HC_Exception@Engine@Hayat@@3PBVHClass@12@B		DATA
+	?HC_Array@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_Stack@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_Hash@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_StringBuffer@Engine@Hayat@@3PBVHClass@12@B	DATA
+	?HC_List@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_Closure@Engine@Hayat@@3PBVHClass@12@B		DATA
+	?HC_Context@Engine@Hayat@@3PBVHClass@12@B		DATA
+	?HC_Fiber@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_Method@Engine@Hayat@@3PBVHClass@12@B		DATA
+	?HC_REF@Engine@Hayat@@3PBVHClass@12@B			DATA
+	?HC_INDIRECT_REF@Engine@Hayat@@3PBVHClass@12@B	DATA
+	?HC_INDIRECT_ENT@Engine@Hayat@@3PBVHClass@12@B	DATA
+	?NIL_VALUE@Engine@Hayat@@3VValue@12@B			DATA
+	?FALSE_VALUE@Engine@Hayat@@3VValue@12@B			DATA
+	?TRUE_VALUE@Engine@Hayat@@3VValue@12@B			DATA
+	?EMPTY_LIST_VALUE@Engine@Hayat@@3VValue@12@B	DATA

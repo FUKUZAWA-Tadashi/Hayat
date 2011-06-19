@@ -1,0 +1,101 @@
+# -*- ruby -*-
+
+def chdir(dir, &block)
+  puts "Entering directory `#{File.expand_path(dir)}'"
+  Dir.chdir(dir, &block)
+  puts "Leaving directory `#{File.expand_path(dir)}'" if block
+end
+def myDefMethod(name, &block)
+  self.class.send(:define_method, name, &block)
+end
+
+
+
+task :default => :calculator
+
+exeext = (RUBY_PLATFORM =~ /cygwin/) ? '.exe' : ''
+
+
+houken = '../houken' + exeext
+
+peg = 'calc.peg'
+tab_cpp = 'calc.tab.cpp'
+srcs = FileList["../../common/*.cpp"]
+srcs += FileList["../../parser/*.cpp"]
+srcs += ['calc.cpp', '../../machdep/unix/machdep.cpp', tab_cpp]
+bin = 'calc' + exeext
+
+
+task :calculator => bin
+
+file bin => srcs do
+  sh 'g++', '-Wall', '-g', '-DHY_WORK_WITHOUT_VM', '-I../../common', '-I../../parser', '-I../../machdep/unix', '-I.', '-o', bin, *srcs
+end
+
+
+file tab_cpp => [peg, houken] do
+  sh houken, peg
+end
+
+task :tab do
+  sh houken, peg
+end
+  
+
+file houken => :houken
+
+task :houken do
+  chdir '..' do
+    sh 'rake'
+  end
+end
+
+
+
+myDefMethod :calc do |exp|
+  v = 0
+  open("|./#{bin} '#{exp}'") do |fh|
+    v = fh.read.to_i
+  end
+  v
+end
+
+testCount = 0
+testOKCount = 0
+myDefMethod :testeq do |x,y|
+  if x == y
+    testOKCount += 1
+  else
+    puts "#{x} expected but was #{y}  (test \##{testCount+1})"
+  end
+  testCount += 1
+end
+
+task :test => [:calculator] do
+  testeq 21, calc('(1+2)*(3+4)')
+  testeq 21, calc('(1--2)*(3 - -4)')
+  testeq 39, calc('5+6*7-8')
+  testeq 512, calc('2**3**2')
+  testeq 2, calc('(2-1) ? (8/4) : (8*4)')
+  testeq 32, calc('(2-2) ? (8/4) : (8*4)')
+  if testOKCount == testCount
+    puts "all OK (#{testCount})"
+  else
+    puts "#{testCount - testOKCount} failed / #{testCount} tests"
+    exit 1
+  end
+end
+
+
+
+task :clean do
+  FileUtils.rm_f(bin, :verbose => true)
+  FileUtils.rm_f(bin + '.stackdump', :verbose => true)
+  FileUtils.rm_f(Dir['calc.tab.*'], :verbose => true)
+end
+
+task :allclean => :clean do
+  chdir '..' do
+    sh 'rake', 'clean'
+  end
+end

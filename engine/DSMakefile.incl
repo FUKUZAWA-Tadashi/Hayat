@@ -1,0 +1,5 @@
+#
+# DS用Makefileのプロジェクト依存部分(DSプロジェクトからコピーされる)
+#
+
+LINCLUDES       += ../../\proj_pct/prog/src ../../\proj_pct/script/pct/syscall ../../\proj_pct/script/pct/syscallout

@@ -1,0 +1,190 @@
+// made by: common/mmesex.rb compiler
+
+// compiler/hyCContext.cpp:143
+// compiler/hyCContext.cpp:219
+%d label(s) not found
+
+// compiler/hyCPackage.cpp:309
+%s: Endian mismatch
+
+// compiler/hyCPackage.cpp:306
+%s: not Hayat package
+
+// compiler/hyCPackage.cpp:312
+%s: version mismatch
+
+// compiler/hyCCompiler.cpp:470
+'%s' is a class name. cannot be substituted
+
+// compiler/hyCCompiler.cpp:494
+'%s' is a method. cannot be substituted
+
+// compiler/hyCCompiler.cpp:1677
+'try' has neither 'catch' nor 'finally'
+
+// compiler/hyCSignature.cpp:77
+argument that have no default value cannot be placed after default value
+
+// compiler/hyCClassInfo.cpp:1116
+bad ffi definition %s::%s\n  ffi definition not found in file %s.cpp
+
+// compiler/hyCCompiler.cpp:778
+// compiler/hyCCompiler.cpp:783
+// compiler/hyCCompiler.cpp:3541
+// compiler/hyCCompiler.cpp:3636
+// compiler/hyCCompiler.cpp:3641
+bad string
+
+// compiler/hyCCompiler.cpp:3536
+bad symbol string
+
+// compiler/hyCSymbolTable.cpp:271
+// compiler/hyCClassInfo.cpp:583
+// compiler/hyCClassInfo.cpp:1020
+can't write to file %s
+
+// compiler/hyCCompiler.cpp:3062
+cannot get constant value before initialized
+
+// compiler/hyCCompiler.cpp:3069
+cannot get variable's value before initialized
+
+// compiler/hyCmain.cpp:335
+cannot obtain compile lock (lock file: %s)
+
+// compiler/hyCCompiler.cpp:3099
+cannot override constant variable '%s'
+
+// compiler/hyCFileOut.cpp:94
+// compiler/hyCFileOut.cpp:96
+cannot read %s
+
+// compiler/hyCSymbolTable.cpp:147
+cannot read num symbols from file %s
+
+// compiler/hyCSymbolTable.cpp:150
+cannot read symbol table size from file %s
+
+// compiler/hyCSymbolTable.cpp:247
+cannot write to file %s
+
+// compiler/hyCCompileFile.cpp:116
+charset specification failed: in=%s, out=%s
+
+// compiler/hyCContext.cpp:189
+class '%s' not found
+
+// compiler/hyCCompiler.cpp:283
+class name '%s' conflict with %s name
+
+// compiler/hyCCompiler.cpp:2735
+compiler bug: subst op
+
+// compiler/hyCCompiler.cpp:478
+constant '%s' value cannot be changed
+
+// compiler/hyCCompiler.cpp:3057
+constant name confilts with %s name
+
+// compiler/hyCContext.cpp:323
+duplicated parameter variable name %s
+
+// compiler/hyCCompiler.cpp:1250
+ffi method name '%s' conflict with %s name
+
+// compiler/hyCCompiler.cpp:1161
+fiber name '%s' conflict with %s name
+
+// compiler/hyCCompiler.cpp:1706
+finally nesting level must less than %d
+
+// compiler/hyCClassInfo.cpp:662
+function name '%s' too long
+
+// compiler/hyCPackage.cpp:112
+illegal require for {%d}
+
+// compiler/hyCCompiler.cpp:255
+in class %s: only 1 C++ class allowed in a Hayat class ; including inherited class
+
+// compiler/hyCCompiler.cpp:3128
+local variable '%s' overrides %s
+
+// compiler/hyCCompiler.cpp:3120
+local variable '%s' overrides %s name
+
+// compiler/hyCCompiler.cpp:2865
+method call or functor cannot be a left value
+
+// compiler/hyCCompiler.cpp:868
+method name '%s' conflict with %s name
+
+// compiler/hyCCompiler.cpp:2450
+// compiler/hyCCompiler.cpp:3094
+multiple definition of const variable
+
+// compiler/hyCClassInfo.cpp:553
+multiple definition of ffi '%s'
+
+// compiler/hyCClassInfo.cpp:131
+multiple definition of method '%s'
+
+// compiler/hyCSignature.cpp:46
+nesting argument cannot be placed after default value or '*' argument
+
+// compiler/hyCSignature.cpp:81
+no argument can be placed after '*' argument
+
+// compiler/hyCSignature.cpp:79
+no argument can be placed around '...' argument
+
+// compiler/hyCPackage.cpp:229
+no package %s{%d} found
+
+// compiler/hyCClassInfo.cpp:500
+only 1 C++ class allowed in a Hayat class : including inherited class
+
+// compiler/hyCCompiler.cpp:3103
+overriding constant variable '%s'
+
+// compiler/hyCCompileFile.cpp:150
+parse error: %s
+
+// compiler/hyCClassInfo.cpp:844
+path name too long to write %s.cpp
+
+// compiler/hyCClassInfo.cpp:578
+path name too long to write %s.h
+
+// compiler/hyCClassInfo.cpp:1015
+path name too long to write m_%s.cpp
+
+// compiler/hyCmain.cpp:386
+program exited by compile error
+
+// compiler/hyCPackage.cpp:121
+require failed: cannot load \"%s\"
+
+// compiler/hyCJumpControlTree.cpp:84
+same label '%s' in same context
+
+// compiler/hyCmain.cpp:379
+symbol table %s have inconsistency\nyou need recompile dependent scripts
+
+// compiler/hyCContext.cpp:444
+too many jump controls in a context
+
+// compiler/hyCuParse.cpp:427
+unclosed STRING
+
+// compiler/hyCuParse.cpp:181
+// compiler/hyCuParse.cpp:200
+// compiler/hyCuParse.cpp:227
+unclosed comment
+
+// compiler/hyCCompiler.cpp:520
+unknown identifier '%s'
+
+// compiler/hyCCompiler.cpp:524
+unknown identifier '%s' treated as Method object
+

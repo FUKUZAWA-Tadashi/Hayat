@@ -1,0 +1,735 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  <meta content="text/html; charset=Shift_JIS" http-equiv="content-type">
+  <title>grammar explanations</title>
+
+
+</head>
+
+
+<body style="color: rgb(0, 0, 0);" alink="#ee0000" link="#0000ee" vlink="#551a8b">
+
+<h1>宝剣 PEG文法説明</h1>
+
+PEG = Parsing Expression Grammar<br>
+
+再帰降下型のパーサを生成するための文法。<br>
+
+BNFに似た記法を使用するが、解析方法は異なる。<br>
+
+<span style="font-weight: bold;">宝剣</span>では、PEGに独自の拡
+張を施している。<br>
+
+<h2>基本</h2>
+
+<table style="background-color: rgb(255, 255, 255); width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+  <tbody>
+
+    <tr>
+
+      <td style="background-color: rgb(204, 255, 255);"><code><span style="font-style: italic;">A</span> &lt;- <span style="font-style: italic;">e</span></code></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+という形で記述する。<br>
+
+<br>
+
+<code><span style="font-style: italic;">A</span>
+</code>は「非終端記号」であり、このルールの名前となるシンボルで、<span style="font-weight: bold;">宝剣</span>では英大文字または英小文字またはアン
+ダースコア
+&nbsp;<code>'m_'</code>
+で始まり、英大文字または英小文字またはアンダースコアまたは数字が続くシンボル。<br>
+
+<code style="font-style: italic;">e</code> は「parsing
+expression」。<br>
+
+<br>
+
+parsing expression は、構文解析を行ないそれが<br>
+
+成功すると、必要な分の入力を消費する(消費しないものもある)。<br>
+
+失敗すると、入力は消費しない。<br>
+
+エラーになると、その時点で異常終了する。<br>
+
+<br>
+
+parsing expression は、終端記号 または 非終端記号 の組合せで表現される。<br>
+
+<br>
+
+<br>
+
+<h3>parsing expression の組合せのパターン</h3>
+
+<br>
+
+<dl style="font-style: italic;">
+
+  <dt><code>e1 e2 e3 ...</code> </dt>
+
+</dl>
+
+<dl>
+
+  <dd>左から順にパースしていき、全部が成功したら成功</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt><code><span style="font-style: italic;">e1
+    </span>/<span style="font-style: italic;"> e2 </span>/<span style="font-style: italic;"> e3 ...</span></code></dt>
+
+</dl>
+
+<dl>
+
+  <dd>左から順にパースして、最初に成功したものがあればそれ以降右側にあるparsing
+expressionはパースせず、成功となる</dd>
+
+  <dd>全部失敗したら失敗</dd>
+
+</dl>
+
+<br>
+
+<code><span style="font-style: italic;">e</span>*</code>
+<dl>
+
+  <dd>0回以上の繰り返し</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt><code><span style="font-style: italic;">e</span>+</code>
+  </dt>
+
+</dl>
+
+<dl>
+
+  <dd>1回以上の繰り返し</dd>
+
+</dl>
+
+<br>
+
+<code><span style="font-style: italic;">e</span>?</code>
+<dl>
+
+  <dd>0回または1回</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt><code>&amp;<span style="font-style: italic;">e</span></code>
+  </dt>
+
+</dl>
+
+<dl>
+
+  <dd><span style="font-style: italic;">e</span>が
+成功すれば成功、但し入力は消費しない</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt><code>!<span style="font-style: italic;">e</span></code></dt>
+
+</dl>
+
+<dl>
+
+  <dd><span style="font-style: italic;">e</span>が
+失敗すれば成功、成功すれば失敗、入力は消費しない</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt>(<span style="font-style: italic;">e</span>)</dt>
+
+</dl>
+
+<dl>
+
+  <dd><span style="font-style: italic;">e</span>が
+成功すれば成功</dd>
+
+</dl>
+
+<br>
+
+<br>
+
+<br>
+
+<h3>終端記号のパターン</h3>
+
+<br>
+
+<dl>
+
+  <dt><code>"<span style="font-style: italic;">str</span>"</code></dt>
+
+</dl>
+
+<dl>
+
+  <dd>文字列が一致すれば成功</dd>
+
+  <dd>文字列中の <code>\n</code> はLFコードに、 <code>\r</code>
+はCRコードに、 <code>\t</code> はタブコードに対応</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt><code>[<span style="font-style: italic;">a</span>-<span style="font-style: italic;">z</span>]</code></dt>
+
+</dl>
+
+<dl>
+
+  <dd>1文字の文字コードが範囲内なら成功</dd>
+
+  <dd><code><span style="font-weight: bold;">宝剣</span>で
+は [a-fA-F] </code>という書き方には対応していない</dd>
+
+  <dd><code>[a-f]/[A-F]</code> と書く</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt><code>.</code></dt>
+
+</dl>
+
+<dl>
+
+  <dd>どんな1文字とでも一致して成功</dd>
+
+  <dd>EOFとは一致せず失敗となる</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt><code>EOF</code></dt>
+
+</dl>
+
+<dl>
+
+  <dd>入力がこれ以上無い場合に成功。</dd>
+
+  <dd><code>!.</code> と同じ</dd>
+
+</dl>
+
+<br>
+
+<br>
+
+<br>
+
+<h2>拡張機能</h2>
+
+<br>
+
+<dl>
+
+  <dt><code>%<span style="font-style: italic;">e</span></code></dt>
+
+</dl>
+
+<dl>
+
+  <dd><code>e</code>が成功すれば成功だが、結果として出力されるSyntaxTreeの中に
+は含まれない</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt><code>#</code></dt>
+
+</dl>
+
+<dl>
+
+  <dd>行末までコメント</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt><code>'<span style="font-style: italic;">token</span>'</code></dt>
+
+</dl>
+
+<dl>
+
+  <dd>文字列が一致し、かつ次の文字を先読みした時の条件が満たされれば成功。</dd>
+
+  <dd>条件とは、ユーザーが定義した <code>NotTokenPred</code>
+が成功する事。</dd>
+
+  <dd>普通の言語なら、<code>NotTokenPred</code>
+は以下のように定義すれば良いだろう。</dd>
+
+  <dd>
+    <table style="width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+      <tbody>
+
+        <tr>
+
+          <td style="background-color: rgb(204, 255, 255);"><code>NotTokenPred
+&lt;- !([a-z]/[A-Z]/[0-9]/"_")</code></td>
+
+        </tr>
+
+      </tbody>
+    </table>
+
+  </dd>
+
+  <dd>注意点としては、<code>NotTokenPred</code>が入力を消費しないようにすべき
+である事。</dd>
+
+</dl>
+
+<br>
+
+<dl>
+
+  <dt>$<span style="font-style: italic;">数字</span></dt>
+
+</dl>
+
+<dl>
+
+  <dd> ErrorCut機能。 これ自体は必ず成功する。</dd>
+
+  <dd>その後に続くparsing expressionが失敗すると、エラーとなってパースは異常終了する。</dd>
+
+  <dd>この時、数字がエラー表示プログラムに渡され、それに従ってエラーメッセージが出力される。</dd>
+
+  <dd>
+    <table style="width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+      <tbody>
+
+        <tr>
+
+          <td style="background-color: rgb(204, 255, 255);"><code>A
+&lt;- B C $1 D / B E $2 F</code></td>
+
+        </tr>
+
+      </tbody>
+    </table>
+
+  </dd>
+
+  <dd>この例では、B, C, E の時点で失敗した場合は A は失敗となり、</dd>
+
+  <dd>B C が成功した後に D が失敗した場合か、 B E が成功した後に F が失敗した場合はエラーとなる。</dd>
+
+  <dd>
+    <table border="1" cellpadding="2" cellspacing="2">
+
+      <tbody>
+
+        <tr>
+
+          <th>入力</th>
+
+          <th>結果</th>
+
+        </tr>
+
+        <tr>
+
+          <td>B C D</td>
+
+          <td>成功</td>
+
+        </tr>
+
+        <tr>
+
+          <td>B E F</td>
+
+          <td>成功</td>
+
+        </tr>
+
+        <tr>
+
+          <td>B D</td>
+
+          <td>失敗</td>
+
+        </tr>
+
+        <tr>
+
+          <td>B C F</td>
+
+          <td>エラー1</td>
+
+        </tr>
+
+        <tr>
+
+          <td>B E G</td>
+
+          <td>エラー２</td>
+
+        </tr>
+
+      </tbody>
+    </table>
+
+  </dd>
+
+  <dt></dt>
+
+</dl>
+
+<dl>
+
+  <dt><code><span style="font-style: italic;">A</span></code><span style="font-style: italic;"></span>$<span style="font-style: italic;">数字</span>　= "<span style="font-style: italic;">メッセージ</span>"</dt>
+
+  <dd>ルール <code><span style="font-style: italic;">A</span></code>
+中のエラーカット番号に対するエラーメッセージを指定する。</dd>
+
+  <dd>
+    <table style="width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+      <tbody>
+
+        <tr>
+
+          <td style="background-color: rgb(204, 255, 255);"><code>A
+&lt;- B $1 C $2 D<br>
+
+A$1 = "C required after B"<br>
+
+A$2 = "missing D"</code></td>
+
+        </tr>
+
+      </tbody>
+    </table>
+
+  </dd>
+
+</dl>
+
+<code></code>
+<dl>
+
+  <dt><code><span style="font-style: italic;">A</span>
+&lt;&lt; <span style="font-style: italic;">spec</span>
+    <span style="font-style: italic;">precedence</span>
+    <span style="font-style: italic;">expression</span></code></dt>
+
+</dl>
+
+<dl>
+
+  <dd>演算子定義</dd>
+
+  <dd><code style="font-style: italic;">A</code>
+は、演算の対象となるオペランドを示すルール。</dd>
+
+  <dd><code style="font-style: italic;">spec</code>
+は、<code>infixl</code>, <code>infixr</code>, <code>infixn</code>,
+    <code>prefix</code>, <code>postfix</code>,
+    <code>ternary</code> のどれか1つ</dd>
+
+  <dd>
+    <table border="1" cellpadding="2" cellspacing="2">
+
+      <tbody>
+
+        <tr>
+
+          <td><code>infixl</code> </td>
+
+          <td>中置演算子左結合</td>
+
+        </tr>
+
+        <tr>
+
+          <td><code>infixr</code> </td>
+
+          <td>中置演算子右結合</td>
+
+        </tr>
+
+        <tr>
+
+          <td><code>infixn</code> </td>
+
+          <td>中置演算子非結合</td>
+
+        </tr>
+
+        <tr>
+
+          <td><code>prefix</code> </td>
+
+          <td>前置演算子</td>
+
+        </tr>
+
+        <tr>
+
+          <td><code>postfix</code> </td>
+
+          <td>後置演算子</td>
+
+        </tr>
+
+        <tr>
+
+          <td><code>ternary</code> </td>
+
+          <td>三項演算子</td>
+
+        </tr>
+
+      </tbody>
+    </table>
+
+  </dd>
+
+  <dd><code style="font-style: italic;">precedence</code>
+は演算子の優先順位で、1以上の整数で、大きい方が優先順位が高い</dd>
+
+  <dd><code style="font-style: italic;">expression</code>
+は、演算子にマッチするparsing expression。三項演算子の場合は2つ必要</dd>
+
+  <dd>例)</dd>
+
+  <dd>
+    <table style="width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+      <tbody>
+
+        <tr>
+
+          <td style="background-color: rgb(204, 255, 255);"><code>A
+&lt;- Number<br>
+
+A &lt;&lt; infixl 10 ("+" / "-")<br>
+
+A &lt;&lt; infixl 20 ("*" / "/")<br>
+
+A &lt;&lt; infixr 30 "**"<br>
+
+A &lt;&lt; prefix 40 "-"<br>
+
+A &lt;&lt; ternary 5 "?" ":"</code></td>
+
+        </tr>
+
+      </tbody>
+    </table>
+
+  </dd>
+
+  <dd>これは、優先順位によって整理され、内部的に以下のように展開されると考えれば良い。</dd>
+
+  <dd>
+    <table style="width: 100%;" border="0" cellpadding="2" cellspacing="2">
+
+      <tbody>
+
+        <tr>
+
+          <td style="background-color: rgb(204, 255, 255);"><code>A
+&lt;- A__5<br>
+
+A__5 &lt;- A__10 ("?" A__10 ":" A__10)?<br>
+
+A__10 &lt;- A__20 (("+" / "-") A__20)*<br>
+
+A__20 &lt;- A__30 (("*" / "/") A__30)*<br>
+
+A__30 &lt;- A__40 ("**" A__40)*<br>
+
+A__40 &lt;- "-"* A__0<br>
+
+A__0 &lt;- Number</code></td>
+
+        </tr>
+
+      </tbody>
+    </table>
+
+  </dd>
+
+  <dd>
+    <pre><code></code></pre>
+
+  </dd>
+
+  <dt><code><span style="font-style: italic;">A</span>
+&lt;%&nbsp;<span style="font-style: italic;">e</span></code></dt>
+
+  <dd>ルール <span style="font-style: italic;">A</span>
+を作成するが、パーサを自動生成しない。</dd>
+
+  <dd>C++で高速なパーサを自分で記述したい場合に使用する。</dd>
+
+  <dd><span style="font-style: italic;">e</span>
+はコメントアウトされた形で出力される。</dd>
+
+  <dd>詳細は、プログラミングガイドを参照。</dd>
+
+</dl>
+
+<dl>
+
+  <dt><code>$action</code> &nbsp;<span style="font-style: italic;">funcdecl</span></dt>
+
+  <dd>ユーザーがプログラムする関数の定義を記述する。</dd>
+
+  <dd>関数名と引数の型を記述する。引数が無い場合は、中身の無い括弧を使用する。(voidとは書かない様に注意)</dd>
+
+  <dd>戻り値は無いので(void固定)、戻り値の型は記述しない。</dd>
+
+  <dd>例1)　<code>$action &nbsp;action()</code></dd>
+
+  <dd>例2)　<code>$action &nbsp;doSomething(int)</code></dd>
+
+  <dd>例3)　<code>$action &nbsp;pass1(Application*)</code></dd>
+
+  <dd>複数記述すると、その全てが有効となる。</dd>
+
+  <dd>1つも書かないと、 action() を指定した事になる。</dd>
+
+</dl>
+
+<dl>
+
+  <dt><code>$ownErrorMessage</code></dt>
+
+  <dd>ErrorCutによってパースが失敗した時のメッセージ表示関数 errorMessage() を</dd>
+
+  <dd>自動生成しない場合に指定する。</dd>
+
+  <dd>この指定がある場合、エラーメッセージ指定ルールは無視される。</dd>
+
+</dl>
+
+<dl>
+
+  <dd></dd>
+
+</dl>
+
+<h2>注意<br>
+
+</h2>
+
+<h4>左再帰</h4>
+
+BNFでよくやるように<br>
+
+<code>A &lt;- A "a" / "a"</code><br>
+
+とすると、入力位置に変更が無い状態で再び <code>A</code>
+を解析しようとしてしまい、無限ループになってしまう。<br>
+
+このような場合は<br>
+
+<code>A &lt;- "a"+<br>
+
+</code>と書き直す。<br>
+
+左再帰のルールは実行時に検出され、エラーとなる。但しmemoize機能をオフにした場合は検出できない。<br>
+
+<br>
+
+<h4>繰り返しによる入力の消費</h4>
+
+繰り返し <code>'*' '+'</code> はマッチする部分の入力を全て消費する。そのため<br>
+
+<code>"a"* "ab"</code> は、決して <code>aaab</code>
+とはマッチしない。<br>
+
+<code>"a"*</code> は入力のうち <code>aaa</code>
+を消費してしまうので、<code>"ab"</code> が <code>b</code>
+とマッチせず<br>
+
+失敗する。<br>
+
+このような場合は <code>"a"+ "b"</code> と書き直さなければマッチしない。<br>
+
+<br>
+
+<br>
+
+<h2>参考</h2>
+
+sample 以下に、簡単な整数の演算を行なうコマンドのサンプルがある。<br>
+
+<br>
+
+<span style="font-weight: bold;">宝剣</span>自身のPEGは、<br>
+
+houken/peg.peg に全て定義されている。<br>
+
+これを houken にかけると、houken/PegParser.h と houken/PegParser.cpp と<br>
+
+(ほぼ)同じものが出力される。<br>
+
+<br>
+
+<h2>リンク</h2>
+
+WikiPediaのPEGの解説(英文) &nbsp;<a href="http://en.wikipedia.org/wiki/Parsing_expression_grammar">http://en.wikipedia.org/wiki/Parsing_expression_grammar</a><br>
+
+</body>
+</html>

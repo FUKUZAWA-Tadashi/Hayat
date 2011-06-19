@@ -1,0 +1,244 @@
+// -*- coding: sjis-unix; -*-
+// SJIS messages for Hayat engine
+
+// stdlib/ffi/HSca_BitArray.cpp:129
+Array index out of bounds: idx1 = %d, idx2 = %d, array size = %d
+インデックス %d または %d は配列の範囲外です: 配列サイズ = %d
+
+// stdlib/ffi/HSca_BitArray.cpp:51
+// stdlib/ffi/HSca_BitArray.cpp:76
+// stdlib/ffi/HSca_Array.cpp:82
+// stdlib/ffi/HSca_Array.cpp:102
+Array index out of bounds: index = %d, array size = %d
+インデックス %d は配列の範囲外です: 配列サイズ = %d
+
+// engine/hyContext.cpp:1162
+Bad FFI call %s::%s\nsp=%d,numRetVal=%d,newsp=%d
+FFI呼び出し %s::%s の結果が異常です\nsp=%d,numRetVal=%d,newsp=%d
+
+// stdlib/ffi/HSca_Fiber.cpp:59
+Closure required
+クロージャが必要です
+
+// engine/hyThreadManager.cpp:45
+PROGRAM BUG :  ThreadManager::firstOfAll() must called first
+初期化ルーチンにバグがあります: まず ThreadManager::firstOfAll() が呼ばれなければなりません
+
+// engine/hyStringBuffer.cpp:122
+// engine/hyStringBuffer.cpp:134
+StringBuffer overflow detected
+StringBufferのバッファオーバーフローが検出されました
+
+// engine/hyFiber.cpp:93
+// engine/hyFiber.cpp:432
+already finished
+Fiberは既に終了しています
+
+// stdlib/ffi/HSca_BitArray.cpp:114
+argument of BitArray::changeSize() must >= 0
+BitArray::changeSize()の引数は、0以上でなければなりません
+
+// stdlib/ffi/HSca_stdlib.cpp:43
+// stdlib/ffi/HSca_stdlib.cpp:52
+assertion failed
+assert失敗
+
+// stdlib/ffi/HSca_List.cpp:90
+call head() of empty List
+空リストに対して head() を呼びました
+
+// stdlib/ffi/HSca_List.cpp:102
+call tail() of empty List
+空リストに対して tail() を呼びました
+
+// engine/hyContext.cpp:634
+// engine/hyContext.cpp:653
+cannot access constant '%s' from class '%s'
+定数 '%s' は、クラス '%s' からはアクセスできません
+
+// engine/hyVM.cpp:770
+cannot access constant '%s::%s'
+定数 '%s::%s' にはアクセスできません
+
+// engine/hyVM.cpp:588
+cannot get member or call method '%s' in class '%s'
+メンバ変数またはメソッド '%s' は、クラス '%s' には存在しません
+
+// engine/hyVM.cpp:617
+cannot set member '%s' or call setter '%s' in class '%s'
+メンバ変数 '%s' またはsetterメソッド '%s' は、クラス '%s' には存在しません
+
+// engine/hySignature.cpp:553
+// engine/hySignature.cpp:623
+class %s not initialized for default value
+クラス '%s' が初期化されていないので、メソッドのデフォルト値を使えません
+
+// engine/hyFfiDecl.h:51
+// engine/hyFfiDecl.h:53
+class method call for instance method
+インスタンスメソッド呼び出しを想定しているのにクラスメソッド呼び出しをされました
+
+// engine/hyContext.cpp:187
+class method not found or signature mismatch: %s::%s
+メソッドが無いか、シグネチャが一致しません: %s::%s
+
+// engine/hyClosure.cpp:59
+closure call signature mismatch
+クロージャ呼び出しのシグネチャが一致しません
+
+// engine/hyClass.cpp:187
+delete BUG !!  in class %s\n
+クラス '%s' で、呼んではいけない delete を呼んでいます
+
+// stdlib/ffi/HSca_Int.cpp:76
+// stdlib/ffi/HSca_Int.cpp:89
+division by zero
+0で除算しました
+
+// engine/hyClass.cpp:868
+ffi table mismatch: table has entry '%s' but class %s does not have it
+FFIのテーブルに不整合があります: テーブルに '%s' がありますが、クラス '%s' には存在しません
+
+// engine/hyFiber.cpp:67
+// engine/hyFiber.cpp:397
+fiber loop
+自分自身を再帰的に実行しようとしました
+
+// engine/hyFiber.cpp:142
+fiber was finished
+Fiberは既に終了しています
+
+// stdlib/ffi/HSca_Bytecode.cpp:33
+file %s reload as %s failed
+ファイル%sのリロードに失敗しました(%sに置き換えてのリロード)
+
+// stdlib/ffi/HSca_Bytecode.cpp:20
+file %s reload failed
+ファイル%sのリロードに失敗しました
+
+// engine/hyClass.cpp:305
+frameSP=%d,frameStack.sp=%d
+frameSP=%d,frameStack.sp=%d
+
+// engine/hyFiber.cpp:111
+generate() loop
+自分自身を再帰的に実行しようとしました
+
+// engine/hyFiber.cpp:229
+getReturnVal() called but not returned
+FiberがreturnしていないのにgetReturnVal()が呼ばれました
+
+// engine/hyVM.cpp:749
+getScopeClass: class not found: %s
+クラス '%s' が見つかりません
+
+// engine/hyVM.cpp:756
+getScopeClass: inner class not found: %s
+インナークラス '%s' が見つかりません
+
+// engine/hyFiber.cpp:219
+getYieldVal() called but not yielding
+FiberがyieldしていないのにgetYieldVal()が呼ばれました
+
+// engine/hyVM.cpp:460
+initialize() must return an object of class '%s'
+initialize() は、'%s' クラスのインスタンスを返さなければなりません
+
+// engine/hyFfiDecl.h:50
+// engine/hyFfiDecl.h:52
+instance method call for a class method
+クラスメソッド呼び出しを想定しているのにインスタンスメソッド呼び出しをされました
+
+// engine/hyContext.cpp:192
+instance method not found or signature mismatch: %s::%s
+メソッドが無いか、シグネチャが一致しません: %s::%s
+
+// engine/hyContext.cpp:964
+internal error: incorrect finally process
+内部エラー:finally処理にバグがあるようです
+
+// engine/hyBytecode.cpp:283
+// engine/hyBytecode.cpp:318
+// engine/hyBytecode.cpp:354
+no link bytecode found %s
+バイトコード '%s' がみつかりません
+
+// engine/hyContext.cpp:285
+no method %s found in scope %s.  self.type=%s
+メソッド '%s' は、スコープ '%s' には見つかりません。 self.type=%s
+
+// engine/hyBytecode.cpp:366
+offs=%d m_stringTableSize=%d
+offs=%d m_stringTableSize=%d
+
+// stdlib/ffi/HSca_Bytecode.cpp:24
+// stdlib/ffi/HSca_Bytecode.cpp:37
+reload feature not available
+リロードの使用が禁止されています
+
+// engine/hyContext.cpp:1220
+return assertion failed:\n  context=%x, sp=%d, framePos=%d, numArgs=%d, nulLocals=%d
+return時スタック異常\n context=%x, sp=%d, framePos=%d, numArgs=%d, nulLocals=%d
+
+// stdlib/ffi/HSca_stdlib.cpp:78
+sleep() called out of thread
+スレッド実行でないのにsleep()を実行しました
+
+// stdlib/ffi/HSca_Random.cpp:37
+srand(0) is not allowed
+sramd(0)は禁止です。0以外を使用しなければなりません
+
+// engine/hyClass.cpp:308
+stack size expected %d but actually %d
+コンストラクタ実行後のスタックサイズは %d であるべきなのに %d になっています
+
+// engine/hyContext.cpp:644
+substitution to Constant '%s' not allowed
+定数 '%s' への代入は禁止されています
+
+// engine/hyClass.cpp:577
+super class %s not found
+スーパークラス '%s' が見つかりません
+
+// engine/hySymbolTable.cpp:103
+symbol table is not initialized
+シンボルテーブルが初期化されていません
+
+// engine/hyContext.cpp:896
+uncaught exception
+例外が処理されずに終了しました
+
+// engine/hyVM.cpp:432
+// engine/hyVM.cpp:546
+unknown class '%s'
+不明なクラス '%s'
+
+// engine/hyContext.cpp:567
+// engine/hyContext.cpp:582
+unknown member var %s (class %s)
+メンバ変数 '%s' はクラス '%s' にはありません
+
+// engine/hyClass.cpp:596
+using class %s not found
+usingのクラス '%s' が見つかりません
+
+// engine/hyClass.cpp:603
+using class ...::%s not found
+usingのクラス '～::%s' が見つかりません
+
+// engine/hyClass.cpp:593
+using class ::%s not found
+usingのクラス '::%s' が見つかりません
+
+// engine/hyContext.cpp:560
+// engine/hyContext.cpp:575
+using member variable '%s' out of instance
+インスタンスが無いのにメンバ変数 '%s' を使おうとしました
+
+// engine/hyVM.cpp:831
+yield out of fiber
+Fiberの外で yield を実行しようとしました
+
+// engine/hyFiber.cpp:241
+yieldResult() called but not yielded
+yieldしていないのにyieldResult()が呼ばれました

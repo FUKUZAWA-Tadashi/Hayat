@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Fiber クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Fiber</h2>
+	Fiberは、軽量スレッドとも呼ばれ、実行中の状態を保持しながら
+	他のプログラムに制御を移す事ができる。
+	<br>
+	制御の移行は yield 命令によって行なわれる。 yield 命令は Fiber の
+	中でしか実行する事ができない。
+	<br>
+	Hayat では主に、イテレータ、ジェネレータ として使用される。
+
+
+	<h3>親クラス</h3>
+	Object, Enumerable
+
+
+	<h3>コンストラクタ</h3>
+
+	<dl>
+	  <dt>new Fiber(closure)</dt>
+	  <dd>新しいFiberオブジェクトを生成する。
+	  </dd>
+	</dl>
+
+
+	<h3>演算子</h3>
+
+	<table>
+	  <tr>
+		<td class="code">-&gt;</td>
+		<td>iterate(右辺) を実行する。</td>
+	  </tr>
+	  <tr>
+		<td class="code">()</td>
+		<td>iterate(引数) を実行する。</td>
+	  </tr>
+	</table>
+
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>go()</dt>
+	  <dd>yieldまたはreturnまで実行させ、yieldならtrue、returnなら
+		false、既に終了していたら :fiber_error 例外を投げる。</dd>
+
+	  <dt>getYieldVal()</dt>
+	  <dd>yield命令により渡された値を取得する。
+		<br>
+		go()の戻り値が true だった場合に使用できる。
+	  </dd>
+
+	  <dt>getReturnVal()</dt>
+	  <dd>return値を取得する。
+		<br>
+		go()の戻り値が false だった場合に使用できる。
+	  </dd>
+
+	  <dt>yieldResult(x)</dt>
+	  <dd>yield命令の戻り値を与える。
+		<br>
+		getYieldVal() の後で使用できる。
+	  </dd>
+
+	  <dt>generate()</dt>
+	  <dd>次の yield まで実行させ、yield値を取り出す。
+		<br>
+		returnが実行された場合には、 :fiber_return 例外を投げる。
+	  </dd>
+
+	  <dt>generate_noThrow()</dt>
+	  <dd>次の yield まで実行させ、yield値を取り出す。
+		<br>
+		returnが実行された時は、return値を取り出す。
+		既に実行が終了していた場合には、nilを返す。
+	  </dd>
+
+	  <dt>iterate(closure)</dt>
+	  <dd>yield値をclosureに与える事を繰り返す。
+<pre>
+f = new Fiber{ yield 1; yield 2; yield 3 }
+a = []
+f.iterate{|x| a.push(x) }
+// a の値は [1,2,3] となる。
+</pre>
+
+		<br>closureがnilの時は、selfを返す。
+	  </dd>
+
+	  <dt>thrown(e)</dt>
+	  <dd>yieldに対してExceptionを投げる。
+		<br>
+		getYieldVal() の後で使用する。
+	  </dd>
+
+	  <dt>stakeCall(...)</dt>
+	  <dd>第1引数のclosureをcallAway()で呼び出し、その中で発生した
+		全ての例外と break,goto の制御を thrown() に渡す。
+		<br>
+		closure 内で next が実行された場合は、単に stakeCall() から
+		戻る。
+		<br>
+		thrown() で投げた例外が Fiber 内で捕捉された場合は、
+		stakeCall()の位置で next を実行した場合と同じ箇所に処理を移動
+		させる。
+		捕捉されなかった場合は、stakeCall() の位置でその例外を再び
+		投げる。
+	  </dd>
+
+	  <dt>finished?()</dt>
+	  <dd>実行が終了していたら、 true </dd>
+
+	  <dt>each()</dt>
+	  <dd>自分自身を返す。</dd>
+
+	  <dt>each(closure)</dt>
+	  <dd>iterate(closure)を実行する。</dd>
+
+	  <dt>take(n)</dt>
+	  <dd>先頭の n 個の yield値 を取得して yield するような
+		新たな Fiber を生成する。
+		<br>
+		つまり、Fiberの先頭 n 個を取り出すと考えれば良い。
+<pre>
+f = 5.times().take(3).toArray()  // => [0,1,2]
+</pre>
+	  </dd>
+	</dl>
+
+	<h3>クラスメソッド</h3>
+
+	<dl>
+	  <dt>Fiber.joint(a,b)</dt>
+	  <dd>2つのEnumrrable、 a と b を順に実行する1つの新たなFiberを作る。
+<pre>
+f1 = 3.times()
+f2 = 3.times().map{|x| x * 2}
+Fiber.joint(f1,f2).toArray()   // => [0,1,2,0,2,4]
+</pre>
+	  </dd>
+
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

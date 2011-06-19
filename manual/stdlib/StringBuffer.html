@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>StringBuffer クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>StringBuffer</h2>
+	可変長文字列を保持する。
+
+	<h3>コンストラクタ</h3>
+	<dl>
+	  <dt>new StringBuffer(bufSize)</dt>
+	  <dd>bufSizeバイトのバッファを確保して、新しい StringBuffer を
+		作成する。
+		バッファの範囲内に納まる文字列の追加はメモリの拡張を必要と
+		しないので速度低下やメモリ断片化を招かず、効率が良い。
+	  </dd>
+	</dl>
+
+
+	<h3>演算子</h3>
+	<table>
+	  <tr>
+		<td class="code">==</td>
+		<td>比較：等しい時に true 。
+		  <br>String との比較もできる。
+		</td>
+	  </tr>
+	  <tr>
+		<td class="code">&lt;=&gt;</td>
+		<td>比較：バイト毎の比較をする。
+		  C言語のstrcmpと同じ。
+		  <br>String との比較もできる。
+		  <br>右辺が StringBuffer でも String でもない場合は、
+		  type_mismatch 例外が投げられる。
+		</td>
+	  </tr>
+	  <tr>
+		<td class="code">+</td>
+		<td>新しい StringBuffer を作り、そこにselfをコピーし、さらに
+		  右辺を末尾に追加する。
+		  <br>
+		  注意: <code>x += y</code> は <code>x = x + y</code> と同じで
+		  あり、新しい StringBuffer を作るので、 x.concat(y) とは結果
+		  が異なる。
+		</td>
+	  </tr>
+	</table>
+
+	<h3>インスタンスメソッド</h3>
+
+	<dl>
+	  <dt>bufSize()</dt>
+	  <dd>バッファサイズ = バッファを拡張せずに入る最大文字列長 を返す。
+	  </dd>
+		
+	  <dt>length()</dt>
+	  <dd>文字列長を返す。</dd>
+
+	  <dt>concat(...)</dt>
+	  <dd>引数オブジェクトを文字列化して末尾に追加する。
+		オブジェクトの文字列化には、 concatToStringBuffer() を mode = 0
+		で呼び出す。
+<pre>
+x.concat(a,b,c)
+// 上の1行と下の3行は同じ。
+a.concatToStringBuffer(x,0)
+b.concatToStringBuffer(x,0)
+c.concatToStringBuffer(x,0)
+</pre>
+	  </dd>
+
+	  <dt>clear()</dt>
+	  <dd>バッファを空にする。 戻り値は自分自身。</dd>
+
+	  <dt>sayCommand</dt>
+	  <dd>StringBufferは、sayCommandに対応する。
+		sayCommand(x)は、concat(x)と同じ動作をする。
+<pre>
+x「abc{123}def」
+// 上の1行と下の3行は同じ結果となる。
+x.concat("abc")
+x.concat(123)
+x.concat("def")
+</pre>
+	  </dd>
+
+
+	  <a name="unpack"></a>
+	  <dt>unpack(tmpl)</dt>
+	  <dd>StringBufferの中身をバイナリとみなし、テンプレート文字列に従って
+		整数や文字列などに展開して、それらを配列に入れて返す。
+		<br>
+		<a href="Array.html#pack">Array::pack</a>の逆変換ができる。
+		<table>
+		  <tr><th>テンプレート文字</th><th>バイナリの展開</th></tr>
+		  <tr><td>n</td><td>BIG Endian 符号無し16bit整数</td></tr>
+		  <tr><td>N</td><td>BIG Endian 32bit整数</td></tr>
+		  <tr><td>v</td><td>LITTLE Endian 符号無し16bit整数</td></tr>
+		  <tr><td>V</td><td>LITTLE Endian 32bit整数</td></tr>
+		  <tr><td>c</td><td>8bit符号付き整数</td></tr>
+		  <tr><td>C</td><td>8bit符号無し整数</td></tr>
+		  <tr><td>s</td><td>16bit符号付き整数</td></tr>
+		  <tr><td>S</td><td>16bit符号無し整数</td></tr>
+		  <tr><td>i</td><td>32bit整数</td></tr>
+		  <tr><td>f</td><td>32bit浮動小数</td></tr>
+		  <tr><td>a</td><td>終端をナルバイト(0x00)とする文字列とみなし、
+			  それをStringBufferに入れる</td></tr>
+		  <tr><td>A</td><td>符号無し16bit整数で文字列長が
+			  指定された文字列とみなし、
+			  それをStringBufferに入れる</td></tr>
+		  <tr><td>x</td><td>8bit読み飛ばし</td></tr>
+		  <tr><td>それ以外</td><td>効果無し、単に無視される</td></tr>
+		</table>
+		<div class="note">
+		  Hayatでは、スクリプトレベルでの整数は32bit符号付き整数しか扱わない。
+		</div>
+<pre>
+"abcd".unpack("nv")
+// [0x6162, 0x6463] となる
+</pre>
+	  </dd>
+
+
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

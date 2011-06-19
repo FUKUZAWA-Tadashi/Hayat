@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>String クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>String</h2>
+	固定文字列クラス。
+	内容を変更する事はできない。
+	<br>
+	newによるインスタンス生成はできない。
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>演算子</h3>
+
+	<table>
+	  <tr>
+		<td class="code">==</td>
+		<td>比較：文字列の内容が等しければ ture 。
+		  Stringだけでなく、StringBufferとの比較もできる。
+		</td>
+	  </tr>
+	  <tr>
+		<td class="code"><=></td>
+		<td>バイト単位で比較： C言語の strcmp と同じ。
+		  Stringだけでなく、StringBufferとの比較もできる。
+		</td>
+	  </tr>
+	  <tr>
+		<td class="code">+ (二項演算子)</td>
+		<td>
+		  右辺の値を文字列化したものをうしろに結合し、
+		  新しい StringBuffer オブジェクトに格納して返す。
+		</td>
+	  </tr>
+	</dl>
+
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

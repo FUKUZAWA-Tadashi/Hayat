@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Bytecode クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Bytecode</h2>
+	バイトコードのリロードを行なうためのクラス。
+	<br>
+	newによるインスタンス生成はできない。
+
+	<h3>クラスメソッド</h3>
+
+	<dl>
+	  <dt>Bytecode.reload(filename)</dt>
+	  <dd>文字列 filename で指定されたバイトコードをリロードする。
+		まだバイトコードを読んでいない状態であれば、単にロードする。
+	  </dd>
+
+	  <dt>Bytecode.reloadAs(filename, name)</dt>
+	  <dd>文字列 filename で指定されたバイトコードをリロードする。
+		但し本来のパッケージ名を指定したシンボルnameに置き換える。
+		<br>
+		シンボル名は、ファイル名の拡張子を .hyb にしてシンボル化したもの。
+		元スクリプトファイル名が "filename.hy" なら、
+		シンボルは<code>:"filename.hyb"</code>となる。
+<pre>
+// "hoge.hy" をコンパイルしたバイトコード "hoge.hyb" を、
+// "fuga.hyb" をリロードしたかのように読み込む。
+Bytecode.reloadAs("hoge", :"fuga.hyb")
+</pre>
+	  </dd>
+
+	  <dt>Bytecode.setObsoleteVarKeptOnReload(flag)</dt>
+	  <dd>リロード時に旧クラスにあって新クラスに無い変数を残すか
+		どうかを設定する。 trueなら残す。 初期状態では残さない。
+	  </dd>
+
+	  <dt>Bytecode.setClassVarCopiedOnReload(flag)</dt>
+	  <dd>バイトコードをリロードした時に、旧クラス変数の値を
+		新クラス変数にコピーするかどうかを設定する。
+		trueならコピーする。 初期状態ではコピーする。
+	  </dd>
+
+	  <dt>Bytecode.setConstVarCopiedOnReload(flag)</dt>
+	  <dd>バイトコードをリロードした時に、旧定数の値を
+		新定数にコピーするかどうかを設定する。
+		trueならコピーする。 初期状態ではコピーする。
+	  </dd>
+
+	  <dt>Bytecode.remains()</dt>
+	  <dd>リロード後、まだメモリ上に残っている旧バイトコードの
+		名前をシンボルの配列で返す。
+	  </dd>
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

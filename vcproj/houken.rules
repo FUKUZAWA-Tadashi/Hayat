@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VisualStudioToolFile
+	Name="Houken PEG parser generator [Shift-JIS]"
+	Version="8.00"
+	>
+	<Rules>
+		<CustomBuildRule
+			Name="houken"
+			DisplayName="houken"
+			CommandLine="$(SolutionDir)$(ConfigurationName)\houken.exe [InputCharset] [MemorySize] [NotUseMemoize] [PrintSyntaxTree] [PrintIntResult] [inputs]"
+			Outputs="$(InputDir)$(InputName).tab.cpp;$(InputDir)$(InputName).tab.h;$(InputDir)$(InputName).tab.ua;$(InputDir)$(InputName).tab.up;$(InputDir)$(InputName).tab.tmpl"
+			FileExtensions="*.peg"
+			ExecutionDescription="Executing Houken"
+			>
+			<Properties>
+				<StringProperty
+					Name="InputCharset"
+					DisplayName="入力文字コード"
+					Category="charset"
+					Description="pegファイルの文字コードを指定"
+					Switch="-c [value]"
+					DefaultValue="SJIS"
+					Delimited="true"
+				/>
+				<StringProperty
+					Name="MemorySize"
+					DisplayName="使用メモリ容量"
+					Category="Memory"
+					Description="使用メモリ容量 メガバイト単位なら数値の後ろにMをつける(例: 4M)"
+					Switch="-M[value]"
+					DefaultValue="2M"
+				/>
+				<BooleanProperty
+					Name="NotUseMemoize"
+					DisplayName="メモ化機能オフ"
+					Category="switch"
+					Description="メモ化機能を使用しない"
+					Switch="-m"
+				/>
+				<BooleanProperty
+					Name="PrintSyntaxTree"
+					DisplayName="構文解析結果の表示"
+					Category="switch"
+					Description="構文解析結果を表示する"
+					Switch="-s"
+				/>
+				<EnumProperty
+					Name="PrintIntResult"
+					DisplayName="途中経過表示スイッチ"
+					Category="switch"
+					Description="途中経過を表示するかどうか"
+					>
+					<Values>
+						<EnumValue
+							Value="0"
+							DisplayName="途中経過の非表示"
+						/>
+						<EnumValue
+							Value="1"
+							Switch="-d"
+							DisplayName="途中経過を表示"
+						/>
+						<EnumValue
+							Value="2"
+							Switch="-d2"
+							DisplayName="途中経過を詳細表示"
+						/>
+					</Values>
+				</EnumProperty>
+			</Properties>
+		</CustomBuildRule>
+	</Rules>
+</VisualStudioToolFile>

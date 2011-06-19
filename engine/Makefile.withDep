@@ -1,0 +1,10 @@
+# -*- makefile -*-
+#
+# depend ‚ð include ‚µ‚½ Makefile
+# 
+
+
+include Makefile
+
+-include $(DEPS)
+

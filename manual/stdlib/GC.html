@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>GC クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>GC</h2>
+	ガーベジコレクタを制御する。
+	<br>
+	newによるインスタンス生成はできない。
+
+	<h3>クラスメソッド</h3>
+
+	<dl>
+	  <dt>GC.incremental()</dt>
+	  <dd>GCを少し進める。
+		通常はC++側でコントロールするので、スクリプトから呼ぶ必要性は
+		少ない。
+	  </dd>
+
+	  <dt>GC.full()</dt>
+	  <dd>完全なガーベジコレクションの1サイクルを実行する。
+		unmark, mark, sweep のフェーズを最初から全て実行する。
+	  </dd>
+
+	  <dt>GC.coalesce()</dt>
+	  <dd>細かく分割されたメモリ領域のうち、
+		隣合う未使用なメモリ領域を結合して大きな領域にまとめる。
+		必ずfull()の直後のタイミングで呼ばなければならない。
+	  </dd>
+
+	  <dt>GC.countObjects()</dt>
+	  <dd>使用しているメモリセル数を取得。
+		デバッグビルドでのみ有効。
+	  </dd>
+
+	  <dt>GC.getPhaseStr()</dt>
+	  <dd>GCフェーズを表す文字列を取得。</dd>
+	</dl>
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

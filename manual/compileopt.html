@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="default.css" type="text/css" />
+	<title>コンパイルオプション</title>
+  </head>
+  <body>
+
+	<a href="index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h2>コンパイルオプション</h2>	
+
+	<dl>
+	  <dt class="code">-I path</dt>
+	  <dd>require命令、include命令のファイルを探すパスを追加する。
+		require命令は、*.hypファイルを読み込む。
+	  </dd>
+
+	  <dt class="code">-o path</dt>
+	  <dd>出力ファイル(*.hyb,*.hyp,*.hdb)を置くパスを指定する。
+		<br>デフォルトは out
+	  </dd>
+
+	  <dt class="code">-zi path</dt>
+	  <dd>FFIソースファイル(HSca_*.cpp)を置いているパスを指定する。
+		<br>デフォルトは ffi
+	  </dd>
+
+	  <dt class="code">-zo path</dt>
+	  <dd>FFI関連自動生成ファイルを置くパスを指定する。
+		<br>デフォルトは ffiout
+	  </dd>
+
+	  <dt class="code">-ci charset</dt>
+	  <dd>入力スクリプトファイル(*.hy)のキャラクタセットを指定する。
+		<br>指定可能なキャラクタセットは以下の通り。
+		<ul>
+		  <li><code>UTF-8</code></li>
+		  <li><code>SJIS</code></li>
+		  <li><code>EUCJP</code></li>
+		</ul>
+	  </dd>
+
+	  <dt class="code">-co charset</dt>
+	  <dd>出力バイトコードファイル(*.hyb)のキャラクタセットを指定する。
+		<br>指定可能なキャラクタセットは以下の通り。
+		<ul>
+		  <li><code>UTF-8</code></li>
+		  <li><code>SJIS</code></li>
+		  <li><code>EUCJP</code></li>
+		  <li><code>UTF-16BE</code></li>
+		  <li><code>UTF-16LE</code></li>
+		</ul>
+	  </dd>
+
+	  <dt class="code">-m</dt>
+	  <dd>コンパイル時のメモリ使用量が減り、速度が低下する。
+		スクリプトをパースする際に、メモ化機能を使わないようにする。
+	  </dd>
+	  <dt class="code">-Wlabel=N</dt>
+	  <dd>goto文の飛び先ラベルがどこかに存在するかどうかをチェックする。
+		(到達可能かどうかはチェックしない)
+		<table>
+		  <tr>
+			<td>N=0</td><td>チェックしない</td>
+		  </tr><tr>
+			<td>N=1</td><td>ファイル内にラベルが無ければWARNINGを出す</td>
+		  </tr><tr>
+			<td>N=2</td><td>ブロック内にラベルが無ければWARNINGを出す</td>
+		  </tr><tr>
+			<td>N=1!</td><td>ファイル内にラベルが無ければERRORを出して停止</td>
+		  </tr><tr>
+			<td>N=2!</td><td>ブロック内にラベルが無ければERRORを出して停止</td>
+		  </tr>
+		</table>
+		デフォルトは、 2!
+	  </dd>
+
+	  <dt class="code">-Wnumsay=N</dt>
+	  <dd>sayCommandの個数を制限する。
+		<table>
+		  <tr>
+			<td>N=0</td><td>チェックしない</td>
+		  </tr><tr>
+			<td>N=x</td><td>sayCommandがx個を越えたらWARNINGを出す</td>
+		  </tr><tr>
+			<td>N=x!</td><td>sayCommandがx個を越えたらERRORを出して停止</td>
+		  </tr>
+		</table>
+		デフォルトは、 0
+	  </dd>
+
+	  <dt class="code">-Wunknown=N</dt>
+	  <dd>所在が不明なクラス名やメソッド名があった場合の動作を指定する。
+		<table>
+		  <tr>
+			<td>N=0</td><td>チェックしない</td>
+		  </tr><tr>
+			<td>N=1</td><td>WARNINGを出す</td>
+		  </tr><tr>
+			<td>N=1!</td><td>ERRORを出して停止</td>
+		  </tr>
+		</table>
+		デフォルトは、 1
+	  </dd>
+
+	  <dt class="code">-s</dt>
+	  <dd>スクリプトをパースした結果の構文解析木を表示する。
+	  </dd>
+
+	  <dt class="code">-d</dt>
+	  <dd>パース途中状態をデバッグ表示する。
+	  </dd>
+	  
+	  <dt class="code">-d2</dt>
+	  <dd>パース途中状態を詳細にデバッグ表示する。
+	  </dd>
+	</dl>
+
+	<hr>
+	<a href="index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

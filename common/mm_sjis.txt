@@ -1,0 +1,37 @@
+// -*- coding: sjis-unix; -*-
+// SJIS messages for Hayat common routines
+
+// common/hyArray.h:140
+// common/hyArray.h:152
+// common/hyArray.h:259
+// common/hyArray.h:266
+Array index %d out of bounds (size=%d)
+配列のインデックス%dが範囲を越えました (配列サイズ=%d)
+
+// common/hyArray.h:198
+Array index out of bounds
+配列のインデックスが範囲を越えました
+
+// common/hyStack.h:147
+addrAt(%d) stack over (sp %d)
+addrAt(%d) はスタックの範囲を越えています(sp=%d)
+
+// common/hyMemPool.cpp:203
+call alloc() inside alloc() : finalize may called alloc()
+alloc()の内側でalloc()が呼ばれています: finalizeでalloc()が呼ばれている可能性があります
+
+// common/hyStack.h:141
+getAt(%d) stack over (sp %d)
+getAt(%d) はスタックの範囲を越えています(sp=%d)
+
+// common/hyStack.h:161
+setAt(%d) stack over (sp %d)
+etAt(%d) はスタックの範囲を越えています(sp=%d)
+
+// common/hyStack.h:88
+// common/hyStack.h:94
+// common/hyStack.h:100
+// common/hyStack.h:111
+// common/hyStack.h:117
+stack underflow
+スタックの下限を越えました

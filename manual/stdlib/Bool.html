@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+	<link rel="stylesheet" href="../default.css" type="text/css" />
+	<title>Bool クラス</title>
+  </head>
+  <body>
+
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+	<hr>
+
+	<h1>標準ライブラリ stdlib</h1>
+
+	<h2>Bool</h2>
+	論理値クラス。 true と false の2種類のインスタンスしか無い。
+	<br>
+	newによるインスタンス生成はできない。
+
+	<h3>親クラス</h3>
+	Object
+
+	<h3>演算子</h3>
+
+	<table>
+	  <tr>
+		<td class="code">!</td>
+		<td>(単項演算子) 論理否定</td>
+	  </tr>
+	  <tr>
+		<td class="code">==</td>
+		<td>比較：等しい時に true</td>
+	  </tr>
+	  <tr>
+		<td class="code">&amp;&amp;</td>
+		<td>論理積
+		  <br>通常 <code>&amp;&amp;</code> 演算子は、コンパイラ内部で処理され、この
+		  演算子実装を呼び出さない。敢えてメソッドとして呼び出したい場合
+		  には、 <code>x.getMethod(:"&amp;&amp;").call(y)</code> という様に
+		  して使う。
+		</td>
+	  </tr>
+	  <tr>
+		<td class="code">||</td>
+		<td>論理和
+		  <br>通常 <code>||</code> 演算子は、コンパイラ内部で処理され、この
+		  演算子実装を呼び出さない。敢えてメソッドとして呼び出したい場合
+		  には、 <code>x.getMethod(:"||").call(y)</code> という様にして使う。
+		</td>
+	  </tr>
+	</table>
+
+	<h4>備考</h4>
+	<code>||</code> , <code>&amp;&amp;</code> 演算は
+	演算子ショートカットのため、通常はコンパイラ内部で処理される。
+	<br>
+	例えば、xがtrueの時、 <code>x || f()</code> という演算では、
+	結果が true になる筈なので、 f() を計算しない。
+	敢えて f() を計算した上で論理和の計算を行ないたい場合には、
+	<code>y = f(); x || y</code> としたり、
+	<code>x.getMethod(:"||").call(f())</code> とする。
+
+	<hr>
+	<a href="../index.html">Hayatリファレンスマニュアル トップページ</a>
+
+  </body>
+</html>

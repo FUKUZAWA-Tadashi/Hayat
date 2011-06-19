@@ -1,0 +1,250 @@
+// -*- coding: sjis-unix; -*-
+// SJIS messages for Hayat compiler
+
+// compiler/hyCContext.cpp:143
+// compiler/hyCContext.cpp:219
+%d label(s) not found
+ラベルが%d個見つかりませんでした
+
+// compiler/hyCPackage.cpp:309
+%s: Endian mismatch
+パッケージ %s のEndianが合わず、読み込めません
+
+// compiler/hyCPackage.cpp:306
+%s: not Hayat package
+ファイル %s はHayatパッケージではありません
+
+// compiler/hyCPackage.cpp:312
+%s: version mismatch
+パッケージ %s のバージョンが合わず、読み込めません
+
+// compiler/hyCCompiler.cpp:470
+'%s' is a class name. cannot be substituted
+'%s' はクラス名なので代入できません
+
+// compiler/hyCCompiler.cpp:494
+'%s' is a method. cannot be substituted
+'%s' はメソッド名なので代入できません
+
+// compiler/hyCCompiler.cpp:1677
+'try' has neither 'catch' nor 'finally'
+try節には、catch節かfinally節が少くとも1つは必要です
+
+// compiler/hyCSignature.cpp:77
+argument that have no default value cannot be placed after default value
+デフォルト値を持たない引数は、他のデフォルト値指定の後には置けません
+
+// compiler/hyCClassInfo.cpp:1116
+bad ffi definition %s::%s\n  ffi definition not found in file %s.cpp
+FFI '%s::%s' の定義が不十分です\n  %s.cpp が存在しないか、またはその中にFFIの定義が不足しています
+
+// compiler/hyCCompiler.cpp:778
+// compiler/hyCCompiler.cpp:783
+// compiler/hyCCompiler.cpp:3541
+// compiler/hyCCompiler.cpp:3636
+// compiler/hyCCompiler.cpp:3641
+bad string
+不正な文字列です
+
+// compiler/hyCCompiler.cpp:3536
+bad symbol string
+シンボル文字列が不正です
+
+// compiler/hyCSymbolTable.cpp:271
+// compiler/hyCClassInfo.cpp:583
+// compiler/hyCClassInfo.cpp:1020
+can't write to file %s
+ファイル %s に書き込めません
+
+// compiler/hyCCompiler.cpp:3062
+cannot get constant value before initialized
+初期化前に定数の値を取得しようとしています
+
+// compiler/hyCCompiler.cpp:3069
+cannot get variable's value before initialized
+初期化前に変数の値を取得しようとしています
+
+// compiler/hyCmain.cpp:335
+cannot obtain compile lock (lock file: %s)
+他のコンパイルプロセスが実行中か、または不正終了しました (ロックファイル %s が存在します)
+
+// compiler/hyCCompiler.cpp:3099
+cannot override constant variable '%s'
+既に定義済みの定数 '%s' を上書きしています
+
+// compiler/hyCFileOut.cpp:94
+// compiler/hyCFileOut.cpp:96
+cannot read %s
+ファイル '%s' を読めません
+
+// compiler/hyCSymbolTable.cpp:147
+cannot read num symbols from file %s
+ファイル '%s' からシンボル数を読めません
+
+// compiler/hyCSymbolTable.cpp:150
+cannot read symbol table size from file %s
+ファイル '%s' からシンボルテーブルサイズを読めません
+
+// compiler/hyCSymbolTable.cpp:247
+cannot write to file %s
+ファイル '%s' に書き込めません
+
+// compiler/hyCCompileFile.cpp:116
+charset specification failed: in=%s, out=%s
+charsetの指定に失敗しました: in=%s, out=%s
+
+// compiler/hyCContext.cpp:189
+class '%s' not found
+クラス '%s' が見つかりません
+
+// compiler/hyCCompiler.cpp:283
+class name '%s' conflict with %s name
+クラス名 '%s' は %s名と衝突しています
+
+// compiler/hyCCompiler.cpp:2735
+compiler bug: subst op
+代入演算子にコンパイラバグあり
+
+// compiler/hyCCompiler.cpp:478
+constant '%s' value cannot be changed
+定数 '%s' の値は変更できません
+
+// compiler/hyCCompiler.cpp:3057
+constant name confilts with %s name
+定数名が %s名と衝突しています
+
+// compiler/hyCContext.cpp:323
+duplicated parameter variable name %s
+メソッド引数名 '%s' が重複しています
+
+// compiler/hyCCompiler.cpp:1250
+ffi method name '%s' conflict with %s name
+FFIメソッド名 '%s' は %s名と衝突しています
+
+// compiler/hyCCompiler.cpp:1161
+fiber name '%s' conflict with %s name
+ファイバ名 '%s' は %s名と衝突しています
+
+// compiler/hyCCompiler.cpp:1706
+finally nesting level must less than %d
+finallyのネスティングは%dレベル未満でなければなりません
+
+// compiler/hyCClassInfo.cpp:662
+function name '%s' too long
+メソッド名 '%s' が長すぎます
+
+// compiler/hyCPackage.cpp:112
+illegal require for {%d}
+requireしているパッケージのシンボル番号{%d}が異常です
+
+// compiler/hyCCompiler.cpp:255
+in class %s: only 1 C++ class allowed in a Hayat class ; including inherited class
+クラス '%s' において、C++のクラスが複数指定されています : 継承元を含めて、1つのC++クラスしか指定できません
+
+// compiler/hyCCompiler.cpp:3128
+local variable '%s' overrides %s
+ローカル変数名 '%s' は %s名と衝突しています
+
+// compiler/hyCCompiler.cpp:3120
+local variable '%s' overrides %s name
+ローカル変数名 '%s' は %s名と衝突しています
+
+// compiler/hyCCompiler.cpp:2865
+method call or functor cannot be a left value
+メソッド呼出しには代入できません
+
+// compiler/hyCCompiler.cpp:868
+method name '%s' conflict with %s name
+メソッド名 '%s' は %s名と衝突しています
+
+// compiler/hyCCompiler.cpp:2450
+// compiler/hyCCompiler.cpp:3094
+multiple definition of const variable
+定数が多重定義されています
+
+// compiler/hyCClassInfo.cpp:553
+multiple definition of ffi '%s'
+FFIメソッド '%s' が多重定義されています
+
+// compiler/hyCClassInfo.cpp:131
+multiple definition of method '%s'
+メソッド '%s' が多重定義されています
+
+// compiler/hyCSignature.cpp:46
+nesting argument cannot be placed after default value or '*' argument
+ネスティング引数は、デフォルト値または *引数の後には置けません
+
+// compiler/hyCSignature.cpp:81
+no argument can be placed after '*' argument
+*引数の後に別の引数を置く事はできません
+
+// compiler/hyCSignature.cpp:79
+no argument can be placed around '...' argument
+'...'引数と同時に、別の引数を使う事はできません
+
+// compiler/hyCPackage.cpp:229
+no package %s{%d} found
+パッケージ '%s' {%d} が見つかりません
+
+// compiler/hyCClassInfo.cpp:500
+only 1 C++ class allowed in a Hayat class : including inherited class
+継承元を含めて、1つのC++クラスしか指定できません
+
+// compiler/hyCCompiler.cpp:3103
+overriding constant variable '%s'
+既に定義済みの定数 '%s' を上書きしています
+
+// compiler/hyCCompileFile.cpp:150
+parse error: %s
+構文解析に失敗しました: %s
+
+// compiler/hyCClassInfo.cpp:844
+path name too long to write %s.cpp
+書き込みファイル名 %s.cpp が長すぎます
+
+// compiler/hyCClassInfo.cpp:578
+path name too long to write %s.h
+書き込みファイル名 %s.h が長すぎます
+
+// compiler/hyCClassInfo.cpp:1015
+path name too long to write m_%s.cpp
+書き込みファイル名 m_%s.cpp が長すぎます
+
+// compiler/hyCmain.cpp:386
+program exited by compile error
+コンパイルエラーにより終了しました
+
+// compiler/hyCPackage.cpp:121
+require failed: cannot load \"%s\"
+requireに失敗しました: '%s' が読み込めません
+
+// compiler/hyCJumpControlTree.cpp:84
+same label '%s' in same context
+同じラベル '%s' が範囲内で複数使われています
+
+// compiler/hyCmain.cpp:379
+symbol table %s have inconsistency\nyou need recompile dependent scripts
+シンボルテーブルファイル '%s' に不整合が見つかりました\n関連ファイルの再コンパイルが必要です
+
+// compiler/hyCContext.cpp:444
+too many jump controls in a context
+内部エラー: jump control 数オーバー
+
+// compiler/hyCuParse.cpp:427
+unclosed STRING
+文字列が閉じられていません
+
+// compiler/hyCuParse.cpp:181
+// compiler/hyCuParse.cpp:200
+// compiler/hyCuParse.cpp:227
+unclosed comment
+コメントが閉じられていません
+
+// compiler/hyCCompiler.cpp:520
+unknown identifier '%s'
+未定義の識別子 '%s' が使われました
+
+// compiler/hyCCompiler.cpp:524
+unknown identifier '%s' treated as Method object
+未定義の識別子 '%s' は、メソッドオブジェクトであると解釈します
+
