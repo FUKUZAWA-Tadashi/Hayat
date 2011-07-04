@@ -1,0 +1,6 @@
+out
+ffiout
+obj
+tester
+tester.exe
+*.stackdump

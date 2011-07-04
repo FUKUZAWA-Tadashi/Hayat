@@ -1,0 +1,6 @@
+obj
+*.stackdump
+peg.tab.*
+*.bak
+houken
+houken.exe

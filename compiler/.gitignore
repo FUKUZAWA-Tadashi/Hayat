@@ -1,0 +1,8 @@
+grammar.tab.*
+hayatc
+hayatc.exe
+*.stackdump
+hyC_opcode.h
+hyC_opcode.cpp
+MACHDEP
+obj

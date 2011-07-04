@@ -1,0 +1,8 @@
+hy_suite.*
+out
+obj
+ffiout
+tester
+tester.exe
+*.stackdump
+gmon.out

@@ -1,0 +1,4 @@
+*.stackdump
+calc.tab.*
+calc
+calc.exe

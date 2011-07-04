@@ -1,0 +1,6 @@
+gokou
+hydas
+hydebdump
+*.exe
+*.exe.stackdump
+obj

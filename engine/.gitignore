@@ -1,0 +1,9 @@
+bin
+depend
+lib
+obj
+opcode_def.h
+opcode_func_defs.inc
+opcode_func_table.inc
+opcode_nameTable.cpp
+MACHDEP
