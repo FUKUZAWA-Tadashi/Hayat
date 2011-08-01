@@ -27,8 +27,8 @@ cygwinでHayatの開発環境を構築する方法
 	rake のインストール
 		cygwin上でgemsを使ってインストール
 			|gem install rake
-		エラーが出てインストールに失敗する場合、以下を実行してみる
-			|gem install --local /cygdrive/q/software/rake-0.8.1.gem
+		エラーが出てインストールに失敗する場合、rake-0.8.1.gem をどこかから拾ってきて以下を実行してみる
+			|gem install --local rake-0.8.1.gem
 
 	Hayat をチェックアウト
 		リンクするプロジェクトの隣にチェックアウトする。
